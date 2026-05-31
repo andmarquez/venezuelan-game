@@ -24,11 +24,19 @@ cat .phone-url
 | Path | Mode |
 |------|------|
 | `/` | Classic kinetic typography (unchanged) |
-| `/lyrics` | Experimental lyrics mode — song ID + LRCLIB lyrics |
+| `/lyrics` | Live lyrics lab — auto song match, beat-synced placeholder lyrics, Tailwind + Framer Motion |
 
-Phone URLs: append `/lyrics` to the Cloudflare tunnel base, e.g. `https://….trycloudflare.com/lyrics`.
+Phone URLs: append `/lyrics` to the Cloudflare tunnel base.
 
-Lyrics mode uses Vite proxies (`/api/lrclib`, `/api/audd`). Optional `VITE_AUDD_API_TOKEN` in `.env` enables auto song detection; manual search works without it.
+Lyrics mode:
+- **Automatic** song panel (mock AI match from BPM/energy after ~5 beats; optional AudD with `VITE_AUDD_API_TOKEN`)
+- **No search bar** — fully automatic
+- Web Audio: volume, bass, mid, treble, BPM, beat intensity
+- Typography: size←volume, weight←bass, spacing←treble, glitch rotation←beat peaks
+- Language from `franc` on lyric text → typography preset
+- Vite proxies: `/api/lrclib`, `/api/audd`
+
+Do not restart Cloudflare tunnel when editing lyrics code; HMR applies on `/lyrics`.
 
 ### Branch note
 

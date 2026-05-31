@@ -1,456 +1,180 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getGlyphVector, useBeatAudio } from './hooks/useBeatAudio.js';
-import {
-  getLyricAtTime,
-  identifySongFromStream,
-  loadLyricsForSong,
-  searchLyrics,
-} from './lib/lyricsService.js';
-import { clamp } from './lib/audioAnalysis.js';
+import { motion } from 'framer-motion';
+import './lyrics/lyrics.css';
+import RecognitionPanel from './lyrics/components/RecognitionPanel.jsx';
+import LyricStage from './lyrics/components/LyricStage.jsx';
+import AudioMeters from './lyrics/components/AudioMeters.jsx';
+import { useLiveAudioEngine } from './lyrics/hooks/useLiveAudioEngine.js';
+import { useAutoRecognition } from './lyrics/hooks/useAutoRecognition.js';
+import { detectLanguageCode, getLanguageStyle } from './lyrics/data/languageStyles.js';
+import { MOCK_SONGS } from './lyrics/data/mockCatalog.js';
 
-const MODES = [
-  { id: 'pulse', label: 'Pulse with audio' },
-  { id: 'stretch', label: 'Stretch' },
-  { id: 'glitch', label: 'Glitch' },
-  { id: 'wave', label: 'Wave' },
-  { id: 'explosion', label: 'Explosion' },
-];
-
-const SWIPE_DISTANCE = 44;
-const AUTO_IDENTIFY_MS = 22000;
+const PLACEHOLDER_LINES = MOCK_SONGS[0].lyrics;
 
 export default function LyricsApp() {
-  const frameRef = useRef(null);
-  const songAnchorRef = useRef(null);
-  const identifyLockRef = useRef(false);
-  const beatLineBumpRef = useRef(0);
+  const [lineIndex, setLineIndex] = useState(0);
+  const [beatKey, setBeatKey] = useState(0);
+  const [started, setStarted] = useState(false);
 
-  const [modeIndex, setModeIndex] = useState(0);
-  const [songMeta, setSongMeta] = useState(null);
-  const [lyricLines, setLyricLines] = useState([]);
-  const [lyricsSynced, setLyricsSynced] = useState(false);
-  const [lyricIndex, setLyricIndex] = useState(0);
-  const [displayText, setDisplayText] = useState('LISTENING…');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [identifyStatus, setIdentifyStatus] = useState('');
-  const [autoIdentify, setAutoIdentify] = useState(false);
-  const [explosionKey, setExplosionKey] = useState(0);
-  const [isExploding, setIsExploding] = useState(false);
+  const { hasStarted, error, metrics, videoRef, streamRef, start, addBeatListener } =
+    useLiveAudioEngine();
 
-  const {
-    hasStarted,
-    status,
-    error,
-    setStatus,
-    setError,
-    audioLevel,
-    currentStyle,
-    videoRef,
+  const { phase, recognition, updateMetrics, reset, setPhase } = useAutoRecognition({
     streamRef,
-    startExperience,
-    updateFrameVariable,
-    setOnBeat,
-  } = useBeatAudio(frameRef);
+    addBeatListener,
+  });
 
-  const currentMode = MODES[modeIndex];
-  const glyphs = useMemo(() => Array.from(displayText), [displayText]);
-  const auddToken = import.meta.env.VITE_AUDD_API_TOKEN ?? '';
+  const lyrics = recognition?.lyrics ?? PLACEHOLDER_LINES;
+  const currentLine = lyrics[lineIndex % lyrics.length] ?? 'LISTENING…';
 
-  const setSongClock = useCallback((songTimeNow) => {
-    songAnchorRef.current = {
-      wallTime: performance.now(),
-      songTime: songTimeNow,
-    };
-  }, []);
+  const detectedLang = useMemo(() => {
+    const fromText = detectLanguageCode(currentLine, recognition?.language ?? 'eng');
+    return fromText;
+  }, [currentLine, recognition?.language]);
 
-  const getSongTime = useCallback(() => {
-    if (!songAnchorRef.current) {
-      return 0;
+  const languageStyle = useMemo(() => {
+    const style = getLanguageStyle(detectedLang);
+    if (recognition?.palette?.[0]) {
+      return { ...style, accent: recognition.palette[0] };
     }
-
-    return (
-      songAnchorRef.current.songTime +
-      (performance.now() - songAnchorRef.current.wallTime) / 1000
-    );
-  }, []);
-
-  const applyLyricLine = useCallback((index, lines) => {
-    if (!lines.length) {
-      setDisplayText('NO LYRICS FOUND');
-      return;
-    }
-
-    const safeIndex = ((index % lines.length) + lines.length) % lines.length;
-    setLyricIndex(safeIndex);
-    setDisplayText(lines[safeIndex].text.toUpperCase());
-  }, []);
-
-  const handleLyricsLoaded = useCallback(
-    (song, lyricsResult, songTimeNow = 0) => {
-      setSongMeta(song);
-      setLyricLines(lyricsResult.lines);
-      setLyricsSynced(lyricsResult.synced);
-      setSongClock(songTimeNow);
-
-      if (lyricsResult.lines.length) {
-        const { index, text } = getLyricAtTime(lyricsResult.lines, songTimeNow);
-        setLyricIndex(index);
-        setDisplayText(text.toUpperCase());
-        setIdentifyStatus(lyricsResult.synced ? 'Synced lyrics loaded.' : 'Lyrics loaded (beat-advance).');
-      } else {
-        setDisplayText('NO LYRICS FOUND');
-        setIdentifyStatus('Song found but no lyrics in LRCLIB.');
-      }
-    },
-    [setSongClock],
-  );
-
-  const runIdentify = useCallback(async () => {
-    const stream = streamRef.current;
-    if (!stream || identifyLockRef.current) {
-      return;
-    }
-
-    identifyLockRef.current = true;
-    setIdentifyStatus('Listening 6s to identify song…');
-
-    try {
-      let song = null;
-
-      if (auddToken) {
-        song = await identifySongFromStream(stream, auddToken);
-      }
-
-      if (!song && searchQuery.trim()) {
-        const results = await searchLyrics(searchQuery.trim());
-        if (results[0]) {
-          song = {
-            artist: results[0].artistName,
-            title: results[0].trackName,
-            album: results[0].albumName,
-            songTimeNow: 0,
-          };
-        }
-      }
-
-      if (!song) {
-        setIdentifyStatus(
-          auddToken
-            ? 'No match. Try louder music or search manually below.'
-            : 'Add VITE_AUDD_API_TOKEN for auto-detect, or search manually.',
-        );
-        return;
-      }
-
-      setIdentifyStatus(`Found: ${song.artist} — ${song.title}. Loading lyrics…`);
-      const lyricsResult = await loadLyricsForSong(song);
-      handleLyricsLoaded(
-        { artist: song.artist, title: song.title, album: song.album },
-        lyricsResult,
-        song.songTimeNow ?? 0,
-      );
-    } catch (identifyError) {
-      setIdentifyStatus(identifyError?.message || 'Identification failed.');
-    } finally {
-      identifyLockRef.current = false;
-    }
-  }, [auddToken, handleLyricsLoaded, searchQuery, streamRef]);
-
-  const runManualSearch = useCallback(async () => {
-    if (!searchQuery.trim()) {
-      return;
-    }
-
-    setIdentifyStatus('Searching lyrics…');
-
-    try {
-      const results = await searchLyrics(searchQuery.trim());
-      if (!results[0]) {
-        setIdentifyStatus('No lyrics found for that search.');
-        return;
-      }
-
-      const song = {
-        artist: results[0].artistName,
-        title: results[0].trackName,
-        album: results[0].albumName,
-      };
-
-      const lyricsResult = await loadLyricsForSong(song);
-      handleLyricsLoaded(song, lyricsResult, 0);
-    } catch (searchError) {
-      setIdentifyStatus(searchError?.message || 'Search failed.');
-    }
-  }, [handleLyricsLoaded, searchQuery]);
-
-  const triggerExplosion = useCallback(() => {
-    setExplosionKey((key) => key + 1);
-    setIsExploding(true);
-    window.setTimeout(() => setIsExploding(false), 780);
-  }, []);
-
-  const changeMode = useCallback((direction = 1) => {
-    setModeIndex((index) => (index + direction + MODES.length) % MODES.length);
-  }, []);
-
-  const handlePointerDown = useCallback(
-    (event) => {
-      const touch = { x: event.clientX, y: event.clientY, timer: null, fired: false };
-      touch.timer = window.setTimeout(() => {
-        touch.fired = true;
-        triggerExplosion();
-      }, 560);
-      frameRef.current._touch = touch;
-    },
-    [triggerExplosion],
-  );
-
-  const handlePointerUp = useCallback(
-    (event) => {
-      const touch = frameRef.current._touch;
-      if (!touch) {
-        return;
-      }
-
-      window.clearTimeout(touch.timer);
-      if (touch.fired) {
-        return;
-      }
-
-      const deltaX = event.clientX - touch.x;
-      const deltaY = event.clientY - touch.y;
-
-      if (Math.abs(deltaX) > SWIPE_DISTANCE && Math.abs(deltaX) > Math.abs(deltaY)) {
-        changeMode(deltaX > 0 ? 1 : -1);
-        return;
-      }
-
-      if (lyricLines.length) {
-        applyLyricLine(lyricIndex + 1, lyricLines);
-        if (!lyricsSynced) {
-          setSongClock(lyricLines[lyricIndex + 1]?.time ?? 0);
-        }
-      } else {
-        runIdentify();
-      }
-    },
-    [applyLyricLine, changeMode, lyricIndex, lyricLines, lyricsSynced, runIdentify, setSongClock],
-  );
+    return style;
+  }, [detectedLang, recognition?.palette]);
 
   useEffect(() => {
-    setOnBeat(() => {
-      if (!lyricLines.length) {
-        return;
-      }
+    updateMetrics({ bpm: metrics.bpm, volume: metrics.volume, bass: metrics.bass });
+  }, [metrics.bpm, metrics.volume, metrics.bass, updateMetrics]);
 
-      if (lyricsSynced) {
-        beatLineBumpRef.current += 1;
-        return;
-      }
+  useEffect(() => {
+    if (!hasStarted) {
+      return undefined;
+    }
 
-      beatLineBumpRef.current += 1;
-      if (beatLineBumpRef.current >= 2) {
-        beatLineBumpRef.current = 0;
-        applyLyricLine(lyricIndex + 1, lyricLines);
-      }
+    return addBeatListener(() => {
+      setLineIndex((index) => (index + 1) % lyrics.length);
+      setBeatKey((key) => key + 1);
     });
-  }, [applyLyricLine, lyricIndex, lyricLines, lyricsSynced, setOnBeat]);
-
-  useEffect(() => {
-    if (!hasStarted || !lyricLines.length || !lyricsSynced) {
-      return undefined;
-    }
-
-    const tick = () => {
-      const { index, text } = getLyricAtTime(lyricLines, getSongTime());
-      if (index !== lyricIndex) {
-        setLyricIndex(index);
-        setDisplayText(text.toUpperCase());
-      }
-    };
-
-    const interval = window.setInterval(tick, 120);
-    return () => window.clearInterval(interval);
-  }, [getSongTime, hasStarted, lyricIndex, lyricLines, lyricsSynced]);
-
-  useEffect(() => {
-    if (!hasStarted || !autoIdentify) {
-      return undefined;
-    }
-
-    const interval = window.setInterval(runIdentify, AUTO_IDENTIFY_MS);
-    return () => window.clearInterval(interval);
-  }, [autoIdentify, hasStarted, runIdentify]);
-
-  useEffect(() => {
-    const handleOrientation = (event) => {
-      const gamma = Number.isFinite(event.gamma) ? event.gamma : 0;
-      const beta = Number.isFinite(event.beta) ? event.beta : 0;
-
-      updateFrameVariable('--tilt-x', clamp(gamma / 35, -1, 1).toFixed(3));
-      updateFrameVariable('--tilt-y', clamp(beta / 45, -1, 1).toFixed(3));
-    };
-
-    window.addEventListener('deviceorientation', handleOrientation, true);
-    return () => window.removeEventListener('deviceorientation', handleOrientation, true);
-  }, [updateFrameVariable]);
+  }, [addBeatListener, hasStarted, lyrics.length]);
 
   const handleStart = useCallback(async () => {
-    const stream = await startExperience();
+    const stream = await start();
     if (stream) {
-      setStatus('Live. Tap Identify or search for a song.');
+      setStarted(true);
+      reset();
+      setPhase('listening');
+      setLineIndex(0);
     }
-  }, [startExperience, setStatus]);
+  }, [reset, setPhase, start]);
+
+  const paletteGlow = recognition?.palette?.[1] ?? languageStyle.accent;
 
   return (
-    <main className="app lyrics-app">
+    <main className="lyrics-shell grid min-h-dvh w-full place-items-center bg-[#030303]">
       <section
-        ref={frameRef}
-        className={`phone-frame mode-${currentMode.id} ${isExploding ? 'is-exploding' : ''}`}
-        onPointerDown={hasStarted ? handlePointerDown : undefined}
-        onPointerUp={hasStarted ? handlePointerUp : undefined}
-        onPointerCancel={hasStarted ? () => window.clearTimeout(frameRef.current?._touch?.timer) : undefined}
+        className="relative isolate aspect-[9/16] w-[min(100vw,calc(100dvh*0.5625))] max-w-[480px] overflow-hidden bg-black shadow-[0_0_80px_rgba(0,0,0,0.8)] touch-none select-none md:rounded-[2rem] md:border md:border-white/10"
         style={{
-          '--audio': audioLevel,
-          '--bass': 0,
-          '--mid': 0,
-          '--high': 0,
-          '--beat-flash': 0,
-          '--beat-font': currentStyle.family,
-          '--beat-color': currentStyle.color,
-          '--beat-glow': currentStyle.glow,
-          '--beat-weight': currentStyle.weight,
-          '--beat-size': currentStyle.size,
-          '--beat-spacing': currentStyle.spacing,
-          '--tilt-x': 0,
-          '--tilt-y': 0,
-          '--motion': 0,
+          boxShadow: `0 0 60px ${paletteGlow}22, 0 0 120px rgba(0,0,0,0.85)`,
         }}
-        aria-label="Lyrics kinetic typography experience"
       >
-        <video ref={videoRef} className="camera-feed" autoPlay muted playsInline />
-        <div className="camera-fallback" />
-        <div className="shade" />
-        <div className="grain" />
+        <video
+          ref={videoRef}
+          className="absolute inset-0 h-full w-full object-cover"
+          style={{
+            transform: `scale(${1.04 + metrics.volume * 0.03})`,
+            filter: `saturate(${0.85 + metrics.mid * 0.3}) contrast(${1.1 + metrics.bass * 0.15}) brightness(${0.82 + metrics.volume * 0.12})`,
+          }}
+          autoPlay
+          muted
+          playsInline
+        />
+
+        <div
+          className="absolute inset-0 z-[1]"
+          style={{
+            background: `linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.82)), radial-gradient(circle at 50% 35%, ${paletteGlow}22, transparent 55%)`,
+          }}
+        />
+        <div className="pointer-events-none absolute inset-0 z-[2] opacity-[0.12] mix-blend-screen [background-image:repeating-linear-gradient(90deg,transparent_0_2px,rgba(255,255,255,0.06)_2px_3px)]" />
 
         {!hasStarted ? (
-          <div className="start-panel">
-            <p className="eyebrow">Lyrics Mode · Experimental</p>
-            <h1>Lyrics that move with the beat.</h1>
-            <p>
-              Identifies songs from the mic and displays lyrics with the same kinetic
-              typography. The classic experience is unchanged at the home link.
+          <div className="absolute inset-0 z-30 flex flex-col justify-end gap-4 p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+            <p className="text-[0.65rem] font-bold uppercase tracking-[0.2em] text-white/55">
+              Live lyrics lab
             </p>
-            <button className="start-button" type="button" onClick={handleStart}>
-              Start Lyrics Mode
-            </button>
-            <Link className="ghost-link" to="/">
-              ← Back to classic mode
+            <h1 className="max-w-[10ch] text-5xl font-black uppercase leading-[0.82] tracking-[-0.08em] text-white">
+              Music reads the room.
+            </h1>
+            <p className="max-w-sm text-sm leading-relaxed text-white/65">
+              Automatic track detection, language-aware typography, and beat-synced lyrics.
+              Classic mode stays at the home link.
+            </p>
+            <motion.button
+              type="button"
+              className="min-h-[4rem] w-full rounded-full border border-white/80 bg-white text-sm font-black uppercase tracking-[0.12em] text-black"
+              whileTap={{ scale: 0.985 }}
+              onClick={handleStart}
+            >
+              Start live session
+            </motion.button>
+            <Link
+              to="/"
+              className="text-[0.72rem] uppercase tracking-[0.12em] text-white/50 no-underline"
+            >
+              ← Classic mode (unchanged)
             </Link>
-            <p className="status">{status}</p>
-            {error ? <p className="error">{error}</p> : null}
+            {error ? <p className="text-xs uppercase tracking-wide text-[#ff314f]">{error}</p> : null}
           </div>
         ) : (
           <>
-            <div className="hud top">
-              <span>{songMeta ? `${songMeta.artist}` : currentMode.label}</span>
-              <span className="hud-meta">
-                <span className="style-tag" style={{ '--tag-color': currentStyle.color }}>
-                  {currentStyle.label}
-                </span>
-              </span>
-            </div>
+            <RecognitionPanel phase={phase} recognition={recognition} metrics={metrics} />
 
-            {songMeta ? (
-              <p className="song-title">{songMeta.title}</p>
-            ) : null}
-
-            <div className="type-stage lyrics-stage" key={`${displayText}-${explosionKey}`}>
-              <div className="kinetic-word lyrics-word" aria-live="polite" aria-label={displayText}>
-                {glyphs.map((glyph, index) => {
-                  const vector = getGlyphVector(index, glyphs.length);
-                  return (
-                    <span
-                      className={glyph === ' ' ? 'glyph space' : 'glyph'}
-                      key={`${glyph}-${index}-${displayText}`}
-                      style={{
-                        '--i': index,
-                        '--blast-x': vector.x,
-                        '--blast-y': vector.y,
-                        '--blast-r': vector.r,
-                        '--orbit-r': vector.orbitR,
-                        '--alt': index % 2 === 0 ? -1 : 1,
-                        '--glitch-x': (index % 3) - 1,
-                        '--wave': Math.sin(index * 0.82).toFixed(3),
-                        '--wave-r': `${((index % 5) - 2) * 2.5}deg`,
-                      }}
-                    >
-                      {glyph === ' ' ? '\u00a0' : glyph}
-                    </span>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="lyrics-controls">
-              <button className="chip-button" type="button" onClick={runIdentify}>
-                Identify song
-              </button>
-              <label className="chip-toggle">
-                <input
-                  type="checkbox"
-                  checked={autoIdentify}
-                  onChange={(event) => setAutoIdentify(event.target.checked)}
-                />
-                Auto
-              </label>
-              <button
-                className="chip-button"
-                type="button"
-                onClick={() => setSongClock(getSongTime())}
+            <div className="absolute left-3 right-3 top-[calc(max(0.75rem,env(safe-area-inset-top))+7.5rem)] z-10 flex justify-end">
+              <span
+                className="rounded-full border px-2.5 py-1 text-[0.55rem] font-bold uppercase tracking-[0.14em] backdrop-blur-md"
+                style={{
+                  borderColor: `${languageStyle.accent}66`,
+                  color: languageStyle.accent,
+                  backgroundColor: `${languageStyle.accent}18`,
+                }}
               >
-                Sync time
-              </button>
+                {languageStyle.label}
+              </span>
             </div>
 
-            <form
-              className="lyrics-search"
-              onSubmit={(event) => {
-                event.preventDefault();
-                runManualSearch();
-              }}
+            <LyricStage
+              line={currentLine}
+              metrics={metrics}
+              languageStyle={languageStyle}
+              beatKey={beatKey}
+            />
+
+            <AudioMeters metrics={metrics} accent={languageStyle.accent} />
+
+            <div className="absolute bottom-[calc(max(0.75rem,env(safe-area-inset-bottom))+3.5rem)] left-3 right-3 z-20 rounded-xl border border-white/10 bg-black/35 px-3 py-2 text-[0.62rem] uppercase tracking-[0.1em] text-white/55 backdrop-blur-md">
+              Lines advance on every beat · Typography follows volume, bass &amp; treble
+            </div>
+
+            <Link
+              to="/"
+              className="absolute bottom-[max(0.75rem,env(safe-area-inset-bottom))] right-3 z-30 text-[0.55rem] uppercase tracking-[0.12em] text-white/45 no-underline"
             >
-              <input
-                type="search"
-                placeholder="Search artist or song…"
-                value={searchQuery}
-                onChange={(event) => setSearchQuery(event.target.value)}
-              />
-              <button type="submit">Search</button>
-            </form>
-
-            {identifyStatus ? <p className="identify-status">{identifyStatus}</p> : null}
-
-            <div className="instruction-card">
-              {lyricsSynced
-                ? 'Synced lyrics follow song time. Tap Sync time if lines drift.'
-                : 'Tap to skip lines. Beats flip font, color, weight & size.'}
-            </div>
-
-            <div className="hud bottom" aria-hidden="true">
-              <span className="meter meter-bass">
-                <span />
-              </span>
-              <span className="meter meter-mid">
-                <span />
-              </span>
-              <Link className="bottom-link" to="/">
-                Classic mode
-              </Link>
-            </div>
+              Classic
+            </Link>
           </>
         )}
+
+        {started && hasStarted ? (
+          <motion.div
+            className="pointer-events-none absolute inset-0 z-[5] border-2 border-transparent"
+            animate={{
+              boxShadow:
+                metrics.beatFlash > 0.2
+                  ? `inset 0 0 0 ${metrics.beatFlash * 3}px ${languageStyle.accent}55`
+                  : 'inset 0 0 0 0px transparent',
+            }}
+            transition={{ duration: 0.08 }}
+          />
+        ) : null}
       </section>
     </main>
   );

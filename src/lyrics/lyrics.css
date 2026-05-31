@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Syne", "Bebas Neue", Impact, sans-serif;
+}
+
+.lyrics-shell {
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+}
