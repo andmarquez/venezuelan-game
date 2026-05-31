@@ -12,18 +12,155 @@ const MODES = [
 
 const LONG_PRESS_MS = 560;
 const SWIPE_DISTANCE = 44;
-const BEAT_COOLDOWN_MS = 260;
-const BASS_HISTORY_SIZE = 48;
+const BEAT_COOLDOWN_MS = 155;
+const BASS_HISTORY_SIZE = 36;
 
-const BEAT_FONTS = [
-  { label: 'Impact', family: 'Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif' },
-  { label: 'Bebas', family: '"Bebas Neue", Impact, sans-serif' },
-  { label: 'Anton', family: 'Anton, Impact, sans-serif' },
-  { label: 'Oswald', family: '"Oswald", Impact, sans-serif' },
-  { label: 'Black Ops', family: '"Black Ops One", Impact, sans-serif' },
-  { label: 'Rubik Mono', family: '"Rubik Mono One", Impact, sans-serif' },
-  { label: 'Syne', family: 'Syne, Impact, sans-serif' },
+const BEAT_STYLES = [
+  {
+    label: 'Impact',
+    family: 'Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif',
+    color: '#ffffff',
+    glow: '#ff183d',
+    weight: 900,
+    size: 1,
+    spacing: '-0.08em',
+  },
+  {
+    label: 'Bebas Red',
+    family: '"Bebas Neue", Impact, sans-serif',
+    color: '#ff183d',
+    glow: '#ffffff',
+    weight: 400,
+    size: 1.14,
+    spacing: '0.04em',
+  },
+  {
+    label: 'Anton Gold',
+    family: 'Anton, Impact, sans-serif',
+    color: '#ffd400',
+    glow: '#ff4d00',
+    weight: 400,
+    size: 1.08,
+    spacing: '0.02em',
+  },
+  {
+    label: 'Archivo',
+    family: '"Archivo Black", Impact, sans-serif',
+    color: '#ffffff',
+    glow: '#00e5ff',
+    weight: 400,
+    size: 0.92,
+    spacing: '-0.04em',
+  },
+  {
+    label: 'Bungee',
+    family: 'Bungee, Impact, sans-serif',
+    color: '#00ffcc',
+    glow: '#ff00aa',
+    weight: 400,
+    size: 0.88,
+    spacing: '0.06em',
+  },
+  {
+    label: 'Monoton',
+    family: 'Monoton, Impact, cursive',
+    color: '#ff6bff',
+    glow: '#ffffff',
+    weight: 400,
+    size: 0.78,
+    spacing: '0.12em',
+  },
+  {
+    label: 'Oswald Thin',
+    family: '"Oswald", Impact, sans-serif',
+    color: '#ffffff',
+    glow: '#ff183d',
+    weight: 500,
+    size: 1.22,
+    spacing: '0.14em',
+  },
+  {
+    label: 'Black Ops',
+    family: '"Black Ops One", Impact, sans-serif',
+    color: '#c8ff00',
+    glow: '#ff183d',
+    weight: 400,
+    size: 0.96,
+    spacing: '-0.02em',
+  },
+  {
+    label: 'Rubik Mono',
+    family: '"Rubik Mono One", Impact, monospace',
+    color: '#ffffff',
+    glow: '#ff183d',
+    weight: 400,
+    size: 0.82,
+    spacing: '-0.06em',
+  },
+  {
+    label: 'Staatliches',
+    family: 'Staatliches, Impact, sans-serif',
+    color: '#ff314f',
+    glow: '#ffffff',
+    weight: 400,
+    size: 1.18,
+    spacing: '0.08em',
+  },
+  {
+    label: 'Syne',
+    family: 'Syne, Impact, sans-serif',
+    color: '#ffffff',
+    glow: '#7c3aed',
+    weight: 800,
+    size: 1.06,
+    spacing: '-0.1em',
+  },
+  {
+    label: 'Righteous',
+    family: 'Righteous, Impact, sans-serif',
+    color: '#ff9500',
+    glow: '#ffffff',
+    weight: 400,
+    size: 1,
+    spacing: '0.03em',
+  },
+  {
+    label: 'Ultra',
+    family: 'Ultra, Impact, serif',
+    color: '#ffffff',
+    glow: '#00ff66',
+    weight: 400,
+    size: 0.9,
+    spacing: '0.01em',
+  },
+  {
+    label: 'Passero',
+    family: '"Passero One", Impact, serif',
+    color: '#ff4081',
+    glow: '#ffe600',
+    weight: 400,
+    size: 1.12,
+    spacing: '0.05em',
+  },
+  {
+    label: 'Wallpoet',
+    family: 'Wallpoet, Impact, cursive',
+    color: '#e0e0ff',
+    glow: '#ff183d',
+    weight: 400,
+    size: 1.04,
+    spacing: '0.1em',
+  },
 ];
+
+function applyBeatStyle(style, updateFrameVariable) {
+  updateFrameVariable('--beat-font', style.family);
+  updateFrameVariable('--beat-color', style.color);
+  updateFrameVariable('--beat-glow', style.glow);
+  updateFrameVariable('--beat-weight', String(style.weight));
+  updateFrameVariable('--beat-size', String(style.size));
+  updateFrameVariable('--beat-spacing', style.spacing);
+}
 
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
@@ -92,7 +229,7 @@ export default function App() {
   const [explosionKey, setExplosionKey] = useState(0);
   const [isExploding, setIsExploding] = useState(false);
   const [audioLevel, setAudioLevel] = useState(0);
-  const [fontIndex, setFontIndex] = useState(0);
+  const [styleIndex, setStyleIndex] = useState(0);
 
   const frameRef = useRef(null);
   const videoRef = useRef(null);
@@ -114,13 +251,13 @@ export default function App() {
   const beatFlashRef = useRef(0);
   const bassHistoryRef = useRef([]);
   const lastBeatTimeRef = useRef(0);
-  const fontIndexRef = useRef(0);
+  const styleIndexRef = useRef(0);
   const lastUiAudioUpdateRef = useRef(0);
   const lastShakeRef = useRef(0);
 
   const currentWord = WORDS[wordIndex];
   const currentMode = MODES[modeIndex];
-  const currentFont = BEAT_FONTS[fontIndex];
+  const currentStyle = BEAT_STYLES[styleIndex];
   const glyphs = useMemo(() => Array.from(currentWord), [currentWord]);
 
   const nextWord = useCallback(() => {
@@ -162,10 +299,10 @@ export default function App() {
       const boostedHigh = clamp(high * 2.5, 0, 1);
       const combined = clamp(boostedBass * 0.55 + boostedMid * 0.3 + boostedHigh * 0.15, 0, 1);
 
-      smoothedBassRef.current = smoothedBassRef.current * 0.58 + boostedBass * 0.42;
-      smoothedMidRef.current = smoothedMidRef.current * 0.68 + boostedMid * 0.32;
-      smoothedHighRef.current = smoothedHighRef.current * 0.74 + boostedHigh * 0.26;
-      smoothedAudioRef.current = smoothedAudioRef.current * 0.62 + combined * 0.38;
+      smoothedBassRef.current = smoothedBassRef.current * 0.48 + boostedBass * 0.52;
+      smoothedMidRef.current = smoothedMidRef.current * 0.58 + boostedMid * 0.42;
+      smoothedHighRef.current = smoothedHighRef.current * 0.64 + boostedHigh * 0.36;
+      smoothedAudioRef.current = smoothedAudioRef.current * 0.55 + combined * 0.45;
 
       const bassHistory = bassHistoryRef.current;
       bassHistory.push(smoothedBassRef.current);
@@ -175,21 +312,22 @@ export default function App() {
 
       const bassAverage = average(bassHistory);
       const now = performance.now();
-      const beatThreshold = bassAverage * 1.28 + 0.08;
+      const beatThreshold = bassAverage * 1.16 + 0.055;
+      const snareHit = smoothedMidRef.current > bassAverage * 1.35 + 0.12 && smoothedMidRef.current > 0.18;
       const isBeat =
-        bassHistory.length > 12 &&
-        smoothedBassRef.current > beatThreshold &&
-        smoothedBassRef.current > 0.14 &&
-        now - lastBeatTimeRef.current > BEAT_COOLDOWN_MS;
+        bassHistory.length > 8 &&
+        now - lastBeatTimeRef.current > BEAT_COOLDOWN_MS &&
+        ((smoothedBassRef.current > beatThreshold && smoothedBassRef.current > 0.1) ||
+          (snareHit && smoothedBassRef.current > 0.08));
 
       if (isBeat) {
         lastBeatTimeRef.current = now;
         beatFlashRef.current = 1;
-        fontIndexRef.current = (fontIndexRef.current + 1) % BEAT_FONTS.length;
-        updateFrameVariable('--beat-font', BEAT_FONTS[fontIndexRef.current].family);
-        setFontIndex(fontIndexRef.current);
+        styleIndexRef.current = (styleIndexRef.current + 1) % BEAT_STYLES.length;
+        applyBeatStyle(BEAT_STYLES[styleIndexRef.current], updateFrameVariable);
+        setStyleIndex(styleIndexRef.current);
       } else {
-        beatFlashRef.current *= 0.78;
+        beatFlashRef.current *= 0.68;
       }
 
       updateFrameVariable('--audio', smoothedAudioRef.current.toFixed(3));
@@ -197,7 +335,7 @@ export default function App() {
       updateFrameVariable('--mid', smoothedMidRef.current.toFixed(3));
       updateFrameVariable('--high', smoothedHighRef.current.toFixed(3));
       updateFrameVariable('--beat-flash', beatFlashRef.current.toFixed(3));
-      frameRef.current?.classList.toggle('is-beat-hit', beatFlashRef.current > 0.32);
+      frameRef.current?.classList.toggle('is-beat-hit', beatFlashRef.current > 0.28);
 
       if (now - lastUiAudioUpdateRef.current > 90) {
         lastUiAudioUpdateRef.current = now;
@@ -272,7 +410,7 @@ export default function App() {
         const audioStream = new MediaStream(audioTracks);
         const analyser = audioContext.createAnalyser();
         analyser.fftSize = 512;
-        analyser.smoothingTimeConstant = 0.62;
+        analyser.smoothingTimeConstant = 0.48;
         analyser.minDecibels = -82;
         analyser.maxDecibels = -8;
 
@@ -288,8 +426,8 @@ export default function App() {
         animationFrameRef.current = requestAnimationFrame(analyzeAudio);
       }
 
-      updateFrameVariable('--beat-font', BEAT_FONTS[0].family);
-      fontIndexRef.current = 0;
+      applyBeatStyle(BEAT_STYLES[0], updateFrameVariable);
+      styleIndexRef.current = 0;
       bassHistoryRef.current = [];
       lastBeatTimeRef.current = 0;
       beatFlashRef.current = 0;
@@ -407,7 +545,12 @@ export default function App() {
           '--mid': 0,
           '--high': 0,
           '--beat-flash': 0,
-          '--beat-font': currentFont.family,
+          '--beat-font': currentStyle.family,
+          '--beat-color': currentStyle.color,
+          '--beat-glow': currentStyle.glow,
+          '--beat-weight': currentStyle.weight,
+          '--beat-size': currentStyle.size,
+          '--beat-spacing': currentStyle.spacing,
           '--tilt-x': 0,
           '--tilt-y': 0,
           '--motion': 0,
@@ -438,7 +581,9 @@ export default function App() {
             <div className="hud top">
               <span>{currentMode.label}</span>
               <span className="hud-meta">
-                <span className="font-tag">{currentFont.label}</span>
+                <span className="style-tag" style={{ '--tag-color': currentStyle.color }}>
+                  {currentStyle.label}
+                </span>
                 <span>{String(wordIndex + 1).padStart(2, '0')}/{WORDS.length}</span>
               </span>
             </div>
@@ -471,7 +616,7 @@ export default function App() {
             </div>
 
             <div className="instruction-card">
-              Tap to change word. Fonts flip on the beat. Let the bass drive the type.
+              Tap to change word. Each beat flips font, color, weight &amp; size.
             </div>
 
             <div className="hud bottom" aria-hidden="true">

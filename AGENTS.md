@@ -4,6 +4,21 @@ Guidance for AI agents working in this repository.
 
 ## Cursor Cloud specific instructions
 
+### Phone access (Cloudflare tunnel — primary)
+
+For HTTPS on a real phone, use the **Cloudflare quick tunnel** (user-preferred). Do **not** restart it when editing app code — Vite HMR pushes updates through the tunnel automatically.
+
+```bash
+npm run dev          # keep running on :5173
+npm run phone:tunnel # writes URL to .phone-url
+cat .phone-url
+```
+
+- Tunnel log: `/tmp/cloudflared.log`
+- Only restart `npm run dev` after dependency changes; leave `cloudflared` running.
+- `vite.config.js` sets `server.allowedHosts: true` so tunnel hostnames work.
+- Fallback tunnels (localtunnel, tunnelmole) are optional; Cloudflare is canonical for this project.
+
 ### Branch note
 
 `main` currently contains only a placeholder README. The Concert Kinetic Typography Vite app lives on `cursor/concert-kinetic-typography-1da3` (or any branch that includes `package.json` and `src/`). Check out that branch before installing dependencies or running scripts.

@@ -49,6 +49,11 @@ textarea {
   --high: 0;
   --beat-flash: 0;
   --beat-font: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  --beat-color: #ffffff;
+  --beat-glow: #ff183d;
+  --beat-weight: 900;
+  --beat-size: 1;
+  --beat-spacing: -0.08em;
   --tilt-x: 0;
   --tilt-y: 0;
   --motion: 0;
@@ -220,7 +225,8 @@ textarea {
   gap: 0.65rem;
 }
 
-.font-tag {
+.font-tag,
+.style-tag {
   padding: 0.18rem 0.42rem;
   border: 1px solid rgba(255, 24, 61, 0.55);
   border-radius: 999px;
@@ -228,12 +234,18 @@ textarea {
   background: rgba(255, 24, 61, 0.14);
   font-size: 0.58rem;
   letter-spacing: 0.08em;
-  transition: background 80ms linear, transform 80ms linear;
+  transition: background 45ms linear, transform 45ms linear, border-color 45ms linear, color 45ms linear;
 }
 
-.is-beat-hit .font-tag {
-  background: rgba(255, 24, 61, 0.42);
-  transform: scale(1.08);
+.style-tag {
+  border-color: color-mix(in srgb, var(--tag-color, #ff183d) 70%, transparent);
+  color: var(--tag-color, #ffffff);
+  background: color-mix(in srgb, var(--tag-color, #ff183d) 18%, transparent);
+}
+
+.is-beat-hit .style-tag {
+  transform: scale(1.12);
+  background: color-mix(in srgb, var(--tag-color, #ff183d) 38%, transparent);
 }
 
 .meter {
@@ -252,12 +264,12 @@ textarea {
 }
 
 .meter-bass span {
-  background: #ff183d;
+  background: var(--beat-glow, #ff183d);
   transform: scaleX(max(0.05, var(--bass)));
 }
 
 .meter-mid span {
-  background: rgba(255, 255, 255, 0.82);
+  background: var(--beat-color, rgba(255, 255, 255, 0.82));
   transform: scaleX(max(0.05, var(--mid)));
 }
 
@@ -276,29 +288,30 @@ textarea {
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
+  color: var(--beat-color);
   font-family: var(--beat-font);
-  font-size: clamp(4.1rem, 21vw, 8.7rem);
-  font-weight: 950;
+  font-size: calc(clamp(3.6rem, 21vw, 8.7rem) * var(--beat-size));
+  font-weight: var(--beat-weight);
   line-height: 0.77;
-  letter-spacing: -0.08em;
+  letter-spacing: var(--beat-spacing);
   text-align: center;
   text-transform: uppercase;
   text-shadow:
-    calc(var(--tilt-x) * 16px) calc(var(--tilt-y) * 12px) 0 rgba(255, 0, 42, 0.56),
-    0 0 calc(12px + var(--bass) * 48px + var(--beat-flash) * 28px) rgba(255, 255, 255, 0.22),
-    0 0 calc(var(--beat-flash) * 42px) rgba(255, 24, 61, 0.55);
+    calc(var(--tilt-x) * 16px) calc(var(--tilt-y) * 12px) 0 color-mix(in srgb, var(--beat-glow) 72%, transparent),
+    0 0 calc(10px + var(--bass) * 52px + var(--beat-flash) * 36px) color-mix(in srgb, var(--beat-glow) 55%, transparent),
+    0 0 calc(var(--beat-flash) * 48px) var(--beat-glow),
+    0 0 calc(var(--high) * 24px) color-mix(in srgb, var(--beat-color) 40%, transparent);
   transform:
     translate3d(calc(var(--tilt-x) * 18px), calc(var(--tilt-y) * 18px), 0)
     rotateX(calc(var(--tilt-y) * -8deg))
     rotateY(calc(var(--tilt-x) * 8deg))
-    scale(calc(1 + var(--bass) * 0.22 + var(--audio) * 0.1 + var(--motion) * 0.04 + var(--beat-flash) * 0.14));
-  transition: transform 55ms linear, filter 55ms linear;
-  will-change: transform, filter;
+    scale(calc(1 + var(--bass) * 0.28 + var(--mid) * 0.08 + var(--motion) * 0.04 + var(--beat-flash) * 0.2));
+  transition: transform 35ms linear, filter 35ms linear, color 0ms, font-size 0ms, font-weight 0ms;
+  will-change: transform, filter, color;
 }
 
 .is-beat-hit .kinetic-word {
-  filter: contrast(calc(1.08 + var(--beat-flash) * 0.35)) saturate(calc(1 + var(--beat-flash) * 0.4));
+  filter: contrast(calc(1.12 + var(--beat-flash) * 0.45)) saturate(calc(1.15 + var(--beat-flash) * 0.55));
 }
 
 .glyph {
@@ -318,30 +331,30 @@ textarea {
 
 .mode-pulse .glyph {
   transform:
-    translateY(calc(var(--wave) * 2px + var(--bass) * -0.08em))
-    scale(calc(1 + var(--bass) * 0.34 + var(--beat-flash) * 0.12));
+    translateY(calc(var(--wave) * 2px + var(--bass) * -0.1em))
+    scale(calc(1 + var(--bass) * 0.42 + var(--beat-flash) * 0.18));
 }
 
 .mode-stretch .glyph {
   transform:
-    translateY(calc(var(--alt) * 0.08em + var(--bass) * -0.16em))
-    scaleY(calc(1 + var(--bass) * 1.65 + var(--mid) * 0.45 + var(--motion) * 0.35))
-    scaleX(calc(1 - var(--bass) * 0.18 + var(--beat-flash) * 0.08));
+    translateY(calc(var(--alt) * 0.08em + var(--bass) * -0.18em))
+    scaleY(calc(1 + var(--bass) * 1.85 + var(--mid) * 0.55 + var(--motion) * 0.35))
+    scaleX(calc(1 - var(--bass) * 0.2 + var(--beat-flash) * 0.12));
 }
 
 .mode-glitch .kinetic-word {
-  color: rgba(255, 255, 255, 0.94);
-  animation: glitch-cut calc(520ms - var(--bass) * 180ms) steps(2, end) infinite;
+  animation: glitch-cut calc(420ms - var(--bass) * 200ms) steps(2, end) infinite;
 }
 
 .mode-glitch .glyph {
+  color: color-mix(in srgb, var(--beat-color) 88%, var(--beat-glow));
   transform:
     translate3d(
-      calc(var(--glitch-x) * (var(--bass) + var(--beat-flash)) * 22px),
-      calc(var(--alt) * var(--motion) * 8px),
+      calc(var(--glitch-x) * (var(--bass) + var(--beat-flash) * 1.2) * 26px),
+      calc(var(--alt) * var(--motion) * 10px),
       0
     )
-    skewX(calc((var(--bass) + var(--high) * 0.4) * -16deg));
+    skewX(calc((var(--bass) + var(--high) * 0.5) * -18deg));
 }
 
 .mode-wave .glyph {
