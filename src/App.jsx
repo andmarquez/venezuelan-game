@@ -12,9 +12,61 @@ const MODES = [
 
 const LONG_PRESS_MS = 560;
 const SWIPE_DISTANCE = 44;
+const BEAT_COOLDOWN_MS = 260;
+const BASS_HISTORY_SIZE = 48;
+
+const BEAT_FONTS = [
+  { label: 'Impact', family: 'Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif' },
+  { label: 'Bebas', family: '"Bebas Neue", Impact, sans-serif' },
+  { label: 'Anton', family: 'Anton, Impact, sans-serif' },
+  { label: 'Oswald', family: '"Oswald", Impact, sans-serif' },
+  { label: 'Black Ops', family: '"Black Ops One", Impact, sans-serif' },
+  { label: 'Rubik Mono', family: '"Rubik Mono One", Impact, sans-serif' },
+  { label: 'Syne', family: 'Syne, Impact, sans-serif' },
+];
 
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
+}
+
+function average(values) {
+  if (!values.length) {
+    return 0;
+  }
+
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
+}
+
+function analyzeFrequencyBands(frequencyData, sampleRate, fftSize) {
+  const binWidth = sampleRate / fftSize;
+  let bassSum = 0;
+  let bassCount = 0;
+  let midSum = 0;
+  let midCount = 0;
+  let highSum = 0;
+  let highCount = 0;
+
+  for (let index = 1; index < frequencyData.length; index += 1) {
+    const frequency = index * binWidth;
+    const normalized = frequencyData[index] / 255;
+
+    if (frequency < 180) {
+      bassSum += normalized;
+      bassCount += 1;
+    } else if (frequency < 2200) {
+      midSum += normalized;
+      midCount += 1;
+    } else if (frequency < 9000) {
+      highSum += normalized;
+      highCount += 1;
+    }
+  }
+
+  return {
+    bass: bassCount ? bassSum / bassCount : 0,
+    mid: midCount ? midSum / midCount : 0,
+    high: highCount ? highSum / highCount : 0,
+  };
 }
 
 function getGlyphVector(index, total) {
@@ -40,6 +92,7 @@ export default function App() {
   const [explosionKey, setExplosionKey] = useState(0);
   const [isExploding, setIsExploding] = useState(false);
   const [audioLevel, setAudioLevel] = useState(0);
+  const [fontIndex, setFontIndex] = useState(0);
 
   const frameRef = useRef(null);
   const videoRef = useRef(null);
@@ -55,11 +108,19 @@ export default function App() {
     longPressFired: false,
   });
   const smoothedAudioRef = useRef(0);
+  const smoothedBassRef = useRef(0);
+  const smoothedMidRef = useRef(0);
+  const smoothedHighRef = useRef(0);
+  const beatFlashRef = useRef(0);
+  const bassHistoryRef = useRef([]);
+  const lastBeatTimeRef = useRef(0);
+  const fontIndexRef = useRef(0);
   const lastUiAudioUpdateRef = useRef(0);
   const lastShakeRef = useRef(0);
 
   const currentWord = WORDS[wordIndex];
   const currentMode = MODES[modeIndex];
+  const currentFont = BEAT_FONTS[fontIndex];
   const glyphs = useMemo(() => Array.from(currentWord), [currentWord]);
 
   const nextWord = useCallback(() => {
@@ -84,23 +145,60 @@ export default function App() {
 
   const analyzeAudio = useCallback(() => {
     const analyser = analyserRef.current;
+    const audioContext = audioContextRef.current;
 
-    if (analyser) {
-      const data = new Uint8Array(analyser.fftSize);
-      analyser.getByteTimeDomainData(data);
+    if (analyser && audioContext) {
+      const frequencyData = new Uint8Array(analyser.frequencyBinCount);
+      analyser.getByteFrequencyData(frequencyData);
 
-      let sum = 0;
-      for (let index = 0; index < data.length; index += 1) {
-        const centered = (data[index] - 128) / 128;
-        sum += centered * centered;
+      const { bass, mid, high } = analyzeFrequencyBands(
+        frequencyData,
+        audioContext.sampleRate,
+        analyser.fftSize,
+      );
+
+      const boostedBass = clamp(bass * 2.4, 0, 1);
+      const boostedMid = clamp(mid * 2.1, 0, 1);
+      const boostedHigh = clamp(high * 2.5, 0, 1);
+      const combined = clamp(boostedBass * 0.55 + boostedMid * 0.3 + boostedHigh * 0.15, 0, 1);
+
+      smoothedBassRef.current = smoothedBassRef.current * 0.58 + boostedBass * 0.42;
+      smoothedMidRef.current = smoothedMidRef.current * 0.68 + boostedMid * 0.32;
+      smoothedHighRef.current = smoothedHighRef.current * 0.74 + boostedHigh * 0.26;
+      smoothedAudioRef.current = smoothedAudioRef.current * 0.62 + combined * 0.38;
+
+      const bassHistory = bassHistoryRef.current;
+      bassHistory.push(smoothedBassRef.current);
+      if (bassHistory.length > BASS_HISTORY_SIZE) {
+        bassHistory.shift();
       }
 
-      const rms = Math.sqrt(sum / data.length);
-      const normalized = clamp(rms * 4.6, 0, 1);
-      smoothedAudioRef.current = smoothedAudioRef.current * 0.72 + normalized * 0.28;
-      updateFrameVariable('--audio', smoothedAudioRef.current.toFixed(3));
-
+      const bassAverage = average(bassHistory);
       const now = performance.now();
+      const beatThreshold = bassAverage * 1.28 + 0.08;
+      const isBeat =
+        bassHistory.length > 12 &&
+        smoothedBassRef.current > beatThreshold &&
+        smoothedBassRef.current > 0.14 &&
+        now - lastBeatTimeRef.current > BEAT_COOLDOWN_MS;
+
+      if (isBeat) {
+        lastBeatTimeRef.current = now;
+        beatFlashRef.current = 1;
+        fontIndexRef.current = (fontIndexRef.current + 1) % BEAT_FONTS.length;
+        updateFrameVariable('--beat-font', BEAT_FONTS[fontIndexRef.current].family);
+        setFontIndex(fontIndexRef.current);
+      } else {
+        beatFlashRef.current *= 0.78;
+      }
+
+      updateFrameVariable('--audio', smoothedAudioRef.current.toFixed(3));
+      updateFrameVariable('--bass', smoothedBassRef.current.toFixed(3));
+      updateFrameVariable('--mid', smoothedMidRef.current.toFixed(3));
+      updateFrameVariable('--high', smoothedHighRef.current.toFixed(3));
+      updateFrameVariable('--beat-flash', beatFlashRef.current.toFixed(3));
+      frameRef.current?.classList.toggle('is-beat-hit', beatFlashRef.current > 0.32);
+
       if (now - lastUiAudioUpdateRef.current > 90) {
         lastUiAudioUpdateRef.current = now;
         setAudioLevel(smoothedAudioRef.current);
@@ -173,8 +271,10 @@ export default function App() {
         const audioTracks = stream.getAudioTracks();
         const audioStream = new MediaStream(audioTracks);
         const analyser = audioContext.createAnalyser();
-        analyser.fftSize = 256;
-        analyser.smoothingTimeConstant = 0.76;
+        analyser.fftSize = 512;
+        analyser.smoothingTimeConstant = 0.62;
+        analyser.minDecibels = -82;
+        analyser.maxDecibels = -8;
 
         sourceRef.current = audioContext.createMediaStreamSource(audioStream);
         sourceRef.current.connect(analyser);
@@ -188,13 +288,19 @@ export default function App() {
         animationFrameRef.current = requestAnimationFrame(analyzeAudio);
       }
 
+      updateFrameVariable('--beat-font', BEAT_FONTS[0].family);
+      fontIndexRef.current = 0;
+      bassHistoryRef.current = [];
+      lastBeatTimeRef.current = 0;
+      beatFlashRef.current = 0;
+
       setHasStarted(true);
       setStatus('Live. Let the music move the type.');
     } catch (startError) {
       setError(startError?.message || 'Permissions were blocked or unavailable.');
       setStatus('Camera and microphone permissions are required to start.');
     }
-  }, [analyzeAudio, requestMotionAccess]);
+  }, [analyzeAudio, requestMotionAccess, updateFrameVariable]);
 
   const handlePointerDown = useCallback(
     (event) => {
@@ -297,6 +403,11 @@ export default function App() {
         onPointerCancel={hasStarted ? handlePointerCancel : undefined}
         style={{
           '--audio': audioLevel,
+          '--bass': 0,
+          '--mid': 0,
+          '--high': 0,
+          '--beat-flash': 0,
+          '--beat-font': currentFont.family,
           '--tilt-x': 0,
           '--tilt-y': 0,
           '--motion': 0,
@@ -326,7 +437,10 @@ export default function App() {
           <>
             <div className="hud top">
               <span>{currentMode.label}</span>
-              <span>{String(wordIndex + 1).padStart(2, '0')}/{WORDS.length}</span>
+              <span className="hud-meta">
+                <span className="font-tag">{currentFont.label}</span>
+                <span>{String(wordIndex + 1).padStart(2, '0')}/{WORDS.length}</span>
+              </span>
             </div>
 
             <div className="type-stage" key={`${currentWord}-${explosionKey}`}>
@@ -357,14 +471,17 @@ export default function App() {
             </div>
 
             <div className="instruction-card">
-              Tap to change word. Move your phone. Let the music control the type.
+              Tap to change word. Fonts flip on the beat. Let the bass drive the type.
             </div>
 
             <div className="hud bottom" aria-hidden="true">
-              <span className="meter">
-                <span style={{ transform: `scaleX(${clamp(audioLevel, 0.05, 1)})` }} />
+              <span className="meter meter-bass">
+                <span />
               </span>
-              <span>Swipe modes · Hold to explode</span>
+              <span className="meter meter-mid">
+                <span />
+              </span>
+              <span>Beat sync · Swipe modes</span>
             </div>
           </>
         )}

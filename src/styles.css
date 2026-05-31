@@ -44,6 +44,11 @@ textarea {
 
 .phone-frame {
   --audio: 0;
+  --bass: 0;
+  --mid: 0;
+  --high: 0;
+  --beat-flash: 0;
+  --beat-font: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
   --tilt-x: 0;
   --tilt-y: 0;
   --motion: 0;
@@ -209,9 +214,31 @@ textarea {
   color: rgba(255, 255, 255, 0.58);
 }
 
+.hud-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.font-tag {
+  padding: 0.18rem 0.42rem;
+  border: 1px solid rgba(255, 24, 61, 0.55);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 24, 61, 0.14);
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  transition: background 80ms linear, transform 80ms linear;
+}
+
+.is-beat-hit .font-tag {
+  background: rgba(255, 24, 61, 0.42);
+  transform: scale(1.08);
+}
+
 .meter {
   position: relative;
-  width: 34%;
+  width: 18%;
   height: 2px;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.2);
@@ -220,8 +247,18 @@ textarea {
 .meter span {
   position: absolute;
   inset: 0;
-  background: #ff183d;
   transform-origin: left center;
+  transition: transform 40ms linear;
+}
+
+.meter-bass span {
+  background: #ff183d;
+  transform: scaleX(max(0.05, var(--bass)));
+}
+
+.meter-mid span {
+  background: rgba(255, 255, 255, 0.82);
+  transform: scaleX(max(0.05, var(--mid)));
 }
 
 .type-stage {
@@ -240,7 +277,7 @@ textarea {
   align-items: center;
   justify-content: center;
   color: #ffffff;
-  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  font-family: var(--beat-font);
   font-size: clamp(4.1rem, 21vw, 8.7rem);
   font-weight: 950;
   line-height: 0.77;
@@ -249,14 +286,19 @@ textarea {
   text-transform: uppercase;
   text-shadow:
     calc(var(--tilt-x) * 16px) calc(var(--tilt-y) * 12px) 0 rgba(255, 0, 42, 0.56),
-    0 0 calc(12px + var(--audio) * 34px) rgba(255, 255, 255, 0.18);
+    0 0 calc(12px + var(--bass) * 48px + var(--beat-flash) * 28px) rgba(255, 255, 255, 0.22),
+    0 0 calc(var(--beat-flash) * 42px) rgba(255, 24, 61, 0.55);
   transform:
     translate3d(calc(var(--tilt-x) * 18px), calc(var(--tilt-y) * 18px), 0)
     rotateX(calc(var(--tilt-y) * -8deg))
     rotateY(calc(var(--tilt-x) * 8deg))
-    scale(calc(1 + var(--audio) * 0.16 + var(--motion) * 0.04));
-  transition: transform 90ms linear;
+    scale(calc(1 + var(--bass) * 0.22 + var(--audio) * 0.1 + var(--motion) * 0.04 + var(--beat-flash) * 0.14));
+  transition: transform 55ms linear, filter 55ms linear;
   will-change: transform, filter;
+}
+
+.is-beat-hit .kinetic-word {
+  filter: contrast(calc(1.08 + var(--beat-flash) * 0.35)) saturate(calc(1 + var(--beat-flash) * 0.4));
 }
 
 .glyph {
@@ -271,33 +313,35 @@ textarea {
 }
 
 .mode-pulse .kinetic-word {
-  animation: editorial-breathe 1.8s ease-in-out infinite alternate;
+  animation: editorial-breathe calc(1.4s - var(--bass) * 0.45s) ease-in-out infinite alternate;
 }
 
 .mode-pulse .glyph {
-  transform: translateY(calc(var(--wave) * 2px)) scale(calc(1 + var(--audio) * 0.24));
+  transform:
+    translateY(calc(var(--wave) * 2px + var(--bass) * -0.08em))
+    scale(calc(1 + var(--bass) * 0.34 + var(--beat-flash) * 0.12));
 }
 
 .mode-stretch .glyph {
   transform:
-    translateY(calc(var(--alt) * 0.08em + var(--audio) * -0.12em))
-    scaleY(calc(1 + var(--audio) * 1.4 + var(--motion) * 0.35))
-    scaleX(calc(1 - var(--audio) * 0.13));
+    translateY(calc(var(--alt) * 0.08em + var(--bass) * -0.16em))
+    scaleY(calc(1 + var(--bass) * 1.65 + var(--mid) * 0.45 + var(--motion) * 0.35))
+    scaleX(calc(1 - var(--bass) * 0.18 + var(--beat-flash) * 0.08));
 }
 
 .mode-glitch .kinetic-word {
   color: rgba(255, 255, 255, 0.94);
-  animation: glitch-cut 520ms steps(2, end) infinite;
+  animation: glitch-cut calc(520ms - var(--bass) * 180ms) steps(2, end) infinite;
 }
 
 .mode-glitch .glyph {
   transform:
     translate3d(
-      calc(var(--glitch-x) * var(--audio) * 18px),
+      calc(var(--glitch-x) * (var(--bass) + var(--beat-flash)) * 22px),
       calc(var(--alt) * var(--motion) * 8px),
       0
     )
-    skewX(calc(var(--audio) * -12deg));
+    skewX(calc((var(--bass) + var(--high) * 0.4) * -16deg));
 }
 
 .mode-wave .glyph {
@@ -364,13 +408,13 @@ textarea {
 @keyframes wave-letter {
   0%,
   100% {
-    transform: translateY(calc(var(--audio) * -0.2em)) rotate(0deg);
+    transform: translateY(calc(var(--bass) * -0.28em)) rotate(0deg);
   }
 
   50% {
     transform:
-      translateY(calc(-0.22em - var(--audio) * 0.45em))
-      rotate(calc(var(--tilt-x) * 8deg + var(--wave-r))); 
+      translateY(calc(-0.22em - var(--bass) * 0.62em - var(--mid) * 0.12em))
+      rotate(calc(var(--tilt-x) * 8deg + var(--wave-r)));
   }
 }
 
@@ -387,7 +431,7 @@ textarea {
     transform:
       translate3d(calc(var(--blast-x) * 0.13), calc(var(--blast-y) * 0.13), 0)
       rotate(var(--orbit-r))
-      scale(calc(1 + var(--audio) * 0.4));
+      scale(calc(1 + var(--bass) * 0.55 + var(--beat-flash) * 0.2));
   }
 }
 
@@ -404,7 +448,7 @@ textarea {
     transform:
       translate3d(var(--blast-x), var(--blast-y), 0)
       rotate(var(--blast-r))
-      scale(calc(1.15 + var(--audio) * 0.5));
+      scale(calc(1.15 + var(--bass) * 0.65 + var(--beat-flash) * 0.35));
   }
 
   100% {
