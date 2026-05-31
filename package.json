@@ -1,0 +1,24 @@
+{
+  "name": "concert-kinetic-typography",
+  "version": "0.1.0",
+  "description": "Mobile-first React Vite kinetic typography concert app",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andmarquez/performingtypography.git"
+  },
+  "dependencies": {
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.0.2",
+    "vite": "^8.0.14"
+  },
+  "private": "true",
+  "type": "module"
+}
