@@ -4,9 +4,19 @@ Guidance for AI agents working in this repository.
 
 ## Cursor Cloud specific instructions
 
-### Phone access (Cloudflare tunnel — primary)
+### Live site (permanent — use on phone)
 
-For HTTPS on a real phone, use the **Cloudflare quick tunnel** (user-preferred). Do **not** restart it when editing app code — Vite HMR pushes updates through the tunnel automatically.
+**GitHub Pages** is the canonical permanent URL for this app:
+
+- **https://andmarquez.github.io/performingtypography/**
+
+Deploys automatically via `.github/workflows/deploy-pages.yml` on push to **`main`** only (GitHub Pages branch policy). Requires **Settings → Pages → Source: GitHub Actions**.
+
+Use this for phone access that does not depend on a running dev server or Cloudflare quick tunnel.
+
+### Phone access during development (Cloudflare tunnel — temporary)
+
+For HTTPS while editing locally, use the **Cloudflare quick tunnel**. Do **not** restart it when editing app code — Vite HMR pushes updates through the tunnel automatically.
 
 ```bash
 npm run dev          # keep running on :5173
