@@ -26,6 +26,22 @@ phone motion when available, and overlays animated editorial typography.
 - DIVINA
 - DIOS ES UNA MUJER
 
+## Live website (permanent)
+
+The app can be hosted on **GitHub Pages** so you always have the same HTTPS link on your phone — no dev server or Cloudflare tunnel required.
+
+**Live URL (after setup):** [https://andmarquez.github.io/performingtypography/](https://andmarquez.github.io/performingtypography/)
+
+### One-time setup (repo owner)
+
+1. Open **GitHub → performingtypography → Settings → Pages**
+2. Under **Build and deployment**, set **Source** to **GitHub Actions**
+3. Push to `main` or `cursor/interactive-graphics-7a2b` — the workflow builds and deploys automatically
+
+Every push to those branches updates the live site within a few minutes. Bookmark the URL on your phone; camera and mic work over HTTPS.
+
+For local development with hot reload, use `npm run dev` and optionally `npm run phone:tunnel` (temporary URL while your computer is running).
+
 ## Local setup
 
 ```bash
