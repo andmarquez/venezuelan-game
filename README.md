@@ -26,6 +26,19 @@ phone motion when available, and overlays animated editorial typography.
 - DIVINA
 - DIOS ES UNA MUJER
 
+## Splash screen images (Home-1 / Home-2 / Home-3)
+
+Add your Figma exports here:
+
+```text
+public/splash/home-1.png
+public/splash/home-2.png
+public/splash/home-3.png
+```
+
+In the repo file tree: open the **`public`** folder (project root, next to `src`) → **`splash`**.  
+See `public/splash/README.md` for details.
+
 ## Live website (permanent)
 
 The app can be hosted on **GitHub Pages** so you always have the same HTTPS link on your phone — no dev server or Cloudflare tunnel required.
