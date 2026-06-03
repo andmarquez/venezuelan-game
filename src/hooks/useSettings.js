@@ -5,6 +5,7 @@ import {
   EXPERIENCE_SCREENS,
   STORAGE_KEY,
 } from '../config/defaults.js';
+import { isBuiltInExperienceName } from '../lib/experienceAssets.js';
 
 function normalizeImportedSvg(item) {
   if (!item?.id || !item?.markup) {
@@ -27,7 +28,10 @@ function normalizeImportedSvg(item) {
 
 function normalizeSettings(raw) {
   const importedSvgs = Array.isArray(raw?.importedSvgs)
-    ? raw.importedSvgs.map(normalizeImportedSvg).filter(Boolean)
+    ? raw.importedSvgs
+        .map(normalizeImportedSvg)
+        .filter(Boolean)
+        .filter((item) => !isBuiltInExperienceName(item.name))
     : DEFAULT_SETTINGS.importedSvgs;
 
   const knownSlugs = new Set(EXPERIENCE_SCREENS.map((screen) => screen.slug));
@@ -57,6 +61,7 @@ function normalizeSettings(raw) {
     graphics: {
       ...DEFAULT_SETTINGS.graphics,
       ...raw?.graphics,
+      showUserImportedSvgs: raw?.graphics?.showUserImportedSvgs === true,
     },
     importedSvgs,
     experience: {

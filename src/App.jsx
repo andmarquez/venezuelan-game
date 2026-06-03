@@ -136,30 +136,17 @@ export default function App() {
     [currentWord, showTextOverlay],
   );
   const showSvgLayer = settings.graphics.enabled && settings.graphics.showImportedSvgs;
-  const experienceSvgs = useExperienceAssets(hasStarted && showSvgLayer);
   const activeExperienceSlug = settings.experience?.activeSlug ?? 'saoko';
-  const activeExperienceSvg = useMemo(() => {
-    if (!experienceSvgs.length) {
-      return null;
-    }
-    return (
-      experienceSvgs.find((item) => item.slug === activeExperienceSlug) ?? experienceSvgs[0]
-    );
-  }, [experienceSvgs, activeExperienceSlug]);
-  const userImportedSvgs = useMemo(
-    () => settings.importedSvgs.filter((item) => item.visible),
-    [settings.importedSvgs],
+  const activeExperienceSvg = useExperienceAssets(
+    hasStarted && showSvgLayer,
+    activeExperienceSlug,
   );
-  const svgLayerItems = useMemo(() => {
-    const layers = [];
-    if (activeExperienceSvg) {
-      layers.push(activeExperienceSvg);
+  const userImportedSvgs = useMemo(() => {
+    if (settings.graphics.showUserImportedSvgs !== true) {
+      return [];
     }
-    if (settings.graphics.showUserImportedSvgs !== false) {
-      layers.push(...userImportedSvgs);
-    }
-    return layers;
-  }, [activeExperienceSvg, userImportedSvgs, settings.graphics.showUserImportedSvgs]);
+    return settings.importedSvgs.filter((item) => item.visible);
+  }, [settings.importedSvgs, settings.graphics.showUserImportedSvgs]);
 
   const selectExperienceArt = useCallback(
     (slug) => {
@@ -569,9 +556,10 @@ export default function App() {
           config={settings.graphics}
         />
         <ImportedSvgLayer
-          items={svgLayerItems}
+          key={activeExperienceSlug}
+          experienceArt={activeExperienceSvg}
+          overlayItems={userImportedSvgs}
           enabled={showSvgLayer}
-          activeExperienceSlug={activeExperienceSlug}
         />
         {settings.graphics.enabled && settings.graphics.shapes ? (
           <div className="graphic-shapes" aria-hidden="true">

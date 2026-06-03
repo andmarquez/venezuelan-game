@@ -1,13 +1,27 @@
+import { EXPERIENCE_SCREENS } from '../config/defaults.js';
 import { createImportedSvg, sanitizeSvgMarkup } from './svgImport.js';
 import { enhanceExperienceMarkup, getExperienceTheme } from './svgEnhance.js';
 
 const BASE = import.meta.env.BASE_URL;
 
-export function createExperienceSvg(name, markup, index = 0, filename = '') {
+export function isBuiltInExperienceName(name) {
+  if (!name) {
+    return false;
+  }
+
+  const normalized = name.toLowerCase().replace(/\.svg$/i, '').trim();
+  return EXPERIENCE_SCREENS.some((screen) => {
+    const fileStem = screen.filename.replace(/\.svg$/i, '').toLowerCase();
+    return screen.slug === normalized || fileStem === normalized;
+  });
+}
+
+export function createExperienceSvg(name, markup, filename = '') {
   const theme = getExperienceTheme(filename || `${name}.svg`);
 
   return {
-    ...createImportedSvg(name, markup, index),
+    ...createImportedSvg(name, markup, 0),
+    id: `experience-${theme.slug}`,
     source: 'experience',
     slug: theme.slug,
     experienceClass: theme.experienceClass,
@@ -23,43 +37,38 @@ export function createExperienceSvg(name, markup, index = 0, filename = '') {
   };
 }
 
-export async function loadExperienceAssets() {
-  try {
-    const manifestUrl = `${BASE}experience/manifest.json`;
-    const manifestResponse = await fetch(manifestUrl, { cache: 'no-cache' });
+export async function loadExperienceAsset(slug) {
+  const screen =
+    EXPERIENCE_SCREENS.find((item) => item.slug === slug) ?? EXPERIENCE_SCREENS[0];
 
-    if (!manifestResponse.ok) {
-      return [];
-    }
-
-    const manifest = await manifestResponse.json();
-    const files = Array.isArray(manifest?.files) ? manifest.files : [];
-
-    if (!files.length) {
-      return [];
-    }
-
-    const loaded = await Promise.all(
-      files.map(async (filename, index) => {
-        const assetUrl = `${BASE}experience/${encodeURIComponent(filename)}`;
-        const response = await fetch(assetUrl, { cache: 'no-cache' });
-
-        if (!response.ok) {
-          console.warn(`Experience SVG not found: ${filename}`);
-          return null;
-        }
-
-        const raw = await response.text();
-        const sanitized = sanitizeSvgMarkup(raw);
-        const markup = enhanceExperienceMarkup(sanitized, filename);
-        const name = filename.replace(/\.svg$/i, '');
-        return createExperienceSvg(name, markup, index, filename);
-      }),
-    );
-
-    return loaded.filter(Boolean);
-  } catch (error) {
-    console.warn('Could not load experience SVGs', error);
-    return [];
+  if (!screen) {
+    return null;
   }
+
+  try {
+    const assetUrl = `${BASE}experience/${encodeURIComponent(screen.filename)}`;
+    const response = await fetch(assetUrl, { cache: 'no-cache' });
+
+    if (!response.ok) {
+      console.warn(`Experience SVG not found: ${screen.filename}`);
+      return null;
+    }
+
+    const raw = await response.text();
+    const sanitized = sanitizeSvgMarkup(raw);
+    const markup = enhanceExperienceMarkup(sanitized, screen.filename);
+    const name = screen.filename.replace(/\.svg$/i, '');
+    return createExperienceSvg(name, markup, screen.filename);
+  } catch (error) {
+    console.warn(`Could not load experience SVG: ${screen.filename}`, error);
+    return null;
+  }
+}
+
+/** @deprecated Loads every file — prefer loadExperienceAsset for one screen at a time. */
+export async function loadExperienceAssets() {
+  const loaded = await Promise.all(
+    EXPERIENCE_SCREENS.map((screen) => loadExperienceAsset(screen.slug)),
+  );
+  return loaded.filter(Boolean);
 }

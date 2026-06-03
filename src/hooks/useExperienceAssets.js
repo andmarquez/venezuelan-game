@@ -1,27 +1,31 @@
 import { useEffect, useState } from 'react';
-import { loadExperienceAssets } from '../lib/experienceAssets.js';
+import { DEFAULT_EXPERIENCE } from '../config/defaults.js';
+import { loadExperienceAsset } from '../lib/experienceAssets.js';
 
-export function useExperienceAssets(enabled) {
-  const [items, setItems] = useState([]);
+/**
+ * Loads exactly one built-in experience artwork for the active tab slug.
+ */
+export function useExperienceAssets(enabled, activeSlug = DEFAULT_EXPERIENCE.activeSlug) {
+  const [item, setItem] = useState(null);
 
   useEffect(() => {
     if (!enabled) {
-      setItems([]);
+      setItem(null);
       return;
     }
 
     let cancelled = false;
 
-    loadExperienceAssets().then((loaded) => {
+    loadExperienceAsset(activeSlug).then((loaded) => {
       if (!cancelled) {
-        setItems(loaded);
+        setItem(loaded);
       }
     });
 
     return () => {
       cancelled = true;
     };
-  }, [enabled]);
+  }, [enabled, activeSlug]);
 
-  return items;
+  return item;
 }
