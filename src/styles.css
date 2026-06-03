@@ -278,7 +278,7 @@ textarea {
   position: absolute;
   inset: 0;
   opacity: 0;
-  animation: splash-cut 24s infinite linear;
+  animation: splash-cut 3s infinite linear;
 }
 
 .splash-slide:nth-child(1) {
@@ -288,12 +288,12 @@ textarea {
 
 .splash-slide:nth-child(2) {
   background: #ff441a;
-  animation-delay: -8s;
+  animation-delay: -1s;
 }
 
 .splash-slide:nth-child(3) {
   background: #050505;
-  animation-delay: -16s;
+  animation-delay: -2s;
 }
 
 @keyframes splash-cut {
