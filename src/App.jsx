@@ -136,9 +136,22 @@ export default function App() {
   );
   const showSvgLayer = settings.graphics.enabled && settings.graphics.showImportedSvgs;
   const experienceSvgs = useExperienceAssets(hasStarted && showSvgLayer);
+  const activeExperienceSlug = settings.experience?.activeSlug ?? 'saoko';
+  const activeExperienceSvg = useMemo(() => {
+    if (!experienceSvgs.length) {
+      return null;
+    }
+    return (
+      experienceSvgs.find((item) => item.slug === activeExperienceSlug) ?? experienceSvgs[0]
+    );
+  }, [experienceSvgs, activeExperienceSlug]);
   const svgLayerItems = useMemo(
-    () => [...experienceSvgs, ...settings.importedSvgs],
-    [experienceSvgs, settings.importedSvgs],
+    () =>
+      [
+        ...(activeExperienceSvg ? [activeExperienceSvg] : []),
+        ...settings.importedSvgs,
+      ],
+    [activeExperienceSvg, settings.importedSvgs],
   );
 
   const nextWord = useCallback(() => {
@@ -483,7 +496,7 @@ export default function App() {
   }, []);
 
   return (
-    <main className="app">
+    <main className={`app ${hasStarted ? 'is-live' : ''}`}>
       {hasStarted ? (
         <button
           type="button"
@@ -510,7 +523,7 @@ export default function App() {
 
       <section
         ref={frameRef}
-        className={`phone-frame mode-${currentMode.id} ${isExploding ? 'is-exploding' : ''} ${settings.graphics.shapes ? 'has-shapes' : ''}`}
+        className={`phone-frame ${hasStarted ? 'is-live' : ''} mode-${currentMode.id} ${isExploding ? 'is-exploding' : ''} ${settings.graphics.shapes ? 'has-shapes' : ''}`}
         onPointerDown={hasStarted && !customizeOpen ? handlePointerDown : undefined}
         onPointerUp={hasStarted && !customizeOpen ? handlePointerUp : undefined}
         onPointerCancel={hasStarted && !customizeOpen ? handlePointerCancel : undefined}

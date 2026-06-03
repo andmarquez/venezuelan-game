@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import {
+  EXPERIENCE_SCREENS,
   FONT_OPTIONS,
   PRESET_WORDS,
   parseWordsText,
@@ -12,7 +13,10 @@ import {
   updateImportedSvg,
 } from '../lib/svgImport.js';
 
+const BASE = import.meta.env.BASE_URL;
+
 const TABS = [
+  { id: 'art', label: 'Art' },
   { id: 'words', label: 'Text' },
   { id: 'type', label: 'Fonts' },
   { id: 'fx', label: 'Graphics' },
@@ -36,7 +40,8 @@ export default function CustomizePanel({ open, settings, onClose, onChange, onRe
     return null;
   }
 
-  const { typography, graphics, importedSvgs } = settings;
+  const { typography, graphics, importedSvgs, experience } = settings;
+  const activeSlug = experience?.activeSlug ?? 'saoko';
   const fixed = typography.fixedStyle;
   const selectedFontId =
     FONT_OPTIONS.find((option) => option.family === fixed.family)?.id ?? FONT_OPTIONS[0].id;
@@ -105,6 +110,39 @@ export default function CustomizePanel({ open, settings, onClose, onChange, onRe
         </div>
 
         <div className="customize-body">
+          {tab === 'art' ? (
+            <section className="customize-section">
+              <p className="customize-hint">
+                Choose which experience artwork fills the screen. Beat sync, glow, and touch
+                interactions match Saoko for every screen.
+              </p>
+              <ul className="experience-art-picker" role="list">
+                {EXPERIENCE_SCREENS.map((screen) => {
+                  const isActive = activeSlug === screen.slug;
+                  const previewSrc = `${BASE}experience/${encodeURIComponent(screen.filename)}`;
+
+                  return (
+                    <li key={screen.slug}>
+                      <button
+                        type="button"
+                        className={`experience-art-option ${isActive ? 'is-active' : ''}`}
+                        aria-pressed={isActive}
+                        onClick={() =>
+                          onChange({ experience: { activeSlug: screen.slug } })
+                        }
+                      >
+                        <span className="experience-art-thumb" aria-hidden="true">
+                          <img src={previewSrc} alt="" loading="lazy" draggable={false} />
+                        </span>
+                        <span className="experience-art-label">{screen.label}</span>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          ) : null}
+
           {tab === 'words' ? (
             <section className="customize-section">
               <label className="customize-toggle">

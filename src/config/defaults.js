@@ -58,6 +58,19 @@ export const DEFAULT_GRAPHICS = {
 
 export const DEFAULT_IMPORTED_SVGS = [];
 
+/** Built-in experience screens (files in public/experience/). */
+export const EXPERIENCE_SCREENS = [
+  { slug: 'saoko', label: 'Saoko', filename: 'Saoko.svg' },
+  { slug: 'despecha', label: 'Despechá', filename: 'Despecha.svg' },
+  { slug: 'berghain', label: 'Berghain', filename: 'Berghain.svg' },
+  { slug: 'bizcochito', label: 'Bizcochito', filename: 'Bizcochito.svg' },
+  { slug: 'perla', label: 'Perla', filename: 'Perla.svg' },
+];
+
+export const DEFAULT_EXPERIENCE = {
+  activeSlug: 'saoko',
+};
+
 export const DEFAULT_TYPOGRAPHY = {
   showOverlay: false,
   autoCycle: true,
@@ -78,6 +91,7 @@ export const DEFAULT_SETTINGS = {
   beatStyles: DEFAULT_BEAT_STYLES,
   graphics: DEFAULT_GRAPHICS,
   importedSvgs: DEFAULT_IMPORTED_SVGS,
+  experience: DEFAULT_EXPERIENCE,
 };
 
 export const STORAGE_KEY = 'concert-kinetic-settings-v1';

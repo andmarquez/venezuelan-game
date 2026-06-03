@@ -1,29 +1,44 @@
-const SAOKO_LAYER_CLASSES = [
-  'saoko-illustration',
-  'saoko-title-mid',
-  'saoko-title-top',
-  'saoko-detail',
-  'saoko-header',
+export const EXPERIENCE_ART_SLUGS = [
+  'saoko',
+  'despecha',
+  'berghain',
+  'bizcochito',
+  'perla',
 ];
 
 export function getExperienceTheme(filename) {
   const slug = filename.replace(/\.svg$/i, '').toLowerCase();
 
-  if (slug === 'saoko') {
-    return {
-      slug: 'saoko',
-      experienceClass: 'experience-saoko',
-      fullScreen: true,
-      lockUpright: true,
-    };
-  }
-
   return {
     slug,
-    experienceClass: 'experience-generic',
-    fullScreen: false,
-    lockUpright: false,
+    experienceClass: 'experience-art',
+    fullScreen: true,
+    lockUpright: true,
   };
+}
+
+function assignExperienceLayerClasses(groups) {
+  const count = groups.length;
+
+  groups.forEach((group, index) => {
+    const classes = ['experience-layer'];
+
+    if (index === 0) {
+      classes.push('experience-art-illustration');
+    } else if (count >= 3 && index === count - 2) {
+      classes.push('experience-art-title-mid');
+    } else if (index === count - 1) {
+      classes.push('experience-art-title-top');
+    } else if (index === 1 && count >= 4) {
+      classes.push('experience-art-detail');
+    } else if (index === 2 && count >= 5) {
+      classes.push('experience-art-header');
+    } else {
+      classes.push(`experience-art-layer-${index}`);
+    }
+
+    group.classList.add(...classes);
+  });
 }
 
 export function enhanceExperienceMarkup(markup, filename) {
@@ -36,19 +51,11 @@ export function enhanceExperienceMarkup(markup, filename) {
   }
 
   svg.querySelectorAll('style').forEach((node) => node.remove());
-
-  const slug = filename.replace(/\.svg$/i, '').toLowerCase();
   svg.classList.add('experience-svg-root');
 
-  if (slug === 'saoko') {
-    const groups = [...svg.querySelectorAll(':scope > g')];
-    groups.forEach((group, index) => {
-      group.classList.add('experience-layer', SAOKO_LAYER_CLASSES[index] || `saoko-layer-${index}`);
-    });
-  } else {
-    [...svg.querySelectorAll(':scope > g')].forEach((group, index) => {
-      group.classList.add('experience-layer', `experience-layer-${index}`);
-    });
+  const groups = [...svg.querySelectorAll(':scope > g')];
+  if (groups.length) {
+    assignExperienceLayerClasses(groups);
   }
 
   svg.querySelectorAll('path').forEach((path) => {

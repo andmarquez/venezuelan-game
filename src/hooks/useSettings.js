@@ -1,5 +1,10 @@
 import { useCallback, useState } from 'react';
-import { DEFAULT_SETTINGS, STORAGE_KEY } from '../config/defaults.js';
+import {
+  DEFAULT_EXPERIENCE,
+  DEFAULT_SETTINGS,
+  EXPERIENCE_SCREENS,
+  STORAGE_KEY,
+} from '../config/defaults.js';
 
 function normalizeImportedSvg(item) {
   if (!item?.id || !item?.markup) {
@@ -25,6 +30,12 @@ function normalizeSettings(raw) {
     ? raw.importedSvgs.map(normalizeImportedSvg).filter(Boolean)
     : DEFAULT_SETTINGS.importedSvgs;
 
+  const knownSlugs = new Set(EXPERIENCE_SCREENS.map((screen) => screen.slug));
+  const activeSlugRaw = raw?.experience?.activeSlug ?? DEFAULT_EXPERIENCE.activeSlug;
+  const activeSlug = knownSlugs.has(activeSlugRaw)
+    ? activeSlugRaw
+    : DEFAULT_EXPERIENCE.activeSlug;
+
   return {
     words: Array.isArray(raw?.words) ? raw.words : DEFAULT_SETTINGS.words,
     beatStyles:
@@ -48,6 +59,11 @@ function normalizeSettings(raw) {
       ...raw?.graphics,
     },
     importedSvgs,
+    experience: {
+      ...DEFAULT_EXPERIENCE,
+      ...raw?.experience,
+      activeSlug,
+    },
   };
 }
 
@@ -81,6 +97,7 @@ export function useSettings() {
         ...patch,
         typography: { ...previous.typography, ...patch.typography },
         graphics: { ...previous.graphics, ...patch.graphics },
+        experience: { ...previous.experience, ...patch.experience },
         importedSvgs: patch.importedSvgs ?? previous.importedSvgs,
       });
 

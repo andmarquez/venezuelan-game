@@ -79,4 +79,11 @@ On real phones, use HTTPS or localhost; see `README.md` for mobile Safari notes.
 1. `npm run dev`
 2. Open http://127.0.0.1:5173/
 3. Start experience (with fake media flags in CI/cloud if needed)
-4. Tap the stage — word index in the HUD should advance (e.g. `01/6` → `02/6`)
+4. Tap the stage — word index in the HUD should advance when kinetic text overlay is enabled
+5. **Customize → Art** — switch experience SVG (Saoko, Despechá, Berghain, Bizcochito, Perla); selection persists in `localStorage` (`experience.activeSlug`)
+
+### Experience assets
+
+- Drop SVGs in `public/experience/`; run `npm run experience:manifest` (also runs on `npm run dev` / `build`).
+- Splash PNGs live in `public/splash/` (`home-4`, `home-2`, `home-3`). After updating images, bump `SPLASH_ASSET_VERSION` in `src/components/SplashScreen.jsx` so phones bypass cache.
+- In-experience HUD / Customize FAB use `.is-live` safe-area padding; splash stays edge-to-edge.

@@ -1,9 +1,11 @@
 const BASE = import.meta.env.BASE_URL;
+/** Bump when splash PNGs change so devices reload cached assets. */
+const SPLASH_ASSET_VERSION = '20260603';
 
 const SLIDES = [
-  { id: 'home-4', src: `${BASE}splash/home-4.png` },
-  { id: 'home-2', src: `${BASE}splash/home-2.png` },
-  { id: 'home-3', src: `${BASE}splash/home-3.png` },
+  { id: 'home-4', src: `${BASE}splash/home-4.png?v=${SPLASH_ASSET_VERSION}` },
+  { id: 'home-2', src: `${BASE}splash/home-2.png?v=${SPLASH_ASSET_VERSION}` },
+  { id: 'home-3', src: `${BASE}splash/home-3.png?v=${SPLASH_ASSET_VERSION}` },
 ];
 
 export default function SplashScreen({
