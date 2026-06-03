@@ -570,7 +570,7 @@ textarea {
 }
 
 .phone-frame.is-live .hud.bottom {
-  bottom: calc(max(0.7rem, env(safe-area-inset-bottom) + 0.35rem) + 3.05rem);
+  bottom: calc(max(0.7rem, env(safe-area-inset-bottom) + 0.35rem) + 3.05rem + 10px);
   padding-right: max(0.35rem, env(safe-area-inset-right));
 }
 
