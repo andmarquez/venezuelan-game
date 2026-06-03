@@ -615,13 +615,15 @@ export default function App() {
             ) : null}
 
             <div className="hud bottom" aria-hidden="true">
-              <span className="meter meter-bass">
-                <span />
-              </span>
-              <span className="meter meter-mid">
-                <span />
-              </span>
-              <span>Beat sync · ANDSIOSA</span>
+              <div className="hud-meters">
+                <span className="meter meter-bass">
+                  <span />
+                </span>
+                <span className="meter meter-mid">
+                  <span />
+                </span>
+              </div>
+              <span className="hud-brand">ANDSIOSA</span>
             </div>
           </>
         )}
