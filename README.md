@@ -26,7 +26,7 @@ phone motion when available, and overlays animated editorial typography.
 - DIVINA
 - DIOS ES UNA MUJER
 
-## Splash screen images (Home-1 / Home-2 / Home-3)
+## Splash screen images (Home-4 / Home-2 / Home-3)
 
 Add your Figma exports here:
 
