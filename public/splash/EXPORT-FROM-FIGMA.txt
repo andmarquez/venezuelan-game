@@ -1,7 +1,10 @@
-Optional pixel-perfect assets from Rosi.fig:
+Add your three Figma frames as full-screen splash backgrounds:
 
-- Export "LUX" logo as SVG → replace src/components/splash/LuxMark.jsx
-- Export profile illustration as SVG → replace src/components/splash/ProfileMark.jsx
-- Or export full frames as home-1.png, home-2.png, home-3.png and switch SplashScreen to image mode
+  public/splash/home-1.png   (artboard Home-1)
+  public/splash/home-2.png   (artboard Home-2)
+  public/splash/home-3.png   (artboard Home-3)
 
-The live splash uses coded layouts matching Home-1 (cream), Home-2 (#ff441a), Home-3 (black).
+Export each frame from Rosi.fig as PNG @2x (1080×1920 or your frame size).
+
+The app cross-fades them in a loop (Home-1 → Home-2 → Home-3 → repeat).
+The glass Start button sits on top; your frame artwork shows through the blur.
