@@ -255,22 +255,23 @@ textarea {
 
 .imported-svg-item.is-experience-full.is-upright,
 .imported-svg-item.is-experience-full.is-upright.is-beat-reactive {
-  transform: translate(-50%, -50%) scale(var(--svg-scale));
+  transform: translate(-50%, calc(-50% + var(--experience-y-nudge, 0px)))
+    scale(var(--svg-scale));
 }
 
 .imported-svg-item.is-experience-full.is-upright.is-beat-reactive {
-  transform: translate(-50%, -50%)
+  transform: translate(-50%, calc(-50% + var(--experience-y-nudge, 0px)))
     scale(calc(var(--svg-scale) * (1 + var(--bass) * 0.06 + var(--beat-flash) * 0.08)));
 }
 
 .is-exploding .imported-svg-item.is-experience-full.is-upright {
-  transform: translate(-50%, -50%)
+  transform: translate(-50%, calc(-50% + var(--experience-y-nudge, 0px)))
     scale(calc(var(--svg-scale) * (1.12 + var(--beat-flash) * 0.2)));
 }
 
 .imported-svg-item.is-experience-full.is-beat-reactive:not(.is-upright) {
   transform:
-    translate(-50%, -50%)
+    translate(-50%, calc(-50% + var(--experience-y-nudge, 0px)))
     translate3d(calc(var(--tilt-x) * 14px), calc(var(--tilt-y) * 10px), 0)
     scale(calc(var(--svg-scale) * (1 + var(--bass) * 0.08 + var(--beat-flash) * 0.1)))
     rotate(calc(var(--svg-rotation) + var(--tilt-x) * 6deg));
@@ -915,11 +916,11 @@ textarea {
   }
 }
 
+.camera-capture-fab,
 .customize-fab {
   position: fixed;
   z-index: 30;
   top: max(0.75rem, env(safe-area-inset-top));
-  right: max(0.75rem, env(safe-area-inset-right));
   min-height: 2.25rem;
   padding: 0.4rem 1rem;
   overflow: visible;
@@ -934,10 +935,119 @@ textarea {
   text-transform: uppercase;
 }
 
+.camera-capture-fab {
+  left: max(0.75rem, env(safe-area-inset-left));
+}
+
+.customize-fab {
+  right: max(0.75rem, env(safe-area-inset-right));
+}
+
+.app.is-live .camera-capture-fab {
+  top: max(1rem, calc(env(safe-area-inset-top) + 0.45rem));
+  left: max(1.15rem, calc(env(safe-area-inset-left) + 0.65rem));
+  padding-left: 1.05rem;
+}
+
 .app.is-live .customize-fab {
   top: max(1rem, calc(env(safe-area-inset-top) + 0.45rem));
   right: max(1.15rem, calc(env(safe-area-inset-right) + 0.65rem));
   padding-right: 1.05rem;
+}
+
+.capture-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: end center;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.62);
+  backdrop-filter: blur(6px);
+}
+
+.capture-panel {
+  width: min(100%, 480px);
+  padding: 1rem 1rem 1.1rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 1.1rem 1.1rem 0.85rem 0.85rem;
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(12, 12, 12, 0.94);
+}
+
+.capture-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.65rem;
+}
+
+.capture-header h2 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.capture-close {
+  min-width: 2rem;
+  min-height: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.85);
+  background: transparent;
+}
+
+.capture-hint {
+  margin: 0 0 0.85rem;
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+
+.capture-actions {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.capture-action {
+  min-height: 2.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.capture-action.is-recording {
+  border-color: rgba(255, 24, 61, 0.75);
+  background: rgba(255, 24, 61, 0.22);
+}
+
+.capture-action:disabled {
+  opacity: 0.45;
+}
+
+.capture-recording-badge {
+  margin: 0.65rem 0 0;
+  color: #ff314f;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-align: center;
+}
+
+.capture-status {
+  margin: 0.75rem 0 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.68rem;
+  line-height: 1.45;
+  text-align: center;
 }
 
 .customize-inline {
