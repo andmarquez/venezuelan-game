@@ -53,7 +53,10 @@ export const DEFAULT_GRAPHICS = {
   ripples: true,
   shapes: true,
   glowColor: '',
+  /** Built-in experience artwork (public/experience). */
   showImportedSvgs: true,
+  /** Optional user-imported SVG overlays (Customize → SVG). Off by default. */
+  showUserImportedSvgs: false,
 };
 
 export const DEFAULT_IMPORTED_SVGS = [];

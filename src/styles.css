@@ -750,6 +750,54 @@ textarea {
   pointer-events: none;
 }
 
+.experience-art-tabs {
+  position: absolute;
+  z-index: 7;
+  left: max(0.65rem, calc(env(safe-area-inset-left) + 0.25rem));
+  right: max(0.65rem, calc(env(safe-area-inset-right) + 0.25rem));
+  bottom: calc(max(3.1rem, env(safe-area-inset-bottom) + 0.65rem) + 4.35rem);
+  display: flex;
+  gap: 0.35rem;
+  overflow-x: auto;
+  padding: 0.35rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.52);
+  backdrop-filter: blur(12px);
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  pointer-events: auto;
+}
+
+.experience-art-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.experience-art-tabs button {
+  flex: 0 0 auto;
+  min-height: 2rem;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.experience-art-tabs button.is-active {
+  border-color: rgba(255, 24, 61, 0.75);
+  color: #fff;
+  background: rgba(255, 24, 61, 0.28);
+}
+
+.experience-art-tabs button:disabled {
+  opacity: 0.45;
+}
+
 .phone-frame.is-live .instruction-card {
   right: max(1.2rem, calc(env(safe-area-inset-right) + 0.4rem));
   left: max(1.2rem, calc(env(safe-area-inset-left) + 0.4rem));

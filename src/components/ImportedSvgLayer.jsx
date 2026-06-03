@@ -1,4 +1,4 @@
-export default function ImportedSvgLayer({ items, enabled }) {
+export default function ImportedSvgLayer({ items, enabled, activeExperienceSlug }) {
   if (!enabled || !items?.length) {
     return null;
   }
@@ -9,9 +9,28 @@ export default function ImportedSvgLayer({ items, enabled }) {
     return null;
   }
 
+  const experienceItems = visibleItems.filter((item) => item.source === 'experience');
+  const overlayItems = visibleItems.filter((item) => item.source !== 'experience');
+
+  let activeExperience = null;
+  if (experienceItems.length) {
+    const slug = activeExperienceSlug ?? experienceItems[0]?.slug;
+    activeExperience =
+      experienceItems.find((item) => item.slug === slug) ?? experienceItems[0];
+  }
+
+  const displayItems = [
+    ...(activeExperience ? [activeExperience] : []),
+    ...overlayItems,
+  ];
+
+  if (!displayItems.length) {
+    return null;
+  }
+
   return (
     <div className="imported-svg-layer" aria-hidden="true">
-      {visibleItems.map((item) => (
+      {displayItems.map((item) => (
         <div
           key={item.id}
           className={`imported-svg-item ${item.beatPulse ? 'is-beat-reactive' : ''} ${item.source === 'experience' ? 'is-experience' : ''} ${item.fullScreen ? 'is-experience-full' : ''} ${item.lockUpright ? 'is-upright' : ''} ${item.experienceClass || ''}`}

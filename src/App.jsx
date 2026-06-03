@@ -3,6 +3,7 @@ import InteractiveGraphics from './components/InteractiveGraphics.jsx';
 import ImportedSvgLayer from './components/ImportedSvgLayer.jsx';
 import SplashScreen from './components/SplashScreen.jsx';
 import CustomizePanel from './components/CustomizePanel.jsx';
+import ExperienceArtTabs from './components/ExperienceArtTabs.jsx';
 import {
   applyBeatStyle,
   resolveActiveStyle,
@@ -145,13 +146,26 @@ export default function App() {
       experienceSvgs.find((item) => item.slug === activeExperienceSlug) ?? experienceSvgs[0]
     );
   }, [experienceSvgs, activeExperienceSlug]);
-  const svgLayerItems = useMemo(
-    () =>
-      [
-        ...(activeExperienceSvg ? [activeExperienceSvg] : []),
-        ...settings.importedSvgs,
-      ],
-    [activeExperienceSvg, settings.importedSvgs],
+  const userImportedSvgs = useMemo(
+    () => settings.importedSvgs.filter((item) => item.visible),
+    [settings.importedSvgs],
+  );
+  const svgLayerItems = useMemo(() => {
+    const layers = [];
+    if (activeExperienceSvg) {
+      layers.push(activeExperienceSvg);
+    }
+    if (settings.graphics.showUserImportedSvgs !== false) {
+      layers.push(...userImportedSvgs);
+    }
+    return layers;
+  }, [activeExperienceSvg, userImportedSvgs, settings.graphics.showUserImportedSvgs]);
+
+  const selectExperienceArt = useCallback(
+    (slug) => {
+      updateSettings({ experience: { activeSlug: slug } });
+    },
+    [updateSettings],
   );
 
   const nextWord = useCallback(() => {
@@ -557,6 +571,7 @@ export default function App() {
         <ImportedSvgLayer
           items={svgLayerItems}
           enabled={showSvgLayer}
+          activeExperienceSlug={activeExperienceSlug}
         />
         {settings.graphics.enabled && settings.graphics.shapes ? (
           <div className="graphic-shapes" aria-hidden="true">
@@ -623,10 +638,18 @@ export default function App() {
               </div>
             ) : null}
 
+            {showSvgLayer ? (
+              <ExperienceArtTabs
+                activeSlug={activeExperienceSlug}
+                onSelect={selectExperienceArt}
+                disabled={customizeOpen}
+              />
+            ) : null}
+
             <div className="instruction-card">
               {showTextOverlay
-                ? 'Tap words · Swipe modes · Customize top-right'
-                : 'Swipe modes · Beats sync artwork · Customize top-right'}
+                ? 'Tap words · Swipe modes · Art tabs below'
+                : 'Pick art tab · Swipe modes · Beats sync artwork'}
             </div>
 
             <div className="hud bottom" aria-hidden="true">

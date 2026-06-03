@@ -395,7 +395,18 @@ export default function CustomizePanel({ open, settings, onClose, onChange, onRe
                     onChange({ graphics: { showImportedSvgs: event.target.checked } })
                   }
                 />
-                Imported SVG graphics
+                Experience artwork (beat-reactive)
+              </label>
+
+              <label className="customize-toggle">
+                <input
+                  type="checkbox"
+                  checked={graphics.showUserImportedSvgs === true}
+                  onChange={(event) =>
+                    onChange({ graphics: { showUserImportedSvgs: event.target.checked } })
+                  }
+                />
+                Extra imported SVG overlays
               </label>
 
               <label className="customize-label" htmlFor="particles-range">
