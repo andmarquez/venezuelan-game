@@ -4,7 +4,6 @@ import ImportedSvgLayer from './components/ImportedSvgLayer.jsx';
 import SplashScreen from './components/SplashScreen.jsx';
 import CustomizePanel from './components/CustomizePanel.jsx';
 import ExperienceArtTabs from './components/ExperienceArtTabs.jsx';
-import CameraCapturePanel from './components/CameraCapturePanel.jsx';
 import {
   applyBeatStyle,
   resolveActiveStyle,
@@ -88,7 +87,6 @@ export default function App() {
   const { settings, updateSettings, resetSettings } = useSettings();
   const [hasStarted, setHasStarted] = useState(false);
   const [customizeOpen, setCustomizeOpen] = useState(false);
-  const [captureOpen, setCaptureOpen] = useState(false);
   const [status, setStatus] = useState('Ready for camera, mic, and motion.');
   const [error, setError] = useState('');
   const [wordIndex, setWordIndex] = useState(0);
@@ -501,34 +499,15 @@ export default function App() {
   return (
     <main className={`app ${hasStarted ? 'is-live' : ''}`}>
       {hasStarted ? (
-        <>
-          <button
-            type="button"
-            className="camera-capture-fab"
-            aria-label="Take photos and record videos"
-            onClick={() => setCaptureOpen(true)}
-          >
-            Camera
-          </button>
-          <button
-            type="button"
-            className="customize-fab"
-            aria-label="Customize text, fonts, and graphics"
-            onClick={() => setCustomizeOpen(true)}
-          >
-            Customize
-          </button>
-        </>
+        <button
+          type="button"
+          className="customize-fab"
+          aria-label="Customize text, fonts, and graphics"
+          onClick={() => setCustomizeOpen(true)}
+        >
+          Customize
+        </button>
       ) : null}
-
-      <CameraCapturePanel
-        open={captureOpen}
-        frameRef={frameRef}
-        videoRef={videoRef}
-        streamRef={streamRef}
-        graphicsRef={graphicsRef}
-        onClose={() => setCaptureOpen(false)}
-      />
 
       <CustomizePanel
         open={customizeOpen}
@@ -546,9 +525,9 @@ export default function App() {
       <section
         ref={frameRef}
         className={`phone-frame ${hasStarted ? 'is-live' : ''} mode-${currentMode.id} ${isExploding ? 'is-exploding' : ''} ${settings.graphics.shapes ? 'has-shapes' : ''}`}
-        onPointerDown={hasStarted && !customizeOpen && !captureOpen ? handlePointerDown : undefined}
-        onPointerUp={hasStarted && !customizeOpen && !captureOpen ? handlePointerUp : undefined}
-        onPointerCancel={hasStarted && !customizeOpen && !captureOpen ? handlePointerCancel : undefined}
+        onPointerDown={hasStarted && !customizeOpen ? handlePointerDown : undefined}
+        onPointerUp={hasStarted && !customizeOpen ? handlePointerUp : undefined}
+        onPointerCancel={hasStarted && !customizeOpen ? handlePointerCancel : undefined}
         style={{
           '--audio': audioLevel,
           '--bass': 0,
@@ -631,7 +610,7 @@ export default function App() {
               <ExperienceArtTabs
                 activeSlug={activeExperienceSlug}
                 onSelect={selectExperienceArt}
-                disabled={customizeOpen || captureOpen}
+                disabled={customizeOpen}
               />
             ) : null}
 

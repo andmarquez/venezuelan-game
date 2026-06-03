@@ -48,9 +48,6 @@ const InteractiveGraphics = forwardRef(function InteractiveGraphics({ active, co
   }, [config]);
 
   useImperativeHandle(ref, () => ({
-    getCanvas() {
-      return canvasRef.current;
-    },
     setMetrics(metrics) {
       metricsRef.current = { ...metricsRef.current, ...metrics };
     },
