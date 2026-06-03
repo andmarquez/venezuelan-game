@@ -913,12 +913,14 @@ textarea {
 }
 
 .customize-fab {
-  position: fixed;
+  position: absolute;
   z-index: 30;
   top: max(0.75rem, env(safe-area-inset-top));
   left: max(0.75rem, env(safe-area-inset-left));
+  width: max-content;
+  max-width: calc(100% - 1.5rem);
   min-height: 2.25rem;
-  padding: 0.4rem 1rem;
+  padding: 0.35rem 0.85rem;
   overflow: visible;
   border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 999px;
@@ -929,12 +931,12 @@ textarea {
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
-.app.is-live .customize-fab {
+.phone-frame.is-live .customize-fab {
   top: max(1rem, calc(env(safe-area-inset-top) + 0.45rem));
-  right: max(1.15rem, calc(env(safe-area-inset-right) + 0.65rem));
-  padding-right: 1.05rem;
+  left: max(1rem, calc(env(safe-area-inset-left) + 0.45rem));
 }
 
 .customize-inline {

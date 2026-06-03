@@ -498,17 +498,6 @@ export default function App() {
 
   return (
     <main className={`app ${hasStarted ? 'is-live' : ''}`}>
-      {hasStarted ? (
-        <button
-          type="button"
-          className="customize-fab"
-          aria-label="Customize text, fonts, and graphics"
-          onClick={() => setCustomizeOpen(true)}
-        >
-          Customize
-        </button>
-      ) : null}
-
       <CustomizePanel
         open={customizeOpen}
         settings={settings}
@@ -546,6 +535,17 @@ export default function App() {
         }}
         aria-label="Concert kinetic typography experience"
       >
+        {hasStarted ? (
+          <button
+            type="button"
+            className="customize-fab"
+            aria-label="Customize text, fonts, and graphics"
+            onClick={() => setCustomizeOpen(true)}
+          >
+            Customize
+          </button>
+        ) : null}
+
         <video ref={videoRef} className="camera-feed" autoPlay muted playsInline />
         <div className="camera-fallback" />
         <div className="shade" />
