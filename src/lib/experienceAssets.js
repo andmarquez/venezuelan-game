@@ -49,7 +49,7 @@ export function createExperienceSvg(name, markup, filename = '') {
 }
 
 export async function loadExperienceAsset(slug) {
-  const manifest = await fetchExperienceManifest();
+  const manifest = await fetchExperienceManifest(true);
   const screens = manifest.screens ?? [];
   const screen =
     screens.find((item) => item.slug === slug && item.available !== false) ??
@@ -63,7 +63,8 @@ export async function loadExperienceAsset(slug) {
   const assetFilename = screen.assetFilename ?? screen.filename;
 
   try {
-    const assetUrl = `${BASE}experience/${encodeURIComponent(assetFilename)}`;
+    const version = manifest.generatedAt ? `?v=${encodeURIComponent(manifest.generatedAt)}` : '';
+    const assetUrl = `${BASE}experience/${encodeURIComponent(assetFilename)}${version}`;
     const response = await fetch(assetUrl, { cache: 'no-cache' });
 
     if (!response.ok) {

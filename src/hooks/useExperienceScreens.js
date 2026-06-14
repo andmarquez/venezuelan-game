@@ -2,19 +2,22 @@ import { useEffect, useState } from 'react';
 import { fetchExperienceManifest } from '../lib/experienceManifest.js';
 
 export function useExperienceScreens(enabled = true) {
-  const [screens, setScreens] = useState([]);
+  const [state, setState] = useState({ screens: [], manifestVersion: '' });
 
   useEffect(() => {
     if (!enabled) {
-      setScreens([]);
+      setState({ screens: [], manifestVersion: '' });
       return;
     }
 
     let cancelled = false;
 
-    fetchExperienceManifest().then((manifest) => {
+    fetchExperienceManifest(true).then((manifest) => {
       if (!cancelled) {
-        setScreens(manifest.screens ?? []);
+        setState({
+          screens: manifest.screens ?? [],
+          manifestVersion: manifest.generatedAt ?? '',
+        });
       }
     });
 
@@ -23,5 +26,5 @@ export function useExperienceScreens(enabled = true) {
     };
   }, [enabled]);
 
-  return screens;
+  return state;
 }

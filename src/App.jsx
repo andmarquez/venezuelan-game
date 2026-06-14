@@ -137,7 +137,7 @@ export default function App() {
     [currentWord, showTextOverlay],
   );
   const showSvgLayer = settings.graphics.enabled && settings.graphics.showImportedSvgs;
-  const experienceScreens = useExperienceScreens(true);
+  const { screens: experienceScreens, manifestVersion } = useExperienceScreens(true);
   const activeExperienceSlug = settings.experience?.activeSlug ?? 'saoko';
   const activeExperienceSvg = useExperienceAssets(
     hasStarted && showSvgLayer,
@@ -520,6 +520,7 @@ export default function App() {
         open={customizeOpen}
         settings={settings}
         screens={experienceScreens}
+        manifestVersion={manifestVersion}
         onClose={() => setCustomizeOpen(false)}
         onChange={updateSettings}
         onReset={() => {
@@ -585,7 +586,7 @@ export default function App() {
           config={settings.graphics}
         />
         <ImportedSvgLayer
-          key={activeExperienceSlug}
+          key={`${activeExperienceSlug}-${manifestVersion}`}
           experienceArt={activeExperienceSvg}
           overlayItems={userImportedSvgs}
           enabled={showSvgLayer}

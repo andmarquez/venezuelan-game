@@ -26,6 +26,7 @@ export default function CustomizePanel({
   open,
   settings,
   screens = [],
+  manifestVersion = '',
   onClose,
   onChange,
   onReset,
@@ -127,7 +128,8 @@ export default function CustomizePanel({
                   const isActive = activeSlug === screen.slug;
                   const isUnavailable = screen.available === false;
                   const previewFile = screen.assetFilename ?? screen.filename;
-                  const previewSrc = `${BASE}experience/${encodeURIComponent(previewFile)}`;
+                  const previewVersion = manifestVersion ? `?v=${encodeURIComponent(manifestVersion)}` : '';
+                  const previewSrc = `${BASE}experience/${encodeURIComponent(previewFile)}${previewVersion}`;
 
                   return (
                     <li key={screen.slug}>
