@@ -224,6 +224,12 @@ export default function App() {
     setModeIndex((index) => (index + direction + MODES.length) % MODES.length);
   }, []);
 
+  const updateFrameVariable = useCallback((name, value) => {
+    if (frameRef.current) {
+      frameRef.current.style.setProperty(name, value);
+    }
+  }, []);
+
   const triggerExplosion = useCallback(() => {
     setExplosionKey((key) => key + 1);
     setIsExploding(true);
@@ -286,12 +292,6 @@ export default function App() {
     },
     [flashGestureCue, updateFrameVariable],
   );
-
-  const updateFrameVariable = useCallback((name, value) => {
-    if (frameRef.current) {
-      frameRef.current.style.setProperty(name, value);
-    }
-  }, []);
 
   const analyzeAudio = useCallback(() => {
     const analyser = analyserRef.current;
