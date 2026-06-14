@@ -327,6 +327,32 @@ textarea {
   opacity: calc(0.7 + var(--high) * 0.3);
 }
 
+/* Flat / Figma exports without layer groups still beat-sync */
+.experience-art .experience-path,
+.experience-art .experience-shape {
+  fill: var(--beat-color);
+  filter: drop-shadow(
+    0 0 calc(4px + var(--beat-flash) * 22px + var(--bass) * 12px)
+    var(--beat-glow)
+  );
+  transition: fill 90ms linear, opacity 100ms linear;
+}
+
+.experience-art .experience-art-illustration .experience-path {
+  fill: color-mix(in srgb, var(--beat-color) 28%, #ffffff);
+  opacity: calc(0.82 + var(--mid) * 0.18);
+  filter: none;
+}
+
+.experience-art .experience-art-title-top .experience-path,
+.experience-art .experience-art-title-mid .experience-path {
+  fill: var(--beat-color);
+  filter: drop-shadow(
+    0 0 calc(4px + var(--beat-flash) * 22px + var(--bass) * 12px)
+    var(--beat-glow)
+  );
+}
+
 .is-beat-hit .experience-art .experience-art-title-top,
 .is-beat-hit .experience-art .experience-art-title-mid {
   animation: experience-art-title-pop 0.35s ease-out;
