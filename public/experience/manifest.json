@@ -10,28 +10,94 @@
     {
       "slug": "saoko",
       "label": "Saoko",
-      "filename": "Saoko.svg"
+      "filename": "Saoko.svg",
+      "assetFilename": "Saoko.svg",
+      "available": true
     },
     {
       "slug": "despecha",
       "label": "Despechá",
-      "filename": "Despecha.svg"
+      "filename": "Despecha.svg",
+      "assetFilename": "Despecha.svg",
+      "available": true
     },
     {
       "slug": "berghain",
       "label": "Berghain",
-      "filename": "Berghain.svg"
+      "filename": "Berghain.svg",
+      "assetFilename": "Berghain.svg",
+      "available": true
     },
     {
       "slug": "bizcochito",
       "label": "Bizcochito",
-      "filename": "Bizcochito.svg"
+      "filename": "Bizcochito.svg",
+      "assetFilename": "Bizcochito.svg",
+      "available": true
     },
     {
       "slug": "perla",
       "label": "Perla",
-      "filename": "Perla.svg"
+      "filename": "Perla.svg",
+      "assetFilename": "Perla.svg",
+      "available": true
+    },
+    {
+      "slug": "voy-a-llevarte-pa-pr",
+      "label": "Voy a llevarte pa PR",
+      "filename": "Voy a llevarte pa PR.svg",
+      "assetFilename": "Voy a llevarte pa PR.svg",
+      "available": false
+    },
+    {
+      "slug": "baile-inolvidable",
+      "label": "Baile inolvidable",
+      "filename": "Baile inolvidable.svg",
+      "assetFilename": "Baile inolvidable.svg",
+      "available": false
+    },
+    {
+      "slug": "hawaii",
+      "label": "Hawaii",
+      "filename": "Hawaii.svg",
+      "assetFilename": "Hawaii.svg",
+      "available": false
+    },
+    {
+      "slug": "pitorro-de-coco",
+      "label": "Pitorro de coco",
+      "filename": "Pitorro de coco.svg",
+      "assetFilename": "Pitorro de coco.svg",
+      "available": false
+    },
+    {
+      "slug": "weltita",
+      "label": "Weltita",
+      "filename": "Weltita.svg",
+      "assetFilename": "Weltita.svg",
+      "available": false
+    },
+    {
+      "slug": "cafe-con-ron",
+      "label": "Cafe con Ron",
+      "filename": "Cafe con Ron.svg",
+      "assetFilename": "Cafe con Ron.svg",
+      "available": false
+    },
+    {
+      "slug": "turista",
+      "label": "Turista",
+      "filename": "Turista.svg",
+      "assetFilename": "Turista.svg",
+      "available": false
+    },
+    {
+      "slug": "dtmf",
+      "label": "DtMF",
+      "filename": "DtMF.svg",
+      "assetFilename": "DtMF.svg",
+      "available": false
     }
   ],
-  "generatedAt": "2026-06-14T13:47:18.306Z"
+  "generatedAt": "2026-06-14T13:52:44.529Z"
 }

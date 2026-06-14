@@ -162,9 +162,14 @@ export default function App() {
       return;
     }
 
-    const knownSlugs = new Set(experienceScreens.map((screen) => screen.slug));
-    if (!knownSlugs.has(activeExperienceSlug)) {
-      updateSettings({ experience: { activeSlug: experienceScreens[0].slug } });
+    const activeScreen = experienceScreens.find((screen) => screen.slug === activeExperienceSlug);
+    const fallback =
+      experienceScreens.find((screen) => screen.available !== false) ?? experienceScreens[0];
+
+    if (fallback && (!activeScreen || activeScreen.available === false)) {
+      if (fallback.slug !== activeExperienceSlug) {
+        updateSettings({ experience: { activeSlug: fallback.slug } });
+      }
     }
   }, [experienceScreens, activeExperienceSlug, updateSettings]);
 

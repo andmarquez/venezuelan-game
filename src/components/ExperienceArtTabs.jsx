@@ -13,6 +13,7 @@ export default function ExperienceArtTabs({ screens, activeSlug, onSelect, disab
     >
       {screens.map((screen) => {
         const isActive = activeSlug === screen.slug;
+        const isUnavailable = screen.available === false;
 
         return (
           <button
@@ -20,11 +21,15 @@ export default function ExperienceArtTabs({ screens, activeSlug, onSelect, disab
             type="button"
             role="tab"
             aria-selected={isActive}
-            className={isActive ? 'is-active' : ''}
-            disabled={disabled}
+            aria-disabled={isUnavailable || undefined}
+            title={isUnavailable ? `${screen.label} (artwork file missing)` : screen.label}
+            className={`${isActive ? 'is-active' : ''} ${isUnavailable ? 'is-unavailable' : ''}`.trim()}
+            disabled={disabled || isUnavailable}
             onClick={(event) => {
               event.stopPropagation();
-              onSelect(screen.slug);
+              if (!isUnavailable) {
+                onSelect(screen.slug);
+              }
             }}
           >
             {screen.label}

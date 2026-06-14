@@ -51,18 +51,23 @@ export function createExperienceSvg(name, markup, filename = '') {
 export async function loadExperienceAsset(slug) {
   const manifest = await fetchExperienceManifest();
   const screens = manifest.screens ?? [];
-  const screen = screens.find((item) => item.slug === slug) ?? screens[0];
+  const screen =
+    screens.find((item) => item.slug === slug && item.available !== false) ??
+    screens.find((item) => item.available !== false) ??
+    screens[0];
 
-  if (!screen) {
+  if (!screen || screen.available === false) {
     return null;
   }
 
+  const assetFilename = screen.assetFilename ?? screen.filename;
+
   try {
-    const assetUrl = `${BASE}experience/${encodeURIComponent(screen.filename)}`;
+    const assetUrl = `${BASE}experience/${encodeURIComponent(assetFilename)}`;
     const response = await fetch(assetUrl, { cache: 'no-cache' });
 
     if (!response.ok) {
-      console.warn(`Experience SVG not found: ${screen.filename}`);
+      console.warn(`Experience SVG not found: ${assetFilename}`);
       return null;
     }
 
@@ -72,7 +77,7 @@ export async function loadExperienceAsset(slug) {
     const name = screen.filename.replace(/\.svg$/i, '');
     return createExperienceSvg(name, markup, screen.filename);
   } catch (error) {
-    console.warn(`Could not load experience SVG: ${screen.filename}`, error);
+    console.warn(`Could not load experience SVG: ${assetFilename}`, error);
     return null;
   }
 }

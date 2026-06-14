@@ -30,6 +30,15 @@ function loadLabelConfig() {
   }
 }
 
+function resolveOnDisk(canonicalName, filesOnDisk) {
+  if (filesOnDisk.includes(canonicalName)) {
+    return canonicalName;
+  }
+
+  const target = canonicalName.toLowerCase();
+  return filesOnDisk.find((name) => name.toLowerCase() === target) ?? null;
+}
+
 const labelConfig = loadLabelConfig();
 const labels = labelConfig.labels ?? {};
 const preferredOrder = Array.isArray(labelConfig.order) ? labelConfig.order : [];
@@ -39,19 +48,54 @@ const filesOnDisk = fs
   .filter((name) => name.toLowerCase().endsWith('.svg'))
   .sort();
 
-const orderedFiles = [
-  ...preferredOrder.filter((name) => filesOnDisk.includes(name)),
-  ...filesOnDisk.filter((name) => !preferredOrder.includes(name)),
-];
+const usedOnDisk = new Set();
 
-const screens = orderedFiles.map((filename) => {
-  const stem = filename.replace(/\.svg$/i, '');
+const screensFromOrder = preferredOrder.map((canonical) => {
+  const onDisk = resolveOnDisk(canonical, filesOnDisk);
+  if (onDisk) {
+    usedOnDisk.add(onDisk);
+  }
+
+  const stem = canonical.replace(/\.svg$/i, '');
+
   return {
-    slug: slugFromFilename(filename),
-    label: labels[filename] ?? stem,
-    filename,
+    slug: slugFromFilename(canonical),
+    label: labels[canonical] ?? stem,
+    filename: canonical,
+    assetFilename: onDisk ?? canonical,
+    available: Boolean(onDisk),
   };
 });
+
+const extraScreens = filesOnDisk
+  .filter((name) => !usedOnDisk.has(name))
+  .map((filename) => {
+    const stem = filename.replace(/\.svg$/i, '');
+    return {
+      slug: slugFromFilename(filename),
+      label: labels[filename] ?? stem,
+      filename,
+      assetFilename: filename,
+      available: true,
+    };
+  });
+
+const screens = preferredOrder.length
+  ? [...screensFromOrder, ...extraScreens]
+  : filesOnDisk.map((filename) => {
+      const stem = filename.replace(/\.svg$/i, '');
+      return {
+        slug: slugFromFilename(filename),
+        label: labels[filename] ?? stem,
+        filename,
+        assetFilename: filename,
+        available: true,
+      };
+    });
+
+const orderedFiles = screens
+  .filter((screen) => screen.available)
+  .map((screen) => screen.assetFilename);
 
 const manifest = {
   files: orderedFiles,
@@ -64,4 +108,7 @@ fs.writeFileSync(
   `${JSON.stringify(manifest, null, 2)}\n`,
 );
 
-console.log(`Experience manifest: ${orderedFiles.length} SVG(s) → public/experience/manifest.json`);
+const availableCount = screens.filter((screen) => screen.available).length;
+console.log(
+  `Experience manifest: ${screens.length} screen(s), ${availableCount} SVG(s) on disk → public/experience/manifest.json`,
+);

@@ -13,26 +13,74 @@ export function slugFromFilename(filename) {
     .replace(/^-+|-+$/g, '');
 }
 
-export function screenFromFilename(filename, label = '') {
+export function screenFromFilename(filename, label = '', available = true) {
   const stem = filename.replace(/\.svg$/i, '');
   return {
     slug: slugFromFilename(filename),
     label: label || stem,
     filename,
+    assetFilename: filename,
+    available,
+  };
+}
+
+function normalizeScreen(screen) {
+  return {
+    slug: screen.slug,
+    label: screen.label,
+    filename: screen.filename,
+    assetFilename: screen.assetFilename ?? screen.filename,
+    available: screen.available !== false,
   };
 }
 
 function normalizeScreens(manifest) {
   if (Array.isArray(manifest?.screens) && manifest.screens.length) {
-    return manifest.screens.map((screen) => ({
-      slug: screen.slug,
-      label: screen.label,
-      filename: screen.filename,
-    }));
+    return manifest.screens.map(normalizeScreen);
   }
 
   const files = Array.isArray(manifest?.files) ? manifest.files : [];
   return files.map((filename) => screenFromFilename(filename));
+}
+
+async function fetchLabelConfig() {
+  try {
+    const response = await fetch(`${BASE}experience/screen-labels.json`, { cache: 'no-cache' });
+    if (!response.ok) {
+      return null;
+    }
+    return response.json();
+  } catch {
+    return null;
+  }
+}
+
+function mergeScreensWithLabelConfig(screens, labelConfig) {
+  const order = Array.isArray(labelConfig?.order) ? labelConfig.order : [];
+  if (!order.length) {
+    return screens;
+  }
+
+  const labels = labelConfig.labels ?? {};
+  const bySlug = new Map(screens.map((screen) => [screen.slug, screen]));
+  const merged = order.map((filename) => {
+    const slug = slugFromFilename(filename);
+    const existing = bySlug.get(slug);
+    if (existing) {
+      return {
+        ...existing,
+        label: labels[filename] ?? existing.label,
+        filename,
+      };
+    }
+
+    const stem = filename.replace(/\.svg$/i, '');
+    return screenFromFilename(filename, labels[filename] ?? stem, false);
+  });
+
+  const orderedSlugs = new Set(merged.map((screen) => screen.slug));
+  const extras = screens.filter((screen) => !orderedSlugs.has(screen.slug));
+  return [...merged, ...extras];
 }
 
 export async function fetchExperienceManifest(force = false) {
@@ -53,7 +101,12 @@ export async function fetchExperienceManifest(force = false) {
       }
 
       const manifest = await response.json();
-      const screens = normalizeScreens(manifest);
+      let screens = normalizeScreens(manifest);
+      const labelConfig = await fetchLabelConfig();
+      if (labelConfig) {
+        screens = mergeScreensWithLabelConfig(screens, labelConfig);
+      }
+
       manifestCache = { ...manifest, screens };
       return manifestCache;
     } catch (error) {

@@ -125,20 +125,29 @@ export default function CustomizePanel({
               <ul className="experience-art-picker" role="list">
                 {screens.map((screen) => {
                   const isActive = activeSlug === screen.slug;
-                  const previewSrc = `${BASE}experience/${encodeURIComponent(screen.filename)}`;
+                  const isUnavailable = screen.available === false;
+                  const previewFile = screen.assetFilename ?? screen.filename;
+                  const previewSrc = `${BASE}experience/${encodeURIComponent(previewFile)}`;
 
                   return (
                     <li key={screen.slug}>
                       <button
                         type="button"
-                        className={`experience-art-option ${isActive ? 'is-active' : ''}`}
+                        className={`experience-art-option ${isActive ? 'is-active' : ''} ${isUnavailable ? 'is-unavailable' : ''}`.trim()}
                         aria-pressed={isActive}
-                        onClick={() =>
-                          onChange({ experience: { activeSlug: screen.slug } })
-                        }
+                        disabled={isUnavailable}
+                        onClick={() => {
+                          if (!isUnavailable) {
+                            onChange({ experience: { activeSlug: screen.slug } });
+                          }
+                        }}
                       >
                         <span className="experience-art-thumb" aria-hidden="true">
-                          <img src={previewSrc} alt="" loading="lazy" draggable={false} />
+                          {isUnavailable ? (
+                            <span className="experience-art-missing">Missing file</span>
+                          ) : (
+                            <img src={previewSrc} alt="" loading="lazy" draggable={false} />
+                          )}
                         </span>
                         <span className="experience-art-label">{screen.label}</span>
                       </button>

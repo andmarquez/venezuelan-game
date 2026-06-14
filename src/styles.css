@@ -801,6 +801,11 @@ textarea {
   opacity: 0.45;
 }
 
+.experience-art-tabs button.is-unavailable {
+  opacity: 0.38;
+  border-style: dashed;
+}
+
 @keyframes editorial-breathe {
   from {
     filter: contrast(1);
@@ -1223,6 +1228,21 @@ textarea {
   box-shadow: 0 0 0 1px rgba(255, 24, 61, 0.25);
 }
 
+.experience-art-option.is-unavailable {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.experience-art-missing {
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  text-align: center;
+  padding: 0.5rem;
+}
+
 .experience-art-thumb {
   display: grid;
   place-items: center;
@@ -1274,6 +1294,21 @@ textarea {
   border-color: rgba(255, 24, 61, 0.65);
   background: rgba(255, 24, 61, 0.12);
   box-shadow: 0 0 0 1px rgba(255, 24, 61, 0.25);
+}
+
+.experience-art-option.is-unavailable {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.experience-art-missing {
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  text-align: center;
+  padding: 0.5rem;
 }
 
 .experience-art-thumb {
