@@ -579,7 +579,6 @@ export default function App() {
         <video ref={videoRef} className="camera-feed" autoPlay muted playsInline />
         <div className="camera-fallback" />
         <div className="shade" />
-        <div className="grain" />
         <InteractiveGraphics
           ref={graphicsRef}
           active={hasStarted && settings.graphics.enabled}
