@@ -804,12 +804,6 @@ export default function App() {
               />
             ) : null}
 
-            <div className="instruction-card" aria-hidden="true">
-              {showTextOverlay
-                ? 'Tap word · Double next art · Triple beat · Swipe modes · Hold explode'
-                : 'Tap next art · Double beat · Triple back · Swipe modes · Hold explode'}
-            </div>
-
             <div className="hud bottom" aria-hidden="true">
               <span className="meter meter-bass">
                 <span />
