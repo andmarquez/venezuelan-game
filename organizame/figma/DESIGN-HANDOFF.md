@@ -2,6 +2,18 @@
 
 Use this when pushing the current app into a new Figma file (Option C).
 
+## Figma file (live)
+
+**Organízame — Design Starter**
+
+https://www.figma.com/design/GzkxjYxJpw6U94P1fv7k5I/Organizame-Design-Starter
+
+Pages:
+- **📱 Screens** — 8 mobile captures (390×844) from the running app
+- **🎨 Design System** — color tokens, typography notes, component list
+
+After editing, send the link back to Cursor to sync code.
+
 ## 1. Connect Figma in Cursor (required for auto-push)
 
 1. Open **Cursor Desktop** (Figma MCP does not work in all cloud-only sessions).
