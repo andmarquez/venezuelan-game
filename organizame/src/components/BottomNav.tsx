@@ -1,5 +1,5 @@
-import { motion } from 'framer-motion';
 import type { TabId } from '../types';
+import { ASSETS } from '../design/tokens';
 
 interface BottomNavProps {
   activeTab: TabId;
@@ -7,17 +7,16 @@ interface BottomNavProps {
 }
 
 const TABS: { id: TabId; label: string; icon: string }[] = [
-  { id: 'today', label: 'Today', icon: '☀️' },
-  { id: 'organizame', label: 'Organízame', icon: '🧠' },
-  { id: 'week', label: 'Week', icon: '📅' },
-  { id: 'inbox', label: 'Inbox', icon: '📥' },
-  { id: 'modes', label: 'Modes', icon: '🎨' },
+  { id: 'today', label: 'Today', icon: ASSETS.navToday },
+  { id: 'organizame', label: 'Dump', icon: ASSETS.navDump },
+  { id: 'week', label: 'Calendar', icon: ASSETS.navCalendar },
+  { id: 'modes', label: 'Goals', icon: ASSETS.navGoals },
 ];
 
 export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-30 border-t border-cream-dark bg-white/95 backdrop-blur-md safe-bottom">
-      <div className="mx-auto flex max-w-lg items-stretch justify-around px-1 pt-2 pb-1">
+    <nav className="fixed bottom-0 left-0 right-0 z-30 border-t border-nav-border bg-nav-bg safe-bottom">
+      <div className="mx-auto flex max-w-lg items-start justify-center gap-3 px-2 pt-[13px] pb-2">
         {TABS.map((tab) => {
           const active = activeTab === tab.id;
           return (
@@ -25,19 +24,22 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
               key={tab.id}
               type="button"
               onClick={() => onTabChange(tab.id)}
-              className="relative flex flex-1 flex-col items-center gap-0.5 px-1 py-1"
+              className="flex w-[68px] flex-col items-center"
             >
-              {active && (
-                <motion.div
-                  layoutId="nav-pill"
-                  className="absolute inset-x-1 inset-y-0 rounded-2xl bg-navy/8"
-                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+              <div
+                className={`flex h-8 w-[54px] items-center justify-center rounded-[14px] ${
+                  active ? 'bg-nav-active-bg' : ''
+                }`}
+              >
+                <img
+                  src={tab.icon}
+                  alt=""
+                  className={`h-[22px] w-[22px] object-contain ${active ? '' : 'opacity-90'}`}
                 />
-              )}
-              <span className="relative text-lg">{tab.icon}</span>
+              </div>
               <span
-                className={`relative text-[10px] font-semibold leading-tight ${
-                  active ? 'text-navy' : 'text-navy/50'
+                className={`mt-1 text-[11px] tracking-[0.275px] ${
+                  active ? 'font-bold text-navy' : 'font-medium text-ink-nav'
                 }`}
               >
                 {tab.label}

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useApp } from '../store/appStore';
 import { TaskCard } from '../components/TaskCard';
+import { ScreenHeader } from '../components/PageHeader';
 import type { Task } from '../types';
 
 export function InboxScreen() {
@@ -35,30 +36,28 @@ export function InboxScreen() {
   };
 
   return (
-    <div className="space-y-4">
-      <header className="flex items-center justify-between">
-        <div>
-          <h1 className="font-display text-3xl font-bold text-navy">Inbox</h1>
-          <p className="text-sm text-navy/60 mt-1">
-            Safe dumping ground. No judgment. (Some judgment.)
-          </p>
-        </div>
+    <div className="space-y-4 pb-4">
+      <div className="relative">
+        <ScreenHeader
+          title="Inbox"
+          subtitle="Unscheduled tasks. Safe to dump. Not safe to ignore forever."
+        />
         <button
           type="button"
           onClick={() => setShowForm(!showForm)}
-          className="rounded-2xl bg-coral px-4 py-2 text-sm font-bold text-white shadow-md"
+          className="absolute top-8 right-14 rounded-[22px] bg-navy px-4 py-2 text-sm font-medium text-white"
         >
           + Add
         </button>
-      </header>
+      </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="rounded-2xl bg-white p-4 shadow-sm space-y-3">
+        <form onSubmit={handleSubmit} className="card-surface rounded-[22px] p-4 space-y-3">
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="What needs doing?"
-            className="w-full rounded-xl bg-cream px-3 py-3 text-sm font-medium"
+            className="w-full rounded-[14px] bg-bg px-3 py-3 text-sm font-medium text-ink"
             required
             autoFocus
           />
@@ -67,15 +66,14 @@ export function InboxScreen() {
               type="number"
               value={duration}
               onChange={(e) => setDuration(parseInt(e.target.value) || 15)}
-              className="rounded-xl bg-cream px-3 py-2 text-sm"
+              className="rounded-[14px] bg-bg px-3 py-2 text-sm text-ink"
               min={15}
               step={15}
-              placeholder="Minutes"
             />
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="rounded-xl bg-cream px-3 py-2 text-sm"
+              className="rounded-[14px] bg-bg px-3 py-2 text-sm text-ink"
             >
               {modes.map((m) => (
                 <option key={m.id} value={m.id}>
@@ -88,7 +86,7 @@ export function InboxScreen() {
             <select
               value={priority}
               onChange={(e) => setPriority(e.target.value as Task['priority'])}
-              className="rounded-xl bg-cream px-3 py-2 text-sm"
+              className="rounded-[14px] bg-bg px-3 py-2 text-sm text-ink"
             >
               <option value="low">Low</option>
               <option value="medium">Medium</option>
@@ -99,7 +97,7 @@ export function InboxScreen() {
               type="date"
               value={deadline}
               onChange={(e) => setDeadline(e.target.value)}
-              className="rounded-xl bg-cream px-3 py-2 text-sm"
+              className="rounded-[14px] bg-bg px-3 py-2 text-sm text-ink"
             />
           </div>
           <textarea
@@ -107,23 +105,22 @@ export function InboxScreen() {
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Notes (optional)"
             rows={2}
-            className="w-full rounded-xl bg-cream px-3 py-2 text-sm resize-none"
+            className="w-full rounded-[14px] bg-bg px-3 py-2 text-sm resize-none text-ink"
           />
-          <button type="submit" className="w-full rounded-xl bg-navy py-3 font-bold text-white text-sm">
+          <button type="submit" className="w-full rounded-[22px] bg-navy py-3 text-sm font-medium text-white">
             Add to inbox
           </button>
         </form>
       )}
 
-      <p className="text-xs font-semibold text-navy/40">
+      <p className="text-xs text-ink-nav">
         {inboxTasks.length} unscheduled task{inboxTasks.length !== 1 ? 's' : ''}
       </p>
 
       {inboxTasks.length === 0 ? (
-        <div className="rounded-2xl bg-white p-8 text-center">
-          <span className="text-4xl">📥</span>
-          <p className="font-display text-lg font-bold text-navy mt-3">Inbox zero energy</p>
-          <p className="text-sm text-navy/50 mt-1">Add tasks here before organizing them.</p>
+        <div className="card-surface flex flex-col items-center rounded-[22px] p-8 text-center">
+          <p className="text-xl text-ink">Inbox zero energy</p>
+          <p className="text-sm text-ink-secondary mt-2">Add tasks here before organizing them.</p>
         </div>
       ) : (
         <div className="space-y-3">

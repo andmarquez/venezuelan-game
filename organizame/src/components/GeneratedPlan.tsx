@@ -3,7 +3,7 @@ import type { ScheduleResult } from '../types';
 import { formatDuration } from '../store/appStore';
 import { ScheduleBlock } from './ScheduleBlock';
 import type { Mode } from '../types';
-import { AndsiosaCharacter } from './AndsiosaCharacter';
+import { ASSETS } from '../design/tokens';
 
 interface GeneratedPlanProps {
   result: ScheduleResult;
@@ -12,10 +12,10 @@ interface GeneratedPlanProps {
 }
 
 const TONE_STYLES = {
-  success: 'bg-lime/20 border-lime',
-  warning: 'bg-orange-100 border-orange-400 animate-shake',
-  error: 'bg-red-100 border-red-400 animate-shake',
-  info: 'bg-lavender/40 border-lavender',
+  success: 'bg-free-bg border-free-text/20',
+  warning: 'bg-orange-50 border-orange-300 animate-shake',
+  error: 'bg-red-50 border-red-300 animate-shake',
+  info: 'bg-mode-surface border-mode-label/20',
 };
 
 export function GeneratedPlan({ result, modes, onAccept }: GeneratedPlanProps) {
@@ -27,15 +27,12 @@ export function GeneratedPlan({ result, modes, onAccept }: GeneratedPlanProps) {
       animate={{ opacity: 1, y: 0 }}
       className="space-y-4"
     >
-      <div className={`rounded-2xl border-l-4 p-4 ${tone}`}>
+      <div className={`rounded-[22px] border-l-4 p-4 ${tone}`}>
         <div className="flex items-start gap-3">
-          <AndsiosaCharacter
-            state={result.fits ? 'celebrating' : result.assistantTone === 'error' ? 'judging' : 'warning'}
-            size="sm"
-          />
+          <img src={ASSETS.mascot} alt="" className="h-12 w-12 object-contain shrink-0" />
           <div>
-            <p className="font-display font-bold text-navy text-lg leading-snug">{result.message}</p>
-            <p className="text-sm text-navy/60 mt-2">
+            <p className="text-base text-ink leading-snug">{result.message}</p>
+            <p className="text-sm text-ink-secondary mt-2">
               {result.fits ? 'Schedule approved by math (barely).' : 'Math has spoken. Listen to it.'}
             </p>
           </div>
@@ -43,18 +40,18 @@ export function GeneratedPlan({ result, modes, onAccept }: GeneratedPlanProps) {
       </div>
 
       <div className="grid grid-cols-3 gap-2">
-        <StatCard label="Available" value={formatDuration(result.totalAvailableMinutes)} color="bg-lime/30" />
-        <StatCard label="Requested" value={formatDuration(result.totalRequestedMinutes)} color="bg-coral/20" />
+        <StatCard label="Available" value={formatDuration(result.totalAvailableMinutes)} />
+        <StatCard label="Requested" value={formatDuration(result.totalRequestedMinutes)} />
         <StatCard
           label="Missing"
           value={result.missingMinutes > 0 ? formatDuration(result.missingMinutes) : '0m'}
-          color={result.missingMinutes > 0 ? 'bg-red-100' : 'bg-lime/30'}
+          highlight={result.missingMinutes > 0}
         />
       </div>
 
       {result.scheduledBlocks.length > 0 && (
         <div>
-          <h4 className="font-display font-bold text-navy mb-2">
+          <h4 className="text-xl text-ink mb-2">
             Proposed schedule ({result.scheduledBlocks.length} blocks)
           </h4>
           <div className="space-y-2">
@@ -66,8 +63,8 @@ export function GeneratedPlan({ result, modes, onAccept }: GeneratedPlanProps) {
       )}
 
       {result.unscheduledTasks.length > 0 && (
-        <div className="rounded-2xl bg-red-50 p-4">
-          <h4 className="font-bold text-red-700 text-sm mb-2">
+        <div className="rounded-[22px] bg-red-50 p-4">
+          <h4 className="font-medium text-red-700 text-sm mb-2">
             Couldn't fit ({result.unscheduledTasks.length})
           </h4>
           <ul className="space-y-1">
@@ -81,11 +78,11 @@ export function GeneratedPlan({ result, modes, onAccept }: GeneratedPlanProps) {
       )}
 
       {result.suggestions.length > 0 && !result.fits && (
-        <div className="rounded-2xl bg-white p-4 shadow-sm">
-          <h4 className="font-display font-bold text-navy mb-2">How to fix this</h4>
+        <div className="card-surface rounded-[22px] p-4">
+          <h4 className="text-ink font-medium mb-2">How to fix this</h4>
           <ul className="space-y-2">
             {result.suggestions.map((s) => (
-              <li key={s} className="flex items-start gap-2 text-sm text-navy/80">
+              <li key={s} className="flex items-start gap-2 text-sm text-ink-secondary">
                 <span className="text-coral">→</span>
                 {s}
               </li>
@@ -98,7 +95,7 @@ export function GeneratedPlan({ result, modes, onAccept }: GeneratedPlanProps) {
         <button
           type="button"
           onClick={onAccept}
-          className="w-full rounded-2xl bg-navy py-4 font-bold text-white hover:bg-navy-light transition"
+          className="w-full rounded-[22px] bg-navy py-4 font-medium text-white"
         >
           Accept this plan ✓
         </button>
@@ -107,11 +104,21 @@ export function GeneratedPlan({ result, modes, onAccept }: GeneratedPlanProps) {
   );
 }
 
-function StatCard({ label, value, color }: { label: string; value: string; color: string }) {
+function StatCard({
+  label,
+  value,
+  highlight = false,
+}: {
+  label: string;
+  value: string;
+  highlight?: boolean;
+}) {
   return (
-    <div className={`rounded-xl ${color} p-3 text-center`}>
-      <p className="text-[10px] font-bold uppercase tracking-wide text-navy/50">{label}</p>
-      <p className="font-display text-lg font-bold text-navy mt-0.5">{value}</p>
+    <div
+      className={`rounded-[14px] p-3 text-center ${highlight ? 'bg-red-50' : 'bg-white card-surface'}`}
+    >
+      <p className="text-[10px] font-bold uppercase tracking-wide text-ink-nav">{label}</p>
+      <p className="text-lg font-medium text-ink mt-0.5">{value}</p>
     </div>
   );
 }

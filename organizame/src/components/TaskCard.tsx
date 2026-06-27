@@ -38,19 +38,19 @@ export function TaskCard({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ delay: index * 0.05 }}
-      className={`rounded-2xl border-l-4 bg-white p-4 shadow-sm ${task.completed ? 'opacity-60' : ''}`}
+      className={`w-full rounded-[22px] border-l-4 bg-white p-4 card-surface ${task.completed ? 'opacity-60' : ''}`}
       style={{ borderLeftColor: mode?.color ?? '#2563eb' }}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <span className="text-lg">{mode?.icon ?? '📌'}</span>
-            <h3 className={`font-semibold text-navy truncate ${task.completed ? 'line-through' : ''}`}>
+            <h3 className={`font-medium text-ink truncate ${task.completed ? 'line-through' : ''}`}>
               {task.name}
             </h3>
           </div>
           <div className="flex flex-wrap gap-2 text-xs">
-            <span className="rounded-full bg-cream px-2 py-0.5 font-medium">
+            <span className="rounded-full bg-bg px-2 py-0.5 font-medium text-ink-secondary">
               {formatDuration(task.durationMinutes)}
             </span>
             <span className={`rounded-full px-2 py-0.5 font-medium ${PRIORITY_COLORS[task.priority]}`}>

@@ -27,12 +27,11 @@ export function WeekPlanner({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="font-display text-2xl font-bold text-navy">This week</h2>
+      <div className="flex items-center justify-end">
         <button
           type="button"
           onClick={onRebalance}
-          className="rounded-2xl bg-coral px-4 py-2 text-sm font-bold text-white shadow-md"
+          className="rounded-[22px] bg-coral px-4 py-2 text-sm font-medium text-white"
         >
           Rebalance my week
         </button>
@@ -60,16 +59,16 @@ export function WeekPlanner({
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
-              className={`w-full rounded-2xl bg-white p-4 text-left shadow-sm ${
+              className={`w-full rounded-[22px] p-4 text-left card-surface ${
                 isOverloaded ? 'ring-2 ring-red-300' : ''
               }`}
             >
               <div className="flex items-center justify-between mb-2">
                 <div>
-                  <p className="text-xs font-bold uppercase tracking-wide text-navy/50">
+                  <p className="text-xs font-bold uppercase tracking-wide text-ink-nav">
                     {format(day, 'EEE')}
                   </p>
-                  <p className="font-display text-lg font-bold text-navy">{format(day, 'MMM d')}</p>
+                  <p className="text-lg font-medium text-ink">{format(day, 'MMM d')}</p>
                 </div>
                 {isOverloaded && (
                   <span className="rounded-full bg-red-100 px-2 py-1 text-[10px] font-bold text-red-600">

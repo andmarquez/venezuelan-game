@@ -5,7 +5,7 @@ export const DEFAULT_MODES: Mode[] = [
     id: 'work',
     name: 'Work Mode',
     color: '#2563eb',
-    bgColor: '#dbeafe',
+    bgColor: '#e1eaff',
     icon: '💼',
     preferredDays: [1, 2, 3, 4, 5],
     preferredTimeStart: 9,

@@ -6,7 +6,7 @@ import { TaskCard } from '../components/TaskCard';
 import { GeneratedPlan } from '../components/GeneratedPlan';
 import { parseBrainDump } from '../services/taskParser';
 import type { Period, Task } from '../types';
-import { AndsiosaCharacter } from '../components/AndsiosaCharacter';
+import { ScreenHeader } from '../components/PageHeader';
 
 const PERIODS: { id: Period; label: string }[] = [
   { id: 'today', label: 'Today' },
@@ -86,32 +86,25 @@ export function OrganizameScreen() {
   };
 
   return (
-    <div className="space-y-5">
-      <header className="flex items-start gap-3">
-        <div className="flex-1">
-          <h1 className="font-display text-3xl font-bold text-navy">Organízame</h1>
-          <p className="text-sm text-navy/60 mt-1">
-            Dump everything. I'll tell you the truth about your ambitions.
-          </p>
-        </div>
-        <AndsiosaCharacter state={andsiosaState} size="md" />
-      </header>
+    <div className="space-y-5 pb-4">
+      <ScreenHeader
+        title="Dump"
+        subtitle="Paste everything you want to do. I'll tell you if it's humanly possible."
+      />
 
       <BrainDumpInput value={brainDumpText} onChange={setBrainDumpText} />
 
       <div>
-        <p className="text-xs font-bold uppercase tracking-wide text-navy/50 mb-2">Organize by</p>
+        <p className="text-[11px] font-bold uppercase tracking-[0.55px] text-mode-label mb-2">
+          Organize by
+        </p>
         <div className="flex flex-wrap gap-2">
           {PERIODS.map((p) => (
             <button
               key={p.id}
               type="button"
               onClick={() => setPeriod(p.id)}
-              className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                period === p.id
-                  ? 'bg-navy text-white'
-                  : 'bg-white text-navy/70 hover:bg-cream-dark'
-              }`}
+              className={`pill-period ${period === p.id ? 'pill-period-active' : 'pill-period-inactive'}`}
             >
               {p.label}
             </button>
@@ -125,45 +118,46 @@ export function OrganizameScreen() {
             type="date"
             value={customStart}
             onChange={(e) => setCustomStart(e.target.value)}
-            className="rounded-xl bg-white px-3 py-2 text-sm"
+            className="rounded-[14px] bg-white px-3 py-2.5 text-sm text-ink card-surface"
           />
           <input
             type="date"
             value={customEnd}
             onChange={(e) => setCustomEnd(e.target.value)}
-            className="rounded-xl bg-white px-3 py-2 text-sm"
+            className="rounded-[14px] bg-white px-3 py-2.5 text-sm text-ink card-surface"
           />
         </div>
       )}
 
-      <div className="flex gap-2">
+      <div className="grid grid-cols-2 gap-3.5">
         <motion.button
           type="button"
           onClick={() => {
             if (!hasParsed) handleParse();
             handleMakeItPossible();
           }}
-          className="flex-1 rounded-2xl bg-navy py-4 font-bold text-white shadow-lg"
-          whileTap={{ scale: 0.97 }}
+          className="col-span-2 flex h-[91px] flex-col justify-end rounded-[22px] bg-navy px-[18px] py-5 text-left"
+          whileTap={{ scale: 0.98 }}
         >
-          {andsiosaState === 'thinking' ? 'Thinking...' : 'Make it possible'}
+          <p className="text-base text-white">
+            {andsiosaState === 'thinking' ? 'Thinking...' : 'Make it possible'}
+          </p>
+          <p className="text-[13px] text-navy-muted mt-1.5">Generate your schedule</p>
         </motion.button>
         <button
           type="button"
           onClick={fixMyChaos}
-          className="rounded-2xl bg-coral/20 px-4 py-4 font-bold text-coral text-sm"
+          className="col-span-2 flex h-[56px] items-center justify-center rounded-[22px] bg-coral text-sm font-medium text-white"
         >
-          Fix chaos
+          Fix my chaos
         </button>
       </div>
 
       {hasParsed && parsedTasks.length > 0 && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="font-display text-lg font-bold text-navy">
-              Parsed tasks ({parsedTasks.length})
-            </h3>
-            <span className="text-sm font-semibold text-navy/50">
+            <h3 className="text-xl text-ink">Parsed tasks ({parsedTasks.length})</h3>
+            <span className="text-sm text-ink-secondary">
               {Math.floor(totalRequested / 60)}h {totalRequested % 60}m total
             </span>
           </div>
@@ -184,7 +178,7 @@ export function OrganizameScreen() {
           <button
             type="button"
             onClick={saveToInbox}
-            className="w-full rounded-xl border-2 border-dashed border-navy/20 py-3 text-sm font-semibold text-navy/60"
+            className="w-full rounded-[22px] border border-dashed border-ink-nav/30 py-3 text-sm font-medium text-ink-secondary"
           >
             Save all to Inbox
           </button>

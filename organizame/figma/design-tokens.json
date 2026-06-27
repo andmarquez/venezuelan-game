@@ -1,67 +1,45 @@
 {
-  "name": "Organízame",
+  "source": "Figma Today.png (node 15:4)",
+  "figmaFile": "https://www.figma.com/design/GzkxjYxJpw6U94P1fv7k5I",
   "frame": {
     "width": 390,
     "height": 844,
-    "background": "#f5f0e8"
+    "background": "#f5f5f5"
   },
   "typography": {
-    "display": {
-      "family": "Fraunces",
-      "weights": [600, 700, 800],
-      "usage": "Headlines, screen titles, Andsiosa quotes"
-    },
-    "ui": {
-      "family": "DM Sans",
-      "weights": [400, 500, 600, 700],
-      "usage": "Body, labels, buttons, nav"
-    },
-    "scale": {
-      "screenTitle": { "font": "display", "size": 30, "weight": 700 },
-      "sectionTitle": { "font": "display", "size": 18, "weight": 700 },
-      "body": { "font": "ui", "size": 14, "weight": 400 },
-      "caption": { "font": "ui", "size": 10, "weight": 600, "letterSpacing": 0.08 }
-    }
+    "family": "Inter",
+    "greeting": { "size": 12, "weight": 500, "color": "#79808f" },
+    "dateLine": { "size": 22, "weight": 400, "color": "#0a1237" },
+    "dateDay": { "size": 89, "weight": 300, "color": "#0a1237" },
+    "sectionTitle": { "size": 20, "weight": 400, "color": "#0a1237" },
+    "body": { "size": 14, "weight": 400, "color": "#8c93a1" }
   },
   "colors": {
-    "navy": "#1a1f3c",
-    "navyLight": "#2a3158",
-    "cream": "#f5f0e8",
-    "creamDark": "#e8e0d4",
-    "coral": "#ff6b6b",
-    "lime": "#a3e635",
-    "lavender": "#ddd6fe",
-    "modes": {
-      "work": { "accent": "#2563eb", "surface": "#dbeafe" },
-      "workout": { "accent": "#84cc16", "surface": "#ecfccb" },
-      "cooking": { "accent": "#f97316", "surface": "#ffedd5" },
-      "timeOff": { "accent": "#a78bfa", "surface": "#ede9fe" },
-      "creative": { "accent": "#fb7185", "surface": "#ffe4e6" },
-      "admin": { "accent": "#d4a574", "surface": "#f5f0e8" },
-      "content": { "accent": "#38bdf8", "surface": "#e0f2fe" },
-      "errands": { "accent": "#fbbf24", "surface": "#fef3c7" }
-    }
+    "bg": "#f5f5f5",
+    "ink": "#0a1237",
+    "inkMuted": "#79808f",
+    "inkSecondary": "#8c93a1",
+    "inkNav": "#7c8290",
+    "navy": "#1e2341",
+    "navyMuted": "#b0b6d0",
+    "coral": "#fd6b6b",
+    "coralMuted": "#ffdbdb",
+    "modeSurface": "#e1eaff",
+    "modeLabel": "#7888a2",
+    "freeBg": "#d4edb7",
+    "freeText": "#092211",
+    "navBg": "#fcfbf9",
+    "navBorder": "#ededea",
+    "navActiveBg": "#f0f2f6",
+    "surface": "#ffffff"
   },
   "radius": {
-    "card": 16,
-    "cardLg": 24,
-    "pill": 9999,
-    "button": 16
+    "card": 22,
+    "cardLg": 26,
+    "navIcon": 14
   },
-  "spacing": {
-    "screenPadding": 16,
-    "cardPadding": 16,
-    "sectionGap": 20,
-    "bottomNavHeight": 72,
-    "andsiosaFabSize": 64,
-    "andsiosaFabOffsetBottom": 96
-  },
-  "components": {
-    "TaskCard": "White surface, 4px left border = mode accent, 16px radius",
-    "ModeCard": "Mode surface color, icon + title + time window",
-    "BottomNav": "5 tabs: Today, Organízame, Week, Inbox, Modes",
-    "AndsiosaCharacter": "Red bob #e63946, skin #ffe8d6, no eyebrows, vector style",
-    "PrimaryButton": "Navy fill, white text, 16px radius",
-    "AccentButton": "Coral fill, white text"
+  "navigation": {
+    "tabs": ["Today", "Dump", "Calendar", "Goals"],
+    "inboxVia": "Andsiosa quick menu"
   }
 }

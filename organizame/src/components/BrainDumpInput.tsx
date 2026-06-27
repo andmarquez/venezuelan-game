@@ -15,24 +15,22 @@ Keep one night free`;
 export function BrainDumpInput({ value, onChange, placeholder }: BrainDumpInputProps) {
   return (
     <div className="space-y-2">
-      <label className="font-display text-xl font-bold text-navy">
-        Brain dump everything 🧠
-      </label>
-      <p className="text-sm text-navy/60">
-        One task per line. I'll figure out durations, categories, and whether you're delusional.
+      <label className="text-xl text-ink">Brain dump everything</label>
+      <p className="text-sm text-ink-secondary">
+        One task per line. I'll figure out durations and whether you're delusional.
       </p>
       <textarea
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder ?? EXAMPLE}
         rows={8}
-        className="w-full resize-none rounded-2xl border-2 border-cream-dark bg-white p-4 text-sm text-navy placeholder:text-navy/30 focus:border-coral focus:outline-none focus:ring-2 focus:ring-coral/20"
+        className="w-full resize-none rounded-[22px] bg-white p-4 text-sm text-ink placeholder:text-ink-nav card-surface focus:outline-none focus:ring-2 focus:ring-navy/20"
       />
       {!value && (
         <button
           type="button"
           onClick={() => onChange(EXAMPLE)}
-          className="text-xs font-semibold text-coral hover:underline"
+          className="text-xs font-medium text-coral hover:underline"
         >
           Try example list →
         </button>

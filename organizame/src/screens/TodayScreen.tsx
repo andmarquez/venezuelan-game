@@ -1,11 +1,13 @@
 import { isSameDay, parseISO } from 'date-fns';
 import { motion } from 'framer-motion';
-import { useApp, getGreeting, todayLabel } from '../store/appStore';
+import { useApp } from '../store/appStore';
 import { getModeById } from '../data/defaultModes';
 import { getFreeTimeToday } from '../services/schedulingEngine';
-import { Timeline, NextEventBanner } from '../components/Timeline';
+import { Timeline } from '../components/Timeline';
 import { ScheduleBlock } from '../components/ScheduleBlock';
-import { pickMessage } from '../data/assistantMessages';
+import { TodayHeader } from '../components/PageHeader';
+import { ModeBanner, ActionCards } from '../components/ActionCards';
+import { formatFreeTime } from '../design/tokens';
 
 export function TodayScreen() {
   const {
@@ -17,7 +19,6 @@ export function TodayScreen() {
     fixMyChaos,
     setActiveTab,
     assistantMessage,
-    connectCalendar,
   } = useApp();
 
   const today = new Date();
@@ -27,93 +28,37 @@ export function TodayScreen() {
   const currentMode = getModeById(modes, settings.currentModeId);
 
   return (
-    <div className="space-y-5">
-      <header>
-        <motion.p
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-sm font-semibold text-navy/50"
-        >
-          {getGreeting()}, {settings.userName}
-        </motion.p>
-        <motion.h1
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05 }}
-          className="font-display text-3xl font-bold text-navy mt-1"
-        >
-          {todayLabel()}
-        </motion.h1>
-      </header>
+    <div className="space-y-5 pb-4">
+      <TodayHeader />
 
       {assistantMessage && (
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="rounded-2xl bg-coral/15 border border-coral/30 p-4"
+          className="rounded-[22px] bg-white px-4 py-3 card-surface"
         >
-          <p className="text-sm font-medium text-navy italic">"{assistantMessage}"</p>
+          <p className="text-sm text-ink-secondary italic leading-relaxed">"{assistantMessage}"</p>
         </motion.div>
       )}
 
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="rounded-2xl p-4"
-        style={{ backgroundColor: currentMode?.bgColor ?? '#dbeafe' }}
-      >
-        <p className="text-xs font-bold uppercase tracking-wide text-navy/50">Current mode</p>
-        <div className="flex items-center gap-2 mt-1">
-          <span className="text-2xl">{currentMode?.icon ?? '💼'}</span>
-          <p className="font-display text-xl font-bold text-navy">{currentMode?.name ?? 'Work Mode'}</p>
-        </div>
-      </motion.div>
+      <ModeBanner mode={currentMode} />
 
-      {!calendarConnected ? (
-        <motion.button
-          type="button"
-          onClick={connectCalendar}
-          className="w-full rounded-2xl bg-work/10 border border-work/30 p-4 text-left"
-          whileTap={{ scale: 0.98 }}
-        >
-          <p className="text-sm font-semibold text-work">Connect calendar to see your real schedule →</p>
-        </motion.button>
-      ) : (
-        <NextEventBanner events={todayEvents} />
-      )}
-
-      <div className="grid grid-cols-2 gap-3">
-        <button
-          type="button"
-          onClick={() => setActiveTab('organizame')}
-          className="rounded-2xl bg-navy p-4 text-left text-white shadow-lg"
-        >
-          <span className="text-2xl">🧠</span>
-          <p className="font-display font-bold mt-2">Organízame</p>
-          <p className="text-xs text-white/70 mt-1">Dump & schedule</p>
-        </button>
-        <button
-          type="button"
-          onClick={fixMyChaos}
-          className="rounded-2xl bg-coral p-4 text-left text-white shadow-lg"
-        >
-          <span className="text-2xl">🔥</span>
-          <p className="font-display font-bold mt-2">Fix my chaos</p>
-          <p className="text-xs text-white/70 mt-1">Emergency mode</p>
-        </button>
-      </div>
+      <ActionCards
+        onMakeItPossible={() => setActiveTab('organizame')}
+        onFixChaos={fixMyChaos}
+      />
 
       <Timeline
         events={todayEvents}
         scheduledBlocks={todayBlocks}
         modes={modes}
         freeMinutes={freeMinutes}
+        freeLabel={formatFreeTime(freeMinutes)}
       />
 
       {todayBlocks.length > 0 && (
         <div>
-          <h3 className="font-display text-lg font-bold text-navy mb-2">Scheduled tasks</h3>
+          <h3 className="text-xl text-ink mb-3">Scheduled tasks</h3>
           <div className="space-y-2">
             {todayBlocks.map((block, i) => (
               <ScheduleBlock key={block.id} block={block} modes={modes} index={i} />
@@ -121,10 +66,6 @@ export function TodayScreen() {
           </div>
         </div>
       )}
-
-      <p className="text-center text-xs text-navy/40 pb-2">
-        {pickMessage('greeting', settings.userName)}
-      </p>
     </div>
   );
 }

@@ -38,15 +38,11 @@ export function ModeSettings({ modes, onUpdate, onAdd }: ModeSettingsProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="font-display text-2xl font-bold text-navy">Life modes</h2>
-          <p className="text-sm text-navy/60 mt-1">How you actually live, not how LinkedIn thinks you do.</p>
-        </div>
+      <div className="flex items-center justify-end">
         <button
           type="button"
           onClick={() => setShowAdd(true)}
-          className="rounded-2xl bg-navy px-3 py-2 text-sm font-bold text-white"
+          className="rounded-[22px] bg-navy px-3 py-2 text-sm font-medium text-white"
         >
           + Custom
         </button>

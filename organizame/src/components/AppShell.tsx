@@ -12,8 +12,8 @@ export function AppShell({ children }: AppShellProps) {
   const { activeTab, setActiveTab } = useApp();
 
   return (
-    <div className="min-h-dvh bg-cream">
-      <main className="mx-auto max-w-lg px-4 pb-28 pt-4 safe-top">{children}</main>
+    <div className="min-h-dvh bg-bg">
+      <main className="mx-auto max-w-lg px-[22px] pb-[100px] safe-top">{children}</main>
       <AndsiosaAssistant />
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
       <ReactionPopup />

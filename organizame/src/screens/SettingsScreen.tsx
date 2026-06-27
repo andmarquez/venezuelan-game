@@ -18,18 +18,18 @@ export function SettingsScreen() {
             onClick={() => setShowSettings(false)}
           />
           <motion.div
-            className="fixed inset-x-0 bottom-0 z-50 mx-auto max-h-[90vh] max-w-lg overflow-y-auto rounded-t-3xl bg-cream p-5 safe-bottom"
+            className="fixed inset-x-0 bottom-0 z-50 mx-auto max-h-[90vh] max-w-lg overflow-y-auto rounded-t-[22px] bg-bg p-5 safe-bottom"
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 28, stiffness: 300 }}
           >
             <div className="mx-auto mb-4 h-1 w-12 rounded-full bg-navy/20" />
-            <h2 className="font-display text-2xl font-bold text-navy mb-4">Settings</h2>
+            <h2 className="text-[28px] text-ink mb-4">Settings</h2>
 
             <div className="space-y-6">
               <section>
-                <label className="text-xs font-bold uppercase tracking-wide text-navy/50">Your name</label>
+                <label className="text-[11px] font-bold uppercase tracking-[0.55px] text-mode-label">Your name</label>
                 <input
                   value={settings.userName}
                   onChange={(e) => updateSettings({ userName: e.target.value })}
