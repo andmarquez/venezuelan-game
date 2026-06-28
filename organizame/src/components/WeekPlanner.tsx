@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import type { CalendarEvent, ScheduledBlock } from '../types';
 import type { Mode } from '../types';
 import { getModeById } from '../data/defaultModes';
-import { formatDuration } from '../store/appStore';
 import { DayAddTaskSheet, type DayTaskInput } from './DayAddTaskSheet';
 import { DayDetailSheet } from './DayDetailSheet';
 
@@ -40,13 +39,6 @@ export function WeekPlanner({
           const dayEvents = events.filter((e) => isSameDay(parseISO(e.start), day));
           const dayBlocks = scheduledBlocks.filter((b) => isSameDay(parseISO(b.start), day));
           const isOverloaded = overloadedDays.includes(dayKey);
-          const totalMinutes =
-            dayEvents.reduce((s, e) => {
-              const start = parseISO(e.start);
-              const end = parseISO(e.end);
-              return s + (end.getTime() - start.getTime()) / 60000;
-            }, 0) +
-            dayBlocks.reduce((s, b) => s + b.durationMinutes, 0);
 
           return (
             <motion.button
@@ -74,9 +66,6 @@ export function WeekPlanner({
                       OVERLOAD
                     </span>
                   )}
-                  <span className="text-xs font-medium text-navy/50">
-                    {formatDuration(Math.round(totalMinutes))}
-                  </span>
                   <span
                     role="button"
                     tabIndex={0}
@@ -123,11 +112,6 @@ export function WeekPlanner({
                     </span>
                   );
                 })}
-                {dayEvents.length === 0 && dayBlocks.length === 0 && (
-                  <span className="text-[10px] text-ink-nav italic">
-                    Tap to open · add tasks inside
-                  </span>
-                )}
               </div>
             </motion.button>
           );
