@@ -12,7 +12,6 @@ export function WeekScreen() {
     settings,
     addTaskToDay,
     scheduleResult,
-    setActiveTab,
     monthPlan,
   } = useApp();
 
@@ -52,15 +51,11 @@ export function WeekScreen() {
           bufferMinutes={settings.bufferMinutes}
           onAddTaskToDay={addTaskToDay}
           overloadedDays={scheduleResult?.overloadedDays ?? []}
-          onDayClick={() => setActiveTab('today')}
         />
       ) : (
         <MonthPlanner
           plan={monthPlan}
-          onWeekClick={() => {
-            setView('week');
-            setActiveTab('organizame');
-          }}
+          onWeekClick={() => setView('week')}
         />
       )}
     </div>

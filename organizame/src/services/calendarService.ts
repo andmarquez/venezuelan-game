@@ -169,6 +169,17 @@ export const calendarService = {
     saveState();
     return state.events[idx];
   },
+
+  deleteEvent(id: string): boolean {
+    const before = state.events.length;
+    state.events = state.events.filter((e) => e.id !== id);
+    state.createdEventIds = state.createdEventIds.filter((cid) => cid !== id);
+    if (state.events.length < before) {
+      saveState();
+      return true;
+    }
+    return false;
+  },
 };
 
 export function formatEventTime(iso: string): string {

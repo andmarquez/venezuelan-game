@@ -6,6 +6,7 @@ import type { Mode } from '../types';
 import { getModeById } from '../data/defaultModes';
 import { formatDuration } from '../store/appStore';
 import { DayAddTaskSheet, type DayTaskInput } from './DayAddTaskSheet';
+import { DayDetailSheet } from './DayDetailSheet';
 
 interface WeekPlannerProps {
   events: CalendarEvent[];
@@ -14,7 +15,6 @@ interface WeekPlannerProps {
   defaultModeId: string;
   bufferMinutes: number;
   onAddTaskToDay: (day: Date, input: DayTaskInput) => void;
-  onDayClick?: (date: Date) => void;
   overloadedDays?: string[];
 }
 
@@ -25,11 +25,11 @@ export function WeekPlanner({
   defaultModeId,
   bufferMinutes,
   onAddTaskToDay,
-  onDayClick,
   overloadedDays = [],
 }: WeekPlannerProps) {
   const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 });
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+  const [selectedDay, setSelectedDay] = useState<Date | null>(null);
   const [addingToDay, setAddingToDay] = useState<Date | null>(null);
 
   return (
@@ -49,26 +49,24 @@ export function WeekPlanner({
             dayBlocks.reduce((s, b) => s + b.durationMinutes, 0);
 
           return (
-            <motion.div
+            <motion.button
               key={dayKey}
+              type="button"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
-              className={`w-full rounded-[22px] p-4 card-surface ${
+              onClick={() => setSelectedDay(day)}
+              className={`w-full rounded-[22px] p-4 text-left card-surface ${
                 isOverloaded ? 'ring-2 ring-red-300' : ''
               }`}
             >
               <div className="flex items-center justify-between gap-2 mb-2">
-                <button
-                  type="button"
-                  onClick={() => onDayClick?.(day)}
-                  className="min-w-0 flex-1 text-left"
-                >
+                <div className="min-w-0 flex-1">
                   <p className="text-xs font-bold uppercase tracking-wide text-ink-nav">
                     {format(day, 'EEE')}
                   </p>
                   <p className="text-lg font-medium text-ink">{format(day, 'MMM d')}</p>
-                </button>
+                </div>
 
                 <div className="flex shrink-0 items-center gap-2">
                   {isOverloaded && (
@@ -79,14 +77,24 @@ export function WeekPlanner({
                   <span className="text-xs font-medium text-navy/50">
                     {formatDuration(Math.round(totalMinutes))}
                   </span>
-                  <button
-                    type="button"
-                    onClick={() => setAddingToDay(day)}
+                  <span
+                    role="button"
+                    tabIndex={0}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setAddingToDay(day);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.stopPropagation();
+                        setAddingToDay(day);
+                      }
+                    }}
                     className="rounded-full bg-coral px-3 py-1.5 text-[11px] font-semibold text-white"
                     aria-label={`Add task to ${format(day, 'EEEE')}`}
                   >
                     + Add
-                  </button>
+                  </span>
                 </div>
               </div>
 
@@ -116,19 +124,29 @@ export function WeekPlanner({
                   );
                 })}
                 {dayEvents.length === 0 && dayBlocks.length === 0 && (
-                  <button
-                    type="button"
-                    onClick={() => setAddingToDay(day)}
-                    className="text-[10px] text-coral/80 font-medium"
-                  >
-                    Tap + Add to plan this day →
-                  </button>
+                  <span className="text-[10px] text-ink-nav italic">
+                    Tap to open · add tasks inside
+                  </span>
                 )}
               </div>
-            </motion.div>
+            </motion.button>
           );
         })}
       </div>
+
+      <AnimatePresence>
+        {selectedDay && (
+          <DayDetailSheet
+            day={selectedDay}
+            events={events}
+            scheduledBlocks={scheduledBlocks}
+            modes={modes}
+            defaultModeId={defaultModeId}
+            bufferMinutes={bufferMinutes}
+            onClose={() => setSelectedDay(null)}
+          />
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {addingToDay && (

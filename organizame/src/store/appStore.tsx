@@ -108,6 +108,8 @@ interface AppContextValue {
     updates: Partial<ScheduledBlock>,
     taskId?: string,
   ) => void;
+  removeScheduledBlock: (id: string, taskId?: string) => void;
+  deleteCalendarEvent: (id: string) => void;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -426,6 +428,32 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [],
   );
 
+  const removeScheduledBlock = useCallback((id: string, taskId?: string) => {
+    setScheduledBlocks((blocks) => {
+      const updated = blocks.filter((b) => b.id !== id);
+      setScheduleResult((prev) =>
+        prev
+          ? {
+              ...prev,
+              scheduledBlocks: updated,
+              totalRequestedMinutes: updated.reduce((sum, b) => sum + b.durationMinutes, 0),
+            }
+          : prev,
+      );
+      return updated;
+    });
+    if (taskId) {
+      setTasks((prev) =>
+        prev.map((t) => (t.id === taskId ? { ...t, scheduled: false } : t)),
+      );
+    }
+  }, []);
+
+  const deleteCalendarEvent = useCallback((id: string) => {
+    calendarService.deleteEvent(id);
+    setCalendarState(calendarService.getState());
+  }, []);
+
   const value: AppContextValue = {
     activeTab,
     setActiveTab,
@@ -470,6 +498,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     fixMyChaos,
     updateCalendarEvent,
     updateScheduledBlock,
+    removeScheduledBlock,
+    deleteCalendarEvent,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
