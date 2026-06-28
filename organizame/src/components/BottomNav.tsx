@@ -16,7 +16,7 @@ const TABS: { id: TabId; label: string; icon: string }[] = [
 export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-30 border-t border-nav-border bg-nav-bg safe-bottom">
-      <div className="mx-auto flex max-w-lg items-start justify-center gap-3 px-2 pt-[13px] pb-2">
+      <div className="mx-auto flex max-w-lg items-start justify-between px-6 pt-[13px] pb-2">
         {TABS.map((tab) => {
           const active = activeTab === tab.id;
           return (
@@ -24,7 +24,7 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
               key={tab.id}
               type="button"
               onClick={() => onTabChange(tab.id)}
-              className="flex w-[68px] flex-col items-center"
+              className="flex min-w-0 flex-1 flex-col items-center"
             >
               <div
                 className={`flex h-8 w-[54px] items-center justify-center rounded-[14px] ${
