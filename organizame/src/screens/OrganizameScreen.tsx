@@ -23,7 +23,6 @@ export function OrganizameScreen() {
     generatePlan,
     scheduleResult,
     andsiosaState,
-    fixMyChaos,
     addTask,
   } = useApp();
 
@@ -129,29 +128,20 @@ export function OrganizameScreen() {
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-3.5">
-        <motion.button
-          type="button"
-          onClick={() => {
-            if (!hasParsed) handleParse();
-            handleMakeItPossible();
-          }}
-          className="col-span-2 flex flex-col justify-center gap-0.5 rounded-[22px] bg-navy px-[18px] py-3.5 text-left"
-          whileTap={{ scale: 0.98 }}
-        >
-          <p className="text-base text-white">
-            {andsiosaState === 'thinking' ? 'Thinking...' : 'Make it possible'}
-          </p>
-          <p className="text-[13px] text-navy-muted mt-1.5">Generate your schedule</p>
-        </motion.button>
-        <button
-          type="button"
-          onClick={fixMyChaos}
-          className="col-span-2 flex h-[56px] items-center justify-center rounded-[22px] bg-coral text-sm font-medium text-white"
-        >
-          Fix my chaos
-        </button>
-      </div>
+      <motion.button
+        type="button"
+        onClick={() => {
+          if (!hasParsed) handleParse();
+          handleMakeItPossible();
+        }}
+        className="flex w-full flex-col justify-center gap-0.5 rounded-[22px] bg-navy px-[18px] py-3.5 text-left"
+        whileTap={{ scale: 0.98 }}
+      >
+        <p className="text-base text-white">
+          {andsiosaState === 'thinking' ? 'Thinking...' : 'Make it possible'}
+        </p>
+        <p className="text-[13px] text-navy-muted">Generate your schedule</p>
+      </motion.button>
 
       {hasParsed && parsedTasks.length > 0 && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
