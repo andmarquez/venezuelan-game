@@ -7,6 +7,7 @@ import { GeneratedPlan } from '../components/GeneratedPlan';
 import { parseBrainDump } from '../services/taskParser';
 import type { Period, Task } from '../types';
 import { ScreenHeader } from '../components/PageHeader';
+import { PrimaryButton } from '../components/PrimaryButton';
 
 const PERIODS: { id: Period; label: string }[] = [
   { id: 'today', label: 'Today' },
@@ -128,20 +129,16 @@ export function OrganizameScreen() {
         </div>
       )}
 
-      <motion.button
-        type="button"
+      <PrimaryButton
+        title="Make it possible"
+        subtitle="Generate your schedule"
+        loading={andsiosaState === 'thinking'}
+        loadingText="Thinking..."
         onClick={() => {
           if (!hasParsed) handleParse();
           handleMakeItPossible();
         }}
-        className="flex w-full flex-col justify-center gap-0.5 rounded-[22px] bg-navy px-[18px] py-3.5 text-left"
-        whileTap={{ scale: 0.98 }}
-      >
-        <p className="text-base text-white">
-          {andsiosaState === 'thinking' ? 'Thinking...' : 'Make it possible'}
-        </p>
-        <p className="text-[13px] text-navy-muted">Generate your schedule</p>
-      </motion.button>
+      />
 
       {hasParsed && parsedTasks.length > 0 && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
