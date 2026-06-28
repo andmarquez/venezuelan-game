@@ -1,8 +1,6 @@
 import { format, parseISO } from 'date-fns';
 import { motion } from 'framer-motion';
-import type { CalendarEvent, ScheduledBlock } from '../types';
-import type { Mode } from '../types';
-import { getModeById } from '../data/defaultModes';
+import type { CalendarEvent, ScheduledBlock, Mode } from '../types';
 import { formatEventTime } from '../services/calendarService';
 
 interface TimelineProps {
@@ -13,7 +11,7 @@ interface TimelineProps {
   freeLabel?: string;
 }
 
-export function Timeline({ events, scheduledBlocks, modes, freeMinutes, freeLabel }: TimelineProps) {
+export function Timeline({ events, scheduledBlocks, freeMinutes, freeLabel }: TimelineProps) {
   const items = [
     ...events.map((e) => ({
       id: e.id,
@@ -55,16 +53,13 @@ export function Timeline({ events, scheduledBlocks, modes, freeMinutes, freeLabe
         </div>
       ) : (
         <div className="space-y-2">
-          {items.map((item, i) => {
-            const mode = getModeById(modes, item.mode ?? 'work');
-            return (
+          {items.map((item, i) => (
               <motion.div
                 key={item.id}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
                 className="card-surface rounded-[22px] p-4"
-                style={{ borderLeft: `4px solid ${mode?.color ?? '#2563eb'}` }}
               >
                 <div className="flex items-start justify-between gap-2">
                   <div>
@@ -78,8 +73,7 @@ export function Timeline({ events, scheduledBlocks, modes, freeMinutes, freeLabe
                   </span>
                 </div>
               </motion.div>
-            );
-          })}
+          ))}
         </div>
       )}
     </div>
