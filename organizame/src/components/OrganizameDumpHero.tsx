@@ -16,7 +16,7 @@ interface OrganizameDumpHeroProps {
 }
 
 export function OrganizameDumpHero({ value, onChange }: OrganizameDumpHeroProps) {
-  const { setShowSettings } = useApp();
+  const { settings, setShowSettings } = useApp();
   const lineCount = value.split('\n').filter((l) => l.trim()).length;
 
   return (
@@ -75,7 +75,7 @@ export function OrganizameDumpHero({ value, onChange }: OrganizameDumpHeroProps)
         />
 
         <div className="flex items-center justify-between gap-2 border-t border-bg px-4 py-3">
-          <p className="text-[11px] text-ink-nav">Andrea… with love: be realistic.</p>
+          <p className="text-[11px] text-ink-nav">{settings.userName}… with love: be realistic.</p>
           {!value && (
             <button
               type="button"
