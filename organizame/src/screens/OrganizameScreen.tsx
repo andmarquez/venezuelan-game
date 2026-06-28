@@ -136,7 +136,7 @@ export function OrganizameScreen() {
             if (!hasParsed) handleParse();
             handleMakeItPossible();
           }}
-          className="col-span-2 flex h-[91px] flex-col justify-end rounded-[22px] bg-navy px-[18px] py-5 text-left"
+          className="col-span-2 flex flex-col justify-center gap-0.5 rounded-[22px] bg-navy px-[18px] py-3.5 text-left"
           whileTap={{ scale: 0.98 }}
         >
           <p className="text-base text-white">

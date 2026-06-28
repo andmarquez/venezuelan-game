@@ -32,12 +32,12 @@ export function ActionCards({ onMakeItPossible, onFixChaos }: ActionCardsProps) 
         className="flex h-[91px] flex-col justify-end rounded-[22px] bg-navy px-[18px] py-5 text-left"
       >
         <p className="text-base text-white leading-[26.25px]">Make it possible</p>
-        <p className="text-[13px] text-navy-muted leading-[13px] mt-1.5">Add to schedule</p>
+        <p className="text-[13px] text-navy-muted leading-[13px]">Add to schedule</p>
       </button>
       <button
         type="button"
         onClick={onFixChaos}
-        className="flex h-[91px] flex-col justify-end rounded-[22px] bg-coral px-[18px] py-5 text-left"
+        className="flex flex-col justify-center gap-0.5 rounded-[22px] bg-coral px-[18px] py-3.5 text-left"
       >
         <p className="text-base text-white leading-[26.25px]">Fix my chaos</p>
         <p className="text-[13px] text-coral-muted leading-[13px] mt-1.5">Emergency mode</p>
