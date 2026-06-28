@@ -5,7 +5,7 @@ import { getFreeTimeToday } from '../services/schedulingEngine';
 import { Timeline } from '../components/Timeline';
 import { ScheduleBlock } from '../components/ScheduleBlock';
 import { TodayHeader } from '../components/PageHeader';
-import { ModeBanner, ActionCards } from '../components/ActionCards';
+import { ModeBanner } from '../components/ActionCards';
 import { formatFreeTime } from '../design/tokens';
 
 export function TodayScreen() {
@@ -15,8 +15,6 @@ export function TodayScreen() {
     calendarEvents,
     calendarConnected,
     scheduledBlocks,
-    fixMyChaos,
-    setActiveTab,
   } = useApp();
 
   const today = new Date();
@@ -30,11 +28,6 @@ export function TodayScreen() {
       <TodayHeader />
 
       <ModeBanner mode={currentMode} />
-
-      <ActionCards
-        onMakeItPossible={() => setActiveTab('organizame')}
-        onFixChaos={fixMyChaos}
-      />
 
       <Timeline
         events={todayEvents}
