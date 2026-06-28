@@ -7,7 +7,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { format } from 'date-fns';
+import { addMinutes, format } from 'date-fns';
 import { DEFAULT_MODES } from '../data/defaultModes';
 import { calendarService } from '../services/calendarService';
 import { reactionService } from '../services/reactionService';
@@ -65,6 +65,10 @@ interface AppContextValue {
   tasks: Task[];
   inboxTasks: Task[];
   addTask: (task: Omit<Task, 'id' | 'createdAt'>) => void;
+  addTaskToDay: (
+    day: Date,
+    input: { name: string; durationMinutes: number; category: string; start: Date },
+  ) => void;
   updateTask: (id: string, updates: Partial<Task>) => void;
   deleteTask: (id: string) => void;
   completeTask: (id: string) => void;
@@ -198,6 +202,60 @@ export function AppProvider({ children }: { children: ReactNode }) {
     };
     setTasks((t) => [...t, newTask]);
   }, []);
+
+  const addTaskToDay = useCallback(
+    (day: Date, input: { name: string; durationMinutes: number; category: string; start: Date }) => {
+      const taskId = `task-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+      const end = addMinutes(input.start, input.durationMinutes);
+
+      const newTask: Task = {
+        id: taskId,
+        name: input.name,
+        durationMinutes: input.durationMinutes,
+        category: input.category,
+        priority: 'medium',
+        canSplit: true,
+        preferredTimeOfDay: 'any',
+        flexibility: 'flexible',
+        scheduled: true,
+        deadline: format(day, 'yyyy-MM-dd'),
+        createdAt: new Date().toISOString(),
+      };
+
+      const newBlock: ScheduledBlock = {
+        id: `sb-${taskId}-${Date.now()}`,
+        taskId,
+        taskName: input.name,
+        mode: input.category,
+        start: input.start.toISOString(),
+        end: end.toISOString(),
+        durationMinutes: input.durationMinutes,
+      };
+
+      setTasks((t) => [...t, newTask]);
+      setScheduledBlocks((blocks) => {
+        const updated = [...blocks, newBlock];
+        setScheduleResult((prev) => ({
+          fits: prev?.fits ?? true,
+          scheduledBlocks: updated,
+          unscheduledTasks: prev?.unscheduledTasks ?? [],
+          totalAvailableMinutes: prev?.totalAvailableMinutes ?? 0,
+          totalRequestedMinutes:
+            (prev?.totalRequestedMinutes ??
+              blocks.reduce((sum, b) => sum + b.durationMinutes, 0)) + input.durationMinutes,
+          missingMinutes: prev?.missingMinutes ?? 0,
+          overloadedDays: prev?.overloadedDays ?? [],
+          suggestions: prev?.suggestions ?? [],
+          message: prev?.message ?? '',
+          assistantTone: prev?.assistantTone ?? 'info',
+          trigger: prev?.trigger,
+        }));
+        return updated;
+      });
+      setAssistantMessage(`Added "${input.name}" to ${format(day, 'EEEE')}.`);
+    },
+    [],
+  );
 
   const updateTask = useCallback((id: string, updates: Partial<Task>) => {
     setTasks((t) => t.map((task) => (task.id === id ? { ...task, ...updates } : task)));
@@ -379,6 +437,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     tasks,
     inboxTasks,
     addTask,
+    addTaskToDay,
     updateTask,
     deleteTask,
     completeTask,

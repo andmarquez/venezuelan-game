@@ -8,6 +8,7 @@ import {
   format,
   isAfter,
   isBefore,
+  isSameDay,
   parseISO,
   setHours,
   setMinutes,
@@ -322,6 +323,48 @@ export function getFreeTimeToday(events: CalendarEvent[]): number {
   const now = new Date();
   const available = getAvailableBlocks(startOfDay(now), endOfDay(now), getBusyBlocks(events), BUFFER_MINUTES);
   return available.reduce((s, b) => s + b.durationMinutes, 0);
+}
+
+/** First open slot on a given day, or a sensible fallback after existing items. */
+export function findSlotOnDay(
+  day: Date,
+  durationMinutes: number,
+  events: CalendarEvent[],
+  scheduledBlocks: ScheduledBlock[],
+  bufferMinutes = BUFFER_MINUTES,
+): Date {
+  const dayStart = setMinutes(setHours(startOfDay(day), DAY_START_HOUR), 0);
+  const dayEnd = setMinutes(setHours(startOfDay(day), DAY_END_HOUR), 0);
+
+  const dayBusy: TimeBlock[] = [
+    ...getBusyBlocks(events.filter((e) => isSameDay(parseISO(e.start), day))),
+    ...scheduledBlocks
+      .filter((b) => isSameDay(parseISO(b.start), day))
+      .map((b) => ({
+        start: parseISO(b.start),
+        end: parseISO(b.end),
+        durationMinutes: b.durationMinutes,
+      })),
+  ];
+
+  const available = getAvailableBlocks(dayStart, dayEnd, dayBusy, bufferMinutes);
+  const slot = available.find((s) => s.durationMinutes >= durationMinutes);
+  if (slot) return slot.start;
+
+  if (dayBusy.length === 0) {
+    return setMinutes(setHours(startOfDay(day), 9), 0);
+  }
+
+  const lastEnd = dayBusy.reduce(
+    (latest, b) => (b.end.getTime() > latest.getTime() ? b.end : latest),
+    dayBusy[0].end,
+  );
+  const afterLast = addMinutes(lastEnd, bufferMinutes);
+  if (isBefore(afterLast, dayEnd) && differenceInMinutes(dayEnd, afterLast) >= durationMinutes) {
+    return afterLast;
+  }
+
+  return setMinutes(setHours(startOfDay(day), 9), 0);
 }
 
 export function getWhatCanIDoNow(

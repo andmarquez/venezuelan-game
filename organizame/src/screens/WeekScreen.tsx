@@ -9,6 +9,8 @@ export function WeekScreen() {
     calendarEvents,
     scheduledBlocks,
     modes,
+    settings,
+    addTaskToDay,
     scheduleResult,
     setActiveTab,
     monthPlan,
@@ -46,6 +48,9 @@ export function WeekScreen() {
           events={calendarEvents}
           scheduledBlocks={scheduledBlocks}
           modes={modes}
+          defaultModeId={settings.currentModeId}
+          bufferMinutes={settings.bufferMinutes}
+          onAddTaskToDay={addTaskToDay}
           overloadedDays={scheduleResult?.overloadedDays ?? []}
           onDayClick={() => setActiveTab('today')}
         />
