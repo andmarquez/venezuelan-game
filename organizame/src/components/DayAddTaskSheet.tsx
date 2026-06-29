@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { addMinutes, format, setHours, setMinutes, startOfDay } from 'date-fns';
 import type { CalendarEvent, Mode, ScheduledBlock } from '../types';
 import { findSlotOnDay } from '../services/schedulingEngine';
+import { buildWorkoutInput } from '../utils/dayPresets';
 
 export interface DayTaskInput {
   name: string;
@@ -89,6 +90,29 @@ export function DayAddTaskSheet({
           <p className="text-sm text-ink-secondary mb-4">{format(day, 'MMMM d')}</p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  const preset = buildWorkoutInput(
+                    day,
+                    modes,
+                    events,
+                    scheduledBlocks,
+                    bufferMinutes,
+                  );
+                  setName(preset.name);
+                  setDuration(preset.durationMinutes);
+                  setCategory(preset.category);
+                  setStartTime(toTimeValue(preset.start));
+                }}
+                className="rounded-full px-3 py-1.5 text-[11px] font-semibold text-ink"
+                style={{ backgroundColor: '#ecfccb' }}
+              >
+                🏋️ Workout · 60m
+              </button>
+            </div>
+
             <label className="block">
               <span className="text-[11px] font-bold uppercase tracking-[0.55px] text-mode-label">
                 Task

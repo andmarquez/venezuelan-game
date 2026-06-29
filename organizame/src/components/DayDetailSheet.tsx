@@ -11,6 +11,7 @@ import {
   type TimelineEditPayload,
 } from './TimelineItemEditSheet';
 import { DayAddTaskSheet, type DayTaskInput } from './DayAddTaskSheet';
+import { buildWorkoutInput } from '../utils/dayPresets';
 
 interface DayDetailSheetProps {
   day: Date;
@@ -169,6 +170,13 @@ export function DayDetailSheet({
     setShowAdd(false);
   };
 
+  const handleAddWorkout = () => {
+    addTaskToDay(
+      day,
+      buildWorkoutInput(day, modes, events, scheduledBlocks, bufferMinutes),
+    );
+  };
+
   return (
     <>
       <motion.div
@@ -207,13 +215,23 @@ export function DayDetailSheet({
               Close
             </button>
           </div>
-          <button
-            type="button"
-            onClick={() => setShowAdd(true)}
-            className="mt-4 w-full rounded-[22px] bg-coral py-3 text-sm font-medium text-white"
-          >
-            + Add task to this day
-          </button>
+          <div className="mt-4 flex gap-2">
+            <button
+              type="button"
+              onClick={() => setShowAdd(true)}
+              className="flex-1 rounded-[22px] bg-coral py-3 text-sm font-medium text-white"
+            >
+              + Add task
+            </button>
+            <button
+              type="button"
+              onClick={handleAddWorkout}
+              className="flex-1 rounded-[22px] py-3 text-sm font-medium text-ink"
+              style={{ backgroundColor: '#ecfccb' }}
+            >
+              🏋️ Workout
+            </button>
+          </div>
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">

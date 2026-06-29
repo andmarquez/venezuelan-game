@@ -6,6 +6,7 @@ import type { Mode } from '../types';
 import { getModeById } from '../data/defaultModes';
 import { DayAddTaskSheet, type DayTaskInput } from './DayAddTaskSheet';
 import { DayDetailSheet } from './DayDetailSheet';
+import { buildWorkoutInput } from '../utils/dayPresets';
 
 interface WeekPlannerProps {
   events: CalendarEvent[];
@@ -66,6 +67,31 @@ export function WeekPlanner({
                       OVERLOAD
                     </span>
                   )}
+                  <span
+                    role="button"
+                    tabIndex={0}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onAddTaskToDay(
+                        day,
+                        buildWorkoutInput(day, modes, events, scheduledBlocks, bufferMinutes),
+                      );
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.stopPropagation();
+                        onAddTaskToDay(
+                          day,
+                          buildWorkoutInput(day, modes, events, scheduledBlocks, bufferMinutes),
+                        );
+                      }
+                    }}
+                    className="rounded-full px-2.5 py-1.5 text-[11px] font-semibold text-ink"
+                    style={{ backgroundColor: '#ecfccb' }}
+                    aria-label={`Add workout to ${format(day, 'EEEE')}`}
+                  >
+                    🏋️
+                  </span>
                   <span
                     role="button"
                     tabIndex={0}
