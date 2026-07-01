@@ -76,7 +76,6 @@ export class GameScene extends Phaser.Scene {
   private keySpace!: Phaser.Input.Keyboard.Key;
   private kissProjectiles: KissProjectile[] = [];
   private lastKissBlowTime = 0;
-  private kissWasDown = false;
 
   private stats: GameStats = createInitialStats();
   private hud!: Phaser.GameObjects.Container;
@@ -601,6 +600,7 @@ export class GameScene extends Phaser.Scene {
     this.updateHUD();
 
     const touch = this.mobileControls?.input ?? {
+      moveAxis: 0,
       left: false,
       right: false,
       jump: false,
@@ -616,11 +616,9 @@ export class GameScene extends Phaser.Scene {
 
     const kissJustDown =
       Phaser.Input.Keyboard.JustDown(this.keyA) ||
-      (touch.kiss && !this.kissWasDown);
+      (this.mobileControls?.consumeKissPress() ?? false);
 
     const highJumpHeld = this.keyX?.isDown || touch.boost;
-
-    this.kissWasDown = touch.kiss;
 
     if (kissJustDown) {
       this.blowKiss();
@@ -631,6 +629,7 @@ export class GameScene extends Phaser.Scene {
       right: (this.cursors.right?.isDown ?? false) || (this.keyD?.isDown ?? false) || touch.right,
       jump: jumpJustDown,
       highJump: highJumpHeld,
+      moveAxis: touch.moveAxis,
     });
 
     this.enemies.forEach((e) => e.update());

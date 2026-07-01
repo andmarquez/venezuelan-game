@@ -61,6 +61,30 @@ export const GAME_CONFIG = {
   /** Lift touch controls above the bottom edge (browser bars, thumbs) */
   mobileControlsLift: 130,
 
+  /**
+   * Wild Rift–style mobile control layout.
+   * Left = move joystick, right = attack + ability arc.
+   */
+  mobileWildRift: {
+    joystick: {
+      xRatio: 0.13,
+      bottomInset: 36,
+      baseRadius: 74,
+      thumbRadius: 30,
+      maxDrag: 52,
+      deadzone: 0.18,
+    },
+    attackRadius: 56,
+    abilityRadius: 44,
+    attackInsetX: 64,
+    attackInsetY: 40,
+    /** Ability buttons arc up-left from jump (Wild Rift spell layout) */
+    abilityArc: [
+      { angleDeg: 215, distance: 96 },
+      { angleDeg: 195, distance: 118 },
+    ],
+  },
+
   /** Timer pickup floating messages */
   timerMessages: [
     'More time to create!',

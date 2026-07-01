@@ -1,230 +1,208 @@
 import Phaser from 'phaser';
 import { GAME_CONFIG } from '../config/gameConfig';
+import { VirtualJoystick } from './VirtualJoystick';
 
 export type TouchInput = {
+  /** Horizontal stick axis −1 (left) to 1 (right) */
+  moveAxis: number;
   left: boolean;
   right: boolean;
   jump: boolean;
-  /** Tap to blow a kiss projectile */
   kiss: boolean;
-  /** Hold while jumping for a higher leap (like X on keyboard) */
   boost: boolean;
 };
 
-type TouchAction = 'left' | 'right' | 'jump' | 'kiss' | 'boost';
+type AbilityId = 'jump' | 'kiss' | 'boost';
+
+type AbilityButton = {
+  id: AbilityId;
+  btn: Phaser.GameObjects.Arc;
+  label: Phaser.GameObjects.Text;
+  radius: number;
+};
 
 /**
- * MobileControls — large semi-transparent touch buttons for thumbs.
- * Supports multi-touch so move, jump, kiss, and boost work together.
+ * MobileControls — Wild Rift–style layout:
+ * - Left: virtual joystick for movement
+ * - Right: primary action + ability arc (jump, boost, kiss)
  */
 export class MobileControls {
   private scene: Phaser.Scene;
   private container: Phaser.GameObjects.Container;
-  private leftBtn!: Phaser.GameObjects.Arc;
-  private rightBtn!: Phaser.GameObjects.Arc;
-  private jumpBtn!: Phaser.GameObjects.Arc;
-  private kissBtn!: Phaser.GameObjects.Arc;
-  private boostBtn!: Phaser.GameObjects.Arc;
-  private activePointers = new Map<number, TouchAction>();
-  /** Fires once per tap on jump — enables double jump in mid-air */
+  private joystick: VirtualJoystick;
+  private abilities: AbilityButton[] = [];
+  private abilityPointers = new Map<number, AbilityId>();
   private jumpPressPending = false;
-  input: TouchInput = { left: false, right: false, jump: false, kiss: false, boost: false };
+  private kissPressPending = false;
+
+  input: TouchInput = {
+    moveAxis: 0,
+    left: false,
+    right: false,
+    jump: false,
+    kiss: false,
+    boost: false,
+  };
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
     this.container = scene.add.container(0, 0).setScrollFactor(0).setDepth(100);
-    this.createButtons();
+
+    this.joystick = new VirtualJoystick(scene, this.container);
+    this.createAbilityCluster();
     this.setupPointerHandlers();
 
     scene.scale.on('resize', this.layout, this);
     this.layout();
   }
 
-  private createButtons(): void {
-    const style = {
-      fillColor: 0xffffff,
-      fillAlpha: 0.35,
-      lineColor: 0xe91e63,
-      lineWidth: 2,
-    };
+  private createAbilityCluster(): void {
+    const defs: { id: AbilityId; label: string; radius: number; primary?: boolean }[] = [
+      { id: 'jump', label: '▲\n×2', radius: GAME_CONFIG.mobileWildRift.attackRadius, primary: true },
+      { id: 'boost', label: '✦', radius: GAME_CONFIG.mobileWildRift.abilityRadius },
+      { id: 'kiss', label: '♥', radius: GAME_CONFIG.mobileWildRift.abilityRadius - 2 },
+    ];
 
-    this.leftBtn = this.scene.add.circle(0, 0, 44, style.fillColor, style.fillAlpha);
-    this.leftBtn.setStrokeStyle(style.lineWidth, style.lineColor);
-    this.leftBtn.setInteractive({ useHandCursor: false });
+    defs.forEach((def) => {
+      const fill = def.primary ? 0x1a2332 : 0x121820;
+      const alpha = def.primary ? 0.72 : 0.62;
+      const stroke = def.primary ? 0xf5f0e1 : 0xc9a96e;
 
-    this.rightBtn = this.scene.add.circle(0, 0, 44, style.fillColor, style.fillAlpha);
-    this.rightBtn.setStrokeStyle(style.lineWidth, style.lineColor);
-    this.rightBtn.setInteractive({ useHandCursor: false });
+      const btn = this.scene.add.circle(0, 0, def.radius, fill, alpha);
+      btn.setStrokeStyle(def.primary ? 3 : 2, stroke, def.primary ? 0.95 : 0.75);
 
-    this.kissBtn = this.scene.add.circle(0, 0, 40, 0xf48fb1, 0.45);
-    this.kissBtn.setStrokeStyle(2, 0xe91e63);
-    this.kissBtn.setInteractive({ useHandCursor: false });
+      const label = this.scene.add.text(0, 0, def.label, {
+        fontSize: def.primary ? '22px' : '24px',
+        color: def.primary ? '#ffffff' : '#f8bbd0',
+        fontFamily: 'Nunito, sans-serif',
+        align: 'center',
+        lineSpacing: def.primary ? -4 : 0,
+        fontStyle: def.primary ? 'bold' : 'normal',
+      }).setOrigin(0.5);
 
-    this.boostBtn = this.scene.add.circle(0, 0, 36, 0xffffff, 0.35);
-    this.boostBtn.setStrokeStyle(2, 0xad1457);
-    this.boostBtn.setInteractive({ useHandCursor: false });
-
-    this.jumpBtn = this.scene.add.circle(0, 0, 52, 0xf48fb1, 0.45);
-    this.jumpBtn.setStrokeStyle(2, 0xe91e63);
-    this.jumpBtn.setInteractive({ useHandCursor: false });
-
-    const leftLabel = this.scene.add.text(0, 0, '◀', {
-      fontSize: '28px',
-      color: '#880e4f',
-      fontFamily: 'Nunito, sans-serif',
-    }).setOrigin(0.5);
-
-    const rightLabel = this.scene.add.text(0, 0, '▶', {
-      fontSize: '28px',
-      color: '#880e4f',
-      fontFamily: 'Nunito, sans-serif',
-    }).setOrigin(0.5);
-
-    const kissLabel = this.scene.add.text(0, 0, '♥', {
-      fontSize: '26px',
-      color: '#ffffff',
-      fontFamily: 'Nunito, sans-serif',
-    }).setOrigin(0.5);
-
-    const boostLabel = this.scene.add.text(0, 0, '✦', {
-      fontSize: '22px',
-      color: '#ad1457',
-      fontFamily: 'Nunito, sans-serif',
-    }).setOrigin(0.5);
-
-    const jumpLabel = this.scene.add.text(0, 0, '▲\n×2', {
-      fontSize: '22px',
-      color: '#ffffff',
-      fontFamily: 'Nunito, sans-serif',
-      align: 'center',
-      lineSpacing: -4,
-    }).setOrigin(0.5);
-
-    this.container.add([
-      this.leftBtn,
-      this.rightBtn,
-      this.kissBtn,
-      this.boostBtn,
-      this.jumpBtn,
-      leftLabel,
-      rightLabel,
-      kissLabel,
-      boostLabel,
-      jumpLabel,
-    ]);
-
-    this.bindLabel(this.leftBtn, leftLabel);
-    this.bindLabel(this.rightBtn, rightLabel);
-    this.bindLabel(this.kissBtn, kissLabel);
-    this.bindLabel(this.boostBtn, boostLabel);
-    this.bindLabel(this.jumpBtn, jumpLabel);
-  }
-
-  private bindLabel(btn: Phaser.GameObjects.Arc, label: Phaser.GameObjects.Text): void {
-    (btn as Phaser.GameObjects.Arc & { label?: Phaser.GameObjects.Text }).label = label;
+      this.container.add([btn, label]);
+      this.abilities.push({ id: def.id, btn, label, radius: def.radius });
+    });
   }
 
   private layout(): void {
     const w = this.scene.scale.width;
     const h = this.scene.scale.height;
-    const pad = GAME_CONFIG.safePadding + 12;
-    // Lift controls up so they sit over the playfield, not under browser chrome
-    const lift = Math.max(GAME_CONFIG.mobileControlsLift, h * 0.18);
-    const bottom = h - pad - lift;
+    const pad = GAME_CONFIG.safePadding;
+    const lift = Math.max(GAME_CONFIG.mobileControlsLift, h * 0.16);
+    const cfg = GAME_CONFIG.mobileWildRift;
 
-    this.leftBtn.setPosition(pad + 44, bottom);
-    this.rightBtn.setPosition(pad + 44 + 96, bottom);
-    this.kissBtn.setPosition(w - pad - 52 - 120, bottom);
-    this.boostBtn.setPosition(w - pad - 52 - 56, bottom - 4);
-    this.jumpBtn.setPosition(w - pad - 52, bottom - 4);
+    this.joystick.layout(w, h);
 
-    for (const btn of [this.leftBtn, this.rightBtn, this.kissBtn, this.boostBtn, this.jumpBtn]) {
-      const label = (btn as Phaser.GameObjects.Arc & { label?: Phaser.GameObjects.Text }).label;
-      label?.setPosition(btn.x, btn.y);
-    }
+    // Primary "attack" button — bottom-right (Wild Rift basic attack position)
+    const attackX = w - pad - cfg.attackInsetX;
+    const attackY = h - lift - cfg.attackInsetY;
+    const jump = this.abilities.find((a) => a.id === 'jump')!;
+    jump.btn.setPosition(attackX, attackY);
+    jump.label.setPosition(attackX, attackY);
+
+    // Ability arc fanning up-left from the attack button
+    const arc = cfg.abilityArc;
+    const arcButtons = this.abilities.filter((a) => a.id !== 'jump');
+    arcButtons.forEach((ability, i) => {
+      const slot = arc[i];
+      const rad = Phaser.Math.DegToRad(slot.angleDeg);
+      const x = attackX + Math.cos(rad) * slot.distance;
+      const y = attackY + Math.sin(rad) * slot.distance;
+      ability.btn.setPosition(x, y);
+      ability.label.setPosition(x, y);
+    });
   }
 
   private setupPointerHandlers(): void {
-    // Allow move + jump + kiss + boost at the same time
     this.scene.input.addPointer(3);
 
-    const hitTest = (x: number, y: number): TouchAction | null => {
-      const btns: { btn: Phaser.GameObjects.Arc; id: TouchAction }[] = [
-        { btn: this.leftBtn, id: 'left' },
-        { btn: this.rightBtn, id: 'right' },
-        { btn: this.kissBtn, id: 'kiss' },
-        { btn: this.boostBtn, id: 'boost' },
-        { btn: this.jumpBtn, id: 'jump' },
-      ];
-      for (const { btn, id } of btns) {
-        const dist = Phaser.Math.Distance.Between(x, y, btn.x, btn.y);
-        if (dist <= btn.radius) return id;
+    const hitAbility = (x: number, y: number): AbilityButton | null => {
+      // Test smallest buttons first so arc abilities win over jump when overlapping
+      const sorted = [...this.abilities].sort((a, b) => a.radius - b.radius);
+      for (const ability of sorted) {
+        const dist = Phaser.Math.Distance.Between(x, y, ability.btn.x, ability.btn.y);
+        if (dist <= ability.radius + 6) return ability;
       }
       return null;
     };
 
     const press = (pointer: Phaser.Input.Pointer) => {
-      const action = hitTest(pointer.x, pointer.y);
-      if (action) {
-        this.activePointers.set(pointer.id, action);
-        if (action === 'jump') {
-          this.jumpPressPending = true;
-        }
+      if (this.joystick.tryActivate(pointer)) {
         this.refreshInput();
-        this.highlightButton(action, true);
+        return;
       }
+
+      const ability = hitAbility(pointer.x, pointer.y);
+      if (!ability) return;
+
+      this.abilityPointers.set(pointer.id, ability.id);
+      if (ability.id === 'jump') this.jumpPressPending = true;
+      if (ability.id === 'kiss') this.kissPressPending = true;
+      this.highlightAbility(ability.id, true);
+      this.refreshInput();
+    };
+
+    const move = (pointer: Phaser.Input.Pointer) => {
+      this.joystick.updatePointer(pointer);
+      this.refreshInput();
     };
 
     const release = (pointer: Phaser.Input.Pointer) => {
-      const action = this.activePointers.get(pointer.id);
-      if (action) {
-        this.activePointers.delete(pointer.id);
-        this.highlightButton(action, false);
-        this.refreshInput();
+      this.joystick.releasePointer(pointer);
+      const abilityId = this.abilityPointers.get(pointer.id);
+      if (abilityId) {
+        this.abilityPointers.delete(pointer.id);
+        this.highlightAbility(abilityId, false);
       }
+      this.refreshInput();
     };
 
     this.scene.input.on('pointerdown', press);
+    this.scene.input.on('pointermove', move);
     this.scene.input.on('pointerup', release);
     this.scene.input.on('pointerupoutside', release);
     this.scene.input.on('pointercancel', release);
   }
 
-  private highlightButton(action: TouchAction, pressed: boolean): void {
-    const map = {
-      left: this.leftBtn,
-      right: this.rightBtn,
-      jump: this.jumpBtn,
-      kiss: this.kissBtn,
-      boost: this.boostBtn,
-    };
-    const btn = map[action];
-    const baseAlpha =
-      action === 'jump' || action === 'kiss' ? 0.45 : action === 'boost' ? 0.35 : 0.35;
-    btn.setAlpha(pressed ? 0.75 : baseAlpha);
-    btn.setScale(pressed ? 0.92 : 1);
+  private highlightAbility(id: AbilityId, pressed: boolean): void {
+    const ability = this.abilities.find((a) => a.id === id);
+    if (!ability) return;
+    ability.btn.setAlpha(pressed ? 0.92 : id === 'jump' ? 0.72 : 0.62);
+    ability.btn.setScale(pressed ? 0.93 : 1);
+    ability.label.setScale(pressed ? 0.93 : 1);
   }
 
   private refreshInput(): void {
-    this.input.left = false;
-    this.input.right = false;
+    const axis = this.joystick.getAxisX();
+    const deadzone = GAME_CONFIG.mobileWildRift.joystick.deadzone;
+
+    this.input.moveAxis = Math.abs(axis) > deadzone ? axis : 0;
+    this.input.left = this.input.moveAxis < -deadzone;
+    this.input.right = this.input.moveAxis > deadzone;
     this.input.jump = false;
     this.input.kiss = false;
     this.input.boost = false;
-    for (const action of this.activePointers.values()) {
-      this.input[action] = true;
+
+    for (const id of this.abilityPointers.values()) {
+      this.input[id] = true;
     }
   }
 
-  setVisible(visible: boolean): void {
-    this.container.setVisible(visible);
-  }
-
-  /** Returns true once per jump-button tap (supports double jump in air). */
   consumeJumpPress(): boolean {
     if (!this.jumpPressPending) return false;
     this.jumpPressPending = false;
     return true;
+  }
+
+  consumeKissPress(): boolean {
+    if (!this.kissPressPending) return false;
+    this.kissPressPending = false;
+    return true;
+  }
+
+  setVisible(visible: boolean): void {
+    this.container.setVisible(visible);
   }
 
   destroy(): void {

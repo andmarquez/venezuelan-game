@@ -78,20 +78,34 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
   updateMovement(
     cursors: Phaser.Types.Input.Keyboard.CursorKeys,
-    keys: { left: boolean; right: boolean; jump: boolean; highJump: boolean },
+    keys: {
+      left: boolean;
+      right: boolean;
+      jump: boolean;
+      highJump: boolean;
+      /** Wild Rift joystick axis −1..1 (overrides left/right when set) */
+      moveAxis?: number;
+    },
   ): void {
     if (this.isHurt || this.animState === 'victory') return;
 
     const onFloor = this.body?.blocked.down || this.body?.touching.down;
-    const left = cursors.left?.isDown || keys.left;
-    const right = cursors.right?.isDown || keys.right;
+    const axis = keys.moveAxis ?? 0;
+    const useAxis = Math.abs(axis) > 0.01;
+    const left = useAxis ? axis < 0 : cursors.left?.isDown || keys.left;
+    const right = useAxis ? axis > 0 : cursors.right?.isDown || keys.right;
     const jumpPressed = keys.jump;
 
     if (onFloor) {
       this.jumpsRemaining = GAME_CONFIG.maxJumps;
     }
 
-    if (left) {
+    if (useAxis) {
+      this.setVelocityX(axis * GAME_CONFIG.playerSpeed);
+      this.setFlipX(axis < 0);
+      this.facingRight = axis > 0;
+      if (onFloor) this.setAnimState(Math.abs(axis) > 0.2 ? 'run' : 'idle');
+    } else if (left) {
       this.setVelocityX(-GAME_CONFIG.playerSpeed);
       this.setFlipX(true);
       this.facingRight = false;
