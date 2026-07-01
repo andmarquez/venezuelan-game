@@ -31,7 +31,7 @@ const game = new Phaser.Game({
   },
   scene: [BootScene, MenuScene, GameScene, GameOverScene, WinScene],
   input: {
-    activePointers: 3,
+    activePointers: 4,
   },
   render: {
     pixelArt: false,

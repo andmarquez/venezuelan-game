@@ -14,7 +14,17 @@ export const GAME_CONFIG = {
   /** Player movement */
   playerSpeed: 280,
   playerJumpVelocity: -520,
+  /** Hold X + jump for an extra-high leap */
+  playerHighJumpVelocity: -700,
   playerBounce: 0.1,
+
+  /** Kiss blow attack */
+  kissBlowCooldownMs: 450,
+  kissProjectileSpeed: 420,
+  kissProjectileLifetimeMs: 900,
+
+  /** Bounce after stomping an enemy */
+  stompBounceVelocity: -340,
 
   /** Gravity (pixels per second²) */
   gravity: 1200,

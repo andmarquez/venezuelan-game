@@ -11,6 +11,8 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   private direction: 1 | -1 = 1;
   private patrolMin: number;
   private patrolMax: number;
+  private bobTween?: Phaser.Tweens.Tween;
+  private converted = false;
 
   constructor(
     scene: Phaser.Scene,
@@ -33,7 +35,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.setFlipX(this.direction === -1);
 
     // Gentle bob animation
-    scene.tweens.add({
+    this.bobTween = scene.tweens.add({
       targets: this,
       y: y - 4,
       duration: 600,
@@ -43,7 +45,50 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     });
   }
 
+  isConverted(): boolean {
+    return this.converted;
+  }
+
+  /** Turn this deadline bug into a floating heart and remove it from play. */
+  convertToHeart(onComplete?: () => void): void {
+    if (this.converted) return;
+    this.converted = true;
+    this.bobTween?.stop();
+    this.setVelocity(0, 0);
+    (this.body as Phaser.Physics.Arcade.Body).enable = false;
+
+    const scene = this.scene;
+    const heart = scene.add.text(this.x, this.y - 10, '♥', {
+      fontSize: '36px',
+      color: '#e91e63',
+    });
+    heart.setOrigin(0.5).setDepth(12);
+
+    scene.tweens.add({
+      targets: heart,
+      y: heart.y - 50,
+      scale: 1.6,
+      alpha: 0,
+      duration: 700,
+      ease: 'Cubic.easeOut',
+      onComplete: () => heart.destroy(),
+    });
+
+    scene.tweens.add({
+      targets: this,
+      scale: 0,
+      alpha: 0,
+      angle: 20,
+      duration: 280,
+      onComplete: () => {
+        this.destroy();
+        onComplete?.();
+      },
+    });
+  }
+
   update(): void {
+    if (this.converted) return;
     this.setVelocityX(this.direction * GAME_CONFIG.enemySpeed);
 
     if (this.x <= this.patrolMin) {

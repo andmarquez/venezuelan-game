@@ -77,7 +77,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
   updateMovement(
     cursors: Phaser.Types.Input.Keyboard.CursorKeys,
-    keys: { left: boolean; right: boolean; jump: boolean },
+    keys: { left: boolean; right: boolean; jump: boolean; highJump: boolean },
   ): void {
     if (this.isHurt || this.animState === 'victory') return;
 
@@ -102,7 +102,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     }
 
     if (jumpPressed && onFloor) {
-      this.setVelocityY(GAME_CONFIG.playerJumpVelocity);
+      const jumpPower = keys.highJump
+        ? GAME_CONFIG.playerHighJumpVelocity
+        : GAME_CONFIG.playerJumpVelocity;
+      this.setVelocityY(jumpPower);
       this.setAnimState('jump');
     }
 
@@ -147,5 +150,21 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
   isInvulnerable(): boolean {
     return this.isHurt;
+  }
+
+  /** Quick puff animation when blowing a kiss. */
+  playKissBlow(): void {
+    if (this.isHurt || this.animState === 'victory') return;
+    this.scene.tweens.add({
+      targets: this,
+      y: this.y - 4,
+      duration: 80,
+      yoyo: true,
+    });
+  }
+
+  stompBounce(): void {
+    this.setVelocityY(GAME_CONFIG.stompBounceVelocity);
+    this.setAnimState('jump');
   }
 }

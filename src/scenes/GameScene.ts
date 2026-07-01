@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { Player } from '../objects/Player';
 import { Enemy } from '../objects/Enemy';
 import { Collectible } from '../objects/Collectible';
+import { KissProjectile } from '../objects/KissProjectile';
 import { MobileControls } from '../ui/MobileControls';
 import {
   GAME_CONFIG,
@@ -71,7 +72,11 @@ export class GameScene extends Phaser.Scene {
   private keyA!: Phaser.Input.Keyboard.Key;
   private keyD!: Phaser.Input.Keyboard.Key;
   private keyW!: Phaser.Input.Keyboard.Key;
+  private keyX!: Phaser.Input.Keyboard.Key;
   private keySpace!: Phaser.Input.Keyboard.Key;
+  private kissProjectiles: KissProjectile[] = [];
+  private lastKissBlowTime = 0;
+  private kissWasDown = false;
 
   private stats: GameStats = createInitialStats();
   private hud!: Phaser.GameObjects.Container;
@@ -97,6 +102,7 @@ export class GameScene extends Phaser.Scene {
     this.gameEnded = false;
     this.enemies = [];
     this.collectibles = [];
+    this.kissProjectiles = [];
     this.parallaxLayers = [];
 
     this.physics.world.setBounds(0, 0, GAME_CONFIG.worldWidth, GAME_CONFIG.worldHeight);
@@ -292,9 +298,69 @@ export class GameScene extends Phaser.Scene {
 
     this.enemies.forEach((enemy) => {
       this.physics.add.overlap(this.player, enemy, () => {
-        this.handleEnemyHit();
+        this.handleEnemyContact(enemy);
       });
     });
+  }
+
+  private handleEnemyContact(enemy: Enemy): void {
+    if (!enemy.active || enemy.isConverted() || this.gameEnded) return;
+    if (this.player.isInvulnerable()) return;
+
+    const playerBody = this.player.body as Phaser.Physics.Arcade.Body;
+    const falling = playerBody.velocity.y > 0;
+    const stomping = falling && this.player.y < enemy.y - 8;
+
+    if (stomping) {
+      this.convertEnemyToHeart(enemy, true);
+      return;
+    }
+
+    this.handleEnemyHit();
+  }
+
+  private convertEnemyToHeart(enemy: Enemy, fromStomp = false): void {
+    if (!enemy.active || enemy.isConverted()) return;
+
+    if (fromStomp) {
+      this.player.stompBounce();
+    }
+
+    enemy.convertToHeart(() => {
+      this.enemies = this.enemies.filter((e) => e !== enemy);
+    });
+
+    this.stats.kisses += 1;
+    this.stats.score += GAME_CONFIG.kissScore;
+    this.updateHUD();
+
+    this.showFloatingMessage(fromStomp ? 'Stomped with love!' : 'Bug turned to heart!');
+  }
+
+  private blowKiss(): void {
+    if (this.gameEnded || this.player.isInvulnerable()) return;
+
+    const now = this.time.now;
+    if (now - this.lastKissBlowTime < GAME_CONFIG.kissBlowCooldownMs) return;
+    this.lastKissBlowTime = now;
+
+    const direction = this.player.getFacingRight() ? 1 : -1;
+    const offsetX = direction === 1 ? 28 : -28;
+    const projectile = new KissProjectile(
+      this,
+      this.player.x + offsetX,
+      this.player.y - 8,
+      direction,
+      (enemy, proj) => {
+        this.convertEnemyToHeart(enemy, false);
+        proj.destroy();
+        this.kissProjectiles = this.kissProjectiles.filter((p) => p !== proj);
+      },
+    );
+
+    projectile.registerEnemyOverlap(this.enemies);
+    this.kissProjectiles.push(projectile);
+    this.player.playKissBlow();
   }
 
   private handleCollectible(item: Collectible): void {
@@ -480,6 +546,7 @@ export class GameScene extends Phaser.Scene {
     this.keyA = this.input.keyboard.addKey('A');
     this.keyD = this.input.keyboard.addKey('D');
     this.keyW = this.input.keyboard.addKey('W');
+    this.keyX = this.input.keyboard.addKey('X');
     this.keySpace = this.input.keyboard.addKey('SPACE');
 
     const isTouch = this.sys.game.device.input.touch;
@@ -534,11 +601,12 @@ export class GameScene extends Phaser.Scene {
     }
     this.updateHUD();
 
-    const touch = this.mobileControls?.input ?? { left: false, right: false, jump: false };
-    const keys = {
-      left: this.keyA?.isDown ?? false,
-      right: this.keyD?.isDown ?? false,
+    const touch = this.mobileControls?.input ?? {
+      left: false,
+      right: false,
       jump: false,
+      kiss: false,
+      boost: false,
     };
 
     const jumpJustDown =
@@ -547,12 +615,24 @@ export class GameScene extends Phaser.Scene {
       Phaser.Input.Keyboard.JustDown(this.keySpace) ||
       (touch.jump && !this.jumpWasDown);
 
+    const kissJustDown =
+      Phaser.Input.Keyboard.JustDown(this.keyA) ||
+      (touch.kiss && !this.kissWasDown);
+
+    const highJumpHeld = this.keyX?.isDown || touch.boost;
+
     this.jumpWasDown = touch.jump;
+    this.kissWasDown = touch.kiss;
+
+    if (kissJustDown) {
+      this.blowKiss();
+    }
 
     this.player.updateMovement(this.cursors, {
-      left: (this.cursors.left?.isDown ?? false) || keys.left || touch.left,
-      right: (this.cursors.right?.isDown ?? false) || keys.right || touch.right,
+      left: (this.cursors.left?.isDown ?? false) || touch.left,
+      right: (this.cursors.right?.isDown ?? false) || (this.keyD?.isDown ?? false) || touch.right,
       jump: jumpJustDown,
+      highJump: highJumpHeld,
     });
 
     this.enemies.forEach((e) => e.update());

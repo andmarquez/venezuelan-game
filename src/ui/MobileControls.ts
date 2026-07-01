@@ -5,11 +5,17 @@ export type TouchInput = {
   left: boolean;
   right: boolean;
   jump: boolean;
+  /** Tap to blow a kiss projectile */
+  kiss: boolean;
+  /** Hold while jumping for a higher leap (like X on keyboard) */
+  boost: boolean;
 };
+
+type TouchAction = 'left' | 'right' | 'jump' | 'kiss' | 'boost';
 
 /**
  * MobileControls — large semi-transparent touch buttons for thumbs.
- * Supports multi-touch so move + jump work simultaneously.
+ * Supports multi-touch so move, jump, kiss, and boost work together.
  */
 export class MobileControls {
   private scene: Phaser.Scene;
@@ -17,8 +23,10 @@ export class MobileControls {
   private leftBtn!: Phaser.GameObjects.Arc;
   private rightBtn!: Phaser.GameObjects.Arc;
   private jumpBtn!: Phaser.GameObjects.Arc;
-  private activePointers = new Map<number, 'left' | 'right' | 'jump'>();
-  input: TouchInput = { left: false, right: false, jump: false };
+  private kissBtn!: Phaser.GameObjects.Arc;
+  private boostBtn!: Phaser.GameObjects.Arc;
+  private activePointers = new Map<number, TouchAction>();
+  input: TouchInput = { left: false, right: false, jump: false, kiss: false, boost: false };
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
@@ -46,6 +54,14 @@ export class MobileControls {
     this.rightBtn.setStrokeStyle(style.lineWidth, style.lineColor);
     this.rightBtn.setInteractive({ useHandCursor: false });
 
+    this.kissBtn = this.scene.add.circle(0, 0, 40, 0xf48fb1, 0.45);
+    this.kissBtn.setStrokeStyle(2, 0xe91e63);
+    this.kissBtn.setInteractive({ useHandCursor: false });
+
+    this.boostBtn = this.scene.add.circle(0, 0, 36, 0xffffff, 0.35);
+    this.boostBtn.setStrokeStyle(2, 0xad1457);
+    this.boostBtn.setInteractive({ useHandCursor: false });
+
     this.jumpBtn = this.scene.add.circle(0, 0, 52, 0xf48fb1, 0.45);
     this.jumpBtn.setStrokeStyle(2, 0xe91e63);
     this.jumpBtn.setInteractive({ useHandCursor: false });
@@ -62,6 +78,18 @@ export class MobileControls {
       fontFamily: 'Nunito, sans-serif',
     }).setOrigin(0.5);
 
+    const kissLabel = this.scene.add.text(0, 0, '♥', {
+      fontSize: '26px',
+      color: '#ffffff',
+      fontFamily: 'Nunito, sans-serif',
+    }).setOrigin(0.5);
+
+    const boostLabel = this.scene.add.text(0, 0, '✦', {
+      fontSize: '22px',
+      color: '#ad1457',
+      fontFamily: 'Nunito, sans-serif',
+    }).setOrigin(0.5);
+
     const jumpLabel = this.scene.add.text(0, 0, '▲', {
       fontSize: '32px',
       color: '#ffffff',
@@ -71,16 +99,25 @@ export class MobileControls {
     this.container.add([
       this.leftBtn,
       this.rightBtn,
+      this.kissBtn,
+      this.boostBtn,
       this.jumpBtn,
       leftLabel,
       rightLabel,
+      kissLabel,
+      boostLabel,
       jumpLabel,
     ]);
 
-    // Store label refs for layout
-    (this.leftBtn as Phaser.GameObjects.Arc & { label?: Phaser.GameObjects.Text }).label = leftLabel;
-    (this.rightBtn as Phaser.GameObjects.Arc & { label?: Phaser.GameObjects.Text }).label = rightLabel;
-    (this.jumpBtn as Phaser.GameObjects.Arc & { label?: Phaser.GameObjects.Text }).label = jumpLabel;
+    this.bindLabel(this.leftBtn, leftLabel);
+    this.bindLabel(this.rightBtn, rightLabel);
+    this.bindLabel(this.kissBtn, kissLabel);
+    this.bindLabel(this.boostBtn, boostLabel);
+    this.bindLabel(this.jumpBtn, jumpLabel);
+  }
+
+  private bindLabel(btn: Phaser.GameObjects.Arc, label: Phaser.GameObjects.Text): void {
+    (btn as Phaser.GameObjects.Arc & { label?: Phaser.GameObjects.Text }).label = label;
   }
 
   private layout(): void {
@@ -91,23 +128,26 @@ export class MobileControls {
 
     this.leftBtn.setPosition(pad + 44, bottom - 44);
     this.rightBtn.setPosition(pad + 44 + 96, bottom - 44);
+    this.kissBtn.setPosition(w - pad - 52 - 120, bottom - 44);
+    this.boostBtn.setPosition(w - pad - 52 - 56, bottom - 48);
     this.jumpBtn.setPosition(w - pad - 52, bottom - 52);
 
-    const lb = (this.leftBtn as Phaser.GameObjects.Arc & { label?: Phaser.GameObjects.Text }).label;
-    const rb = (this.rightBtn as Phaser.GameObjects.Arc & { label?: Phaser.GameObjects.Text }).label;
-    const jb = (this.jumpBtn as Phaser.GameObjects.Arc & { label?: Phaser.GameObjects.Text }).label;
-    lb?.setPosition(this.leftBtn.x, this.leftBtn.y);
-    rb?.setPosition(this.rightBtn.x, this.rightBtn.y);
-    jb?.setPosition(this.jumpBtn.x, this.jumpBtn.y);
+    for (const btn of [this.leftBtn, this.rightBtn, this.kissBtn, this.boostBtn, this.jumpBtn]) {
+      const label = (btn as Phaser.GameObjects.Arc & { label?: Phaser.GameObjects.Text }).label;
+      label?.setPosition(btn.x, btn.y);
+    }
   }
 
   private setupPointerHandlers(): void {
-    this.scene.input.addPointer(2);
+    // Allow move + jump + kiss + boost at the same time
+    this.scene.input.addPointer(3);
 
-    const hitTest = (x: number, y: number): 'left' | 'right' | 'jump' | null => {
-      const btns: { btn: Phaser.GameObjects.Arc; id: 'left' | 'right' | 'jump' }[] = [
+    const hitTest = (x: number, y: number): TouchAction | null => {
+      const btns: { btn: Phaser.GameObjects.Arc; id: TouchAction }[] = [
         { btn: this.leftBtn, id: 'left' },
         { btn: this.rightBtn, id: 'right' },
+        { btn: this.kissBtn, id: 'kiss' },
+        { btn: this.boostBtn, id: 'boost' },
         { btn: this.jumpBtn, id: 'jump' },
       ];
       for (const { btn, id } of btns) {
@@ -141,10 +181,18 @@ export class MobileControls {
     this.scene.input.on('pointercancel', release);
   }
 
-  private highlightButton(action: 'left' | 'right' | 'jump', pressed: boolean): void {
-    const map = { left: this.leftBtn, right: this.rightBtn, jump: this.jumpBtn };
+  private highlightButton(action: TouchAction, pressed: boolean): void {
+    const map = {
+      left: this.leftBtn,
+      right: this.rightBtn,
+      jump: this.jumpBtn,
+      kiss: this.kissBtn,
+      boost: this.boostBtn,
+    };
     const btn = map[action];
-    btn.setAlpha(pressed ? 0.7 : action === 'jump' ? 0.45 : 0.35);
+    const baseAlpha =
+      action === 'jump' || action === 'kiss' ? 0.45 : action === 'boost' ? 0.35 : 0.35;
+    btn.setAlpha(pressed ? 0.75 : baseAlpha);
     btn.setScale(pressed ? 0.92 : 1);
   }
 
@@ -152,6 +200,8 @@ export class MobileControls {
     this.input.left = false;
     this.input.right = false;
     this.input.jump = false;
+    this.input.kiss = false;
+    this.input.boost = false;
     for (const action of this.activePointers.values()) {
       this.input[action] = true;
     }
