@@ -3,6 +3,7 @@ import { GAME_CONFIG } from '../config/gameConfig';
 import { getUiViewport, pointerToUiSpace } from './viewportLayout';
 import { getMobileLayoutInsets } from './scaleMode';
 import { VirtualJoystick } from './VirtualJoystick';
+import { onViewportChange } from './viewportMetrics';
 
 export type TouchInput = {
   moveAxis: number;
@@ -35,6 +36,7 @@ export class MobileControls {
   private jumpPressPending = false;
   private kissPressPending = false;
   private controlScale = 1;
+  private offViewportChange?: () => void;
 
   input: TouchInput = {
     moveAxis: 0,
@@ -46,6 +48,7 @@ export class MobileControls {
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
+    this.scene.input.setTopOnly(false);
     this.container = scene.add
       .container(0, 0)
       .setScrollFactor(0)
@@ -56,6 +59,7 @@ export class MobileControls {
     this.setupPointerHandlers();
 
     scene.scale.on(Phaser.Scale.Events.RESIZE, this.layout, this);
+    this.offViewportChange = onViewportChange(() => this.layout());
     this.layout();
   }
 
@@ -73,10 +77,6 @@ export class MobileControls {
       const btn = this.scene.add.circle(0, 0, def.radius, fill, alpha);
       btn.setStrokeStyle(def.primary ? 3 : 2, stroke, def.primary ? 0.95 : 0.85);
       btn.setScrollFactor(0);
-      btn.setInteractive(
-        new Phaser.Geom.Circle(0, 0, def.radius + 8),
-        Phaser.Geom.Circle.Contains,
-      );
 
       const icon = this.scene.add.graphics();
       icon.setScrollFactor(0);
@@ -133,17 +133,19 @@ export class MobileControls {
 
   private setupPointerHandlers(): void {
     this.scene.input.addPointer(3);
+    const camera = this.scene.cameras.main;
+
     const hitAbility = (x: number, y: number): AbilityButton | null => {
       const sorted = [...this.abilities].sort((a, b) => a.radius - b.radius);
       for (const ability of sorted) {
         const dist = Phaser.Math.Distance.Between(x, y, ability.btn.x, ability.btn.y);
-        if (dist <= (ability.radius + 12) * this.controlScale) return ability;
+        if (dist <= (ability.radius + 16) * this.controlScale) return ability;
       }
       return null;
     };
 
     const press = (pointer: Phaser.Input.Pointer) => {
-      const ui = pointerToUiSpace(pointer);
+      const ui = pointerToUiSpace(pointer, camera);
 
       if (this.joystick.tryActivate(ui.x, ui.y, pointer)) {
         this.refreshInput();
@@ -161,7 +163,7 @@ export class MobileControls {
     };
 
     const move = (pointer: Phaser.Input.Pointer) => {
-      const ui = pointerToUiSpace(pointer);
+      const ui = pointerToUiSpace(pointer, camera);
       this.joystick.updatePointer(ui.x, ui.y, pointer);
       this.refreshInput();
     };
@@ -176,15 +178,27 @@ export class MobileControls {
       this.refreshInput();
     };
 
-    this.abilities.forEach((ability) => {
-      ability.btn.on('pointerdown', (p: Phaser.Input.Pointer) => press(p));
-    });
-
     this.scene.input.on('pointerdown', press);
     this.scene.input.on('pointermove', move);
     this.scene.input.on('pointerup', release);
     this.scene.input.on('pointerupoutside', release);
     this.scene.input.on('pointercancel', release);
+  }
+
+  /** Called each frame — clears ghost touches after iOS drops pointerup. */
+  update(): void {
+    this.joystick.releaseStalePointer();
+    for (const [pointerId] of [...this.abilityPointers]) {
+      const active = this.scene.input.manager.pointers.some(
+        (p) => p.id === pointerId && p.isDown,
+      );
+      if (!active) {
+        const abilityId = this.abilityPointers.get(pointerId);
+        if (abilityId) this.highlightAbility(abilityId, false);
+        this.abilityPointers.delete(pointerId);
+      }
+    }
+    this.refreshInput();
   }
 
   private highlightAbility(id: AbilityId, pressed: boolean): void {
@@ -228,6 +242,7 @@ export class MobileControls {
 
   destroy(): void {
     this.scene.scale.off(Phaser.Scale.Events.RESIZE, this.layout, this);
+    this.offViewportChange?.();
     this.container.destroy();
   }
 }

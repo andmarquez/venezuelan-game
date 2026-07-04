@@ -513,6 +513,8 @@ export class GameScene extends Phaser.Scene {
   update(_time: number, delta: number): void {
     if (this.gameEnded) return;
 
+    this.mobileControls?.update();
+
     // Countdown timer
     this.stats.timeRemaining -= delta / 1000;
     if (this.stats.timeRemaining <= 0) {

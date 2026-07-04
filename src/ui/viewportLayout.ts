@@ -33,7 +33,14 @@ export function getUiViewport(scale: Phaser.Scale.ScaleManager): UiViewport {
 }
 
 /** Map pointer to fixed UI coordinates (scrollFactor 0 HUD / controls). */
-export function pointerToUiSpace(pointer: Phaser.Input.Pointer): { x: number; y: number } {
-  // pointer.x/y are screen-space; scrollFactor-0 UI stays in screen space (not world + scroll).
-  return { x: pointer.x, y: pointer.y };
+export function pointerToUiSpace(
+  pointer: Phaser.Input.Pointer,
+  camera: Phaser.Cameras.Scene2D.Camera,
+): { x: number; y: number } {
+  // Fixed UI lives in viewport space — strip camera scroll from world coords.
+  pointer.updateWorldPoint(camera);
+  return {
+    x: pointer.worldX - camera.scrollX,
+    y: pointer.worldY - camera.scrollY,
+  };
 }

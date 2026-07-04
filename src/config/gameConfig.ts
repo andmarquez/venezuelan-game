@@ -81,21 +81,21 @@ export const GAME_CONFIG = {
    */
   /**
    * Wild Rift controls — anchors from Figma M02 gameplay zones (node 26:178).
-   * Joystick 13:16 center (126, 526), Jump 17:582 center (1155, 531).
+   * Joystick 13:16 center (97, 503), Jump 17:582 center (1194, 431), Kiss 17:583 (1094, 393).
    */
   mobileWildRift: {
     joystick: {
-      xRatio: 126 / 1280,
-      yRatio: 526 / 720,
+      xRatio: 97 / 1280,
+      yRatio: 503 / 720,
       baseRadius: 74,
       thumbRadius: 30,
       maxDrag: 52,
       deadzone: 0.18,
     },
-    jumpXRatio: 1155 / 1280,
-    jumpYRatio: 531 / 720,
-    kissXRatio: 1054 / 1280,
-    kissYRatio: 492 / 720,
+    jumpXRatio: 1194 / 1280,
+    jumpYRatio: 431 / 720,
+    kissXRatio: 1094 / 1280,
+    kissYRatio: 393 / 720,
     attackRadius: 56,
     abilityRadius: 44,
     /** Legacy arc offset — used when kissXRatio not applied */

@@ -7,6 +7,7 @@ import { type UiViewport } from './viewportLayout';
  * Wild Rift–style virtual joystick for movement (left thumb).
  */
 export class VirtualJoystick {
+  private scene: Phaser.Scene;
   private container: Phaser.GameObjects.Container;
   private base!: Phaser.GameObjects.Arc;
   private thumb!: Phaser.GameObjects.Arc;
@@ -19,6 +20,7 @@ export class VirtualJoystick {
   private hitScale = 1;
 
   constructor(scene: Phaser.Scene, parent: Phaser.GameObjects.Container) {
+    this.scene = scene;
     this.container = scene.add.container(0, 0);
     parent.add(this.container);
 
@@ -31,10 +33,6 @@ export class VirtualJoystick {
     this.base = scene.add.circle(0, 0, baseRadius, 0x0d1117, 0.42);
     this.base.setStrokeStyle(3, 0xc9a96e, 0.55);
     this.base.setScrollFactor(0);
-    this.base.setInteractive(
-      new Phaser.Geom.Circle(0, 0, baseRadius + 32),
-      Phaser.Geom.Circle.Contains,
-    );
 
     this.thumb = scene.add.circle(0, 0, thumbRadius, 0x1a2332, 0.75);
     this.thumb.setStrokeStyle(2, 0xf5f0e1, 0.85);
@@ -59,10 +57,13 @@ export class VirtualJoystick {
   }
 
   tryActivate(uiX: number, uiY: number, pointer: Phaser.Input.Pointer): boolean {
+    this.releaseStalePointer();
+
     if (this.pointerId !== null) return false;
+
     const cfg = GAME_CONFIG.mobileWildRift.joystick;
     const dist = Phaser.Math.Distance.Between(uiX, uiY, this.centerX, this.centerY);
-    if (dist > (cfg.baseRadius + 32) * this.hitScale) return false;
+    if (dist > (cfg.baseRadius + 40) * this.hitScale) return false;
 
     this.pointerId = pointer.id;
     this.updateThumb(uiX, uiY);
@@ -77,14 +78,27 @@ export class VirtualJoystick {
 
   releasePointer(pointer: Phaser.Input.Pointer): void {
     if (pointer.id !== this.pointerId) return;
-    this.pointerId = null;
-    this.axisX = 0;
-    this.resetThumb();
-    this.highlight(false);
+    this.clearPointer();
+  }
+
+  /** Recover when Safari drops pointerup while the camera scrolls. */
+  releaseStalePointer(): void {
+    if (this.pointerId === null) return;
+    const active = this.scene.input.manager.pointers.some(
+      (p) => p.id === this.pointerId && p.isDown,
+    );
+    if (!active) this.clearPointer();
   }
 
   getAxisX(): number {
     return this.axisX;
+  }
+
+  private clearPointer(): void {
+    this.pointerId = null;
+    this.axisX = 0;
+    this.resetThumb();
+    this.highlight(false);
   }
 
   private updateThumb(x: number, y: number): void {
