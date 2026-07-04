@@ -20,6 +20,14 @@
   },
   "platforms": [
     {
+      "name": "ground_floor",
+      "x": 0,
+      "y": 666,
+      "width": 5336,
+      "height": 56,
+      "type": "platform"
+    },
+    {
       "name": "platform_start",
       "x": 0,
       "y": 584,
@@ -48,7 +56,7 @@
       "x": 996,
       "y": 556,
       "width": 391,
-      "height": 20,
+      "height": 113,
       "type": "platform"
     },
     {
@@ -64,7 +72,7 @@
       "x": 1472,
       "y": 596,
       "width": 246,
-      "height": 20,
+      "height": 73,
       "type": "platform"
     },
     {
@@ -72,7 +80,7 @@
       "x": 1860,
       "y": 486,
       "width": 98,
-      "height": 20,
+      "height": 69,
       "type": "platform"
     },
     {
@@ -80,7 +88,7 @@
       "x": 1791,
       "y": 555,
       "width": 314,
-      "height": 20,
+      "height": 114,
       "type": "platform"
     },
     {
@@ -88,7 +96,7 @@
       "x": 2105,
       "y": 583,
       "width": 465,
-      "height": 20,
+      "height": 86,
       "type": "platform"
     },
     {
@@ -102,25 +110,25 @@
     {
       "name": "platform_05",
       "x": 2717,
-      "y": 676,
+      "y": 586,
       "width": 1410,
-      "height": 20,
+      "height": 83,
       "type": "platform"
     },
     {
       "name": "floating_platform_06",
-      "x": 4138,
+      "x": 4163,
       "y": 497,
       "width": 90,
-      "height": 20,
+      "height": 69,
       "type": "platform"
     },
     {
       "name": "platform_06",
       "x": 4127,
-      "y": 656,
+      "y": 566,
       "width": 386,
-      "height": 20,
+      "height": 103,
       "type": "platform"
     },
     {
@@ -133,16 +141,16 @@
     },
     {
       "name": "platform_07",
-      "x": 4500,
-      "y": 676,
-      "width": 317,
-      "height": 20,
+      "x": 4513,
+      "y": 598,
+      "width": 304,
+      "height": 71,
       "type": "platform"
     },
     {
       "name": "floating_platform_08",
-      "x": 4788,
-      "y": 578,
+      "x": 4748,
+      "y": 478,
       "width": 195,
       "height": 20,
       "type": "platform"
@@ -158,8 +166,8 @@
   ],
   "markers": {
     "player_spawn": {
-      "x": 198,
-      "y": 564
+      "x": 231,
+      "y": 469
     },
     "portal_goal": {
       "x": 5289,
@@ -171,26 +179,38 @@
         "y": 512
       },
       {
-        "x": 427,
-        "y": 340
+        "x": 431,
+        "y": 441
       },
       {
-        "x": 762,
-        "y": 282
+        "x": 667,
+        "y": 417
+      },
+      {
+        "x": 168,
+        "y": 643
+      },
+      {
+        "x": 398,
+        "y": 643
+      },
+      {
+        "x": 722,
+        "y": 643
       }
     ],
     "timer_collectibles": [
       {
-        "x": 864,
-        "y": 284
+        "x": 811,
+        "y": 487
       }
     ],
     "enemies": [
       {
         "x": 520,
         "y": 526,
-        "min": 200,
-        "max": 820
+        "min": 120,
+        "max": 900
       }
     ]
   }

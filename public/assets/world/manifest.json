@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-07-04T06:49:30.642Z",
+  "generatedAt": "2026-07-04T15:03:00.217Z",
   "figmaFileKey": "1zlB4dA4ktyuuBXzseo1ix",
   "figmaFileUrl": "https://www.figma.com/design/1zlB4dA4ktyuuBXzseo1ix",
-  "version": 3,
+  "version": 4,
   "backgrounds": {
     "level-1-mobile": {
       "key": "world:level-1-background",
@@ -23,6 +23,6 @@
     "level": "level-1",
     "width": 5335,
     "height": 720,
-    "platformCount": 17
+    "platformCount": 18
   }
 }
