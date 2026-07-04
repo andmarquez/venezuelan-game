@@ -1,6 +1,6 @@
 {
   "level": "level-1",
-  "figmaArtboard": "M02 — Gameplay (Level 1)",
+  "figmaArtboard": "D02 — Gameplay",
   "figmaNodeId": "13:2",
   "width": 8553,
   "height": 720,
@@ -526,5 +526,5 @@
       }
     ]
   },
-  "variant": "mobile"
+  "variant": "desktop"
 }

@@ -15,7 +15,8 @@ export class BootScene extends Phaser.Scene {
 
   preload(): void {
     this.load.json('world-manifest', '/assets/world/manifest.json');
-    this.load.json('level-1-layout', '/assets/world/level-1/layout.json');
+    this.load.json('level-1-layout-mobile', '/assets/world/level-1/layout-mobile.json');
+    this.load.json('level-1-layout-desktop', '/assets/world/level-1/layout-desktop.json');
   }
 
   create(): void {

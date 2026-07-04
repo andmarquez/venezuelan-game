@@ -12,6 +12,9 @@ import {
 } from '../config/gameConfig';
 import { WorldBuilder } from '../world/WorldBuilder';
 import type { LevelLayout, WorldManifest } from '../world/worldTypes';
+import { figmaFrameToFoot, getLevelLayoutCacheKey, isDebugMode } from '../world/layoutUtils';
+import { depthFromFootY, WORLD_LAYERS } from '../world/layerConfig';
+import type { SurfaceSegment } from '../world/TerrainSurface';
 
 /**
  * GameScene — main Level 1 gameplay.
@@ -45,6 +48,9 @@ export class GameScene extends Phaser.Scene {
   private portalMessage?: Phaser.GameObjects.Text;
   private gameEnded = false;
   private levelLayout!: LevelLayout;
+  private surfaceSegments: SurfaceSegment[] = [];
+  private toggleDebug?: () => void;
+  private keyDebug!: Phaser.Input.Keyboard.Key;
 
   constructor() {
     super({ key: 'GameScene' });
@@ -57,16 +63,19 @@ export class GameScene extends Phaser.Scene {
     this.collectibles = [];
     this.kissProjectiles = [];
 
-    this.levelLayout = this.cache.json.get('level-1-layout') as LevelLayout;
+    this.levelLayout = this.cache.json.get(getLevelLayoutCacheKey(this.game)) as LevelLayout;
     const worldW = this.levelLayout?.width ?? GAME_CONFIG.worldWidth;
     const worldManifest = (this.registry.get('worldManifest') as WorldManifest | null) ?? null;
+    const debug = isDebugMode();
 
     this.physics.world.setBounds(0, 0, worldW, GAME_CONFIG.worldHeight);
     this.cameras.main.setBounds(0, 0, worldW, GAME_CONFIG.worldHeight);
     this.cameras.main.setBackgroundColor('#b8e0f5');
 
-    const world = WorldBuilder.build(this, this.levelLayout, worldManifest);
+    const world = WorldBuilder.build(this, this.levelLayout, worldManifest, { debug });
     this.platforms = world.platforms;
+    this.surfaceSegments = world.surfaceSegments;
+    this.toggleDebug = world.toggleDebug;
     this.createPlayer();
     this.createCollectibles();
     this.createEnemies();
@@ -76,13 +85,25 @@ export class GameScene extends Phaser.Scene {
     this.setupInput();
     this.createPortraitOverlay();
 
+    const isMobile = shouldShowMobileControls(this.game);
     this.cameras.main.startFollow(this.player, true, GAME_CONFIG.cameraLerp, GAME_CONFIG.cameraLerp);
-    this.cameras.main.setDeadzone(200, 100);
+    this.cameras.main.setDeadzone(isMobile ? 100 : 200, isMobile ? 70 : 100);
   }
 
   private createPlayer(): void {
-    const { x, y } = this.levelLayout.gameplay.playerStart;
-    this.player = new Player(this, x, y);
+    const start = this.levelLayout.gameplay.playerStart;
+    let footX = start.x;
+    let footY = start.y;
+
+    if (start.figmaOrigin === 'topLeft' || (start.width && start.height)) {
+      const foot = figmaFrameToFoot(start.x, start.y, start.width ?? 48, start.height ?? 64);
+      footX = foot.x;
+      footY = foot.y;
+    }
+
+    const snapped = WorldBuilder.snapFootToSurface(footX, footY, this.surfaceSegments, 64);
+    this.player = new Player(this, snapped.x, snapped.y);
+    this.player.setDepth(depthFromFootY(snapped.y, WORLD_LAYERS.player));
   }
 
   private createCollectibles(): void {
@@ -400,6 +421,7 @@ export class GameScene extends Phaser.Scene {
     this.keyW = this.input.keyboard.addKey('W');
     this.keyX = this.input.keyboard.addKey('X');
     this.keySpace = this.input.keyboard.addKey('SPACE');
+    this.keyDebug = this.input.keyboard.addKey('H');
 
     const showTouch = shouldShowMobileControls(this.game);
     if (showTouch) {
@@ -478,6 +500,10 @@ export class GameScene extends Phaser.Scene {
       this.blowKiss();
     }
 
+    if (Phaser.Input.Keyboard.JustDown(this.keyDebug)) {
+      this.toggleDebug?.();
+    }
+
     this.player.updateMovement(this.cursors, {
       left: (this.cursors.left?.isDown ?? false) || touch.left,
       right: (this.cursors.right?.isDown ?? false) || (this.keyD?.isDown ?? false) || touch.right,
@@ -487,6 +513,8 @@ export class GameScene extends Phaser.Scene {
     });
 
     this.enemies.forEach((e) => e.update());
+
+    this.player.setDepth(depthFromFootY(this.player.y, WORLD_LAYERS.player));
 
     if (this.player.y > GAME_CONFIG.worldHeight + 50) {
       this.endGame('fall');

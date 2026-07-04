@@ -6,6 +6,8 @@ export type GroundSegment = {
   y: number;
   width: number;
   height: number;
+  /** Optional explicit walk surface Y (Figma top-left space). Defaults to near-bottom of rect. */
+  surfaceY?: number;
 };
 
 export type WorldPlacement = {
@@ -18,7 +20,13 @@ export type WorldPlacement = {
 };
 
 export type LevelGameplay = {
-  playerStart: { x: number; y: number };
+  playerStart: {
+    x: number;
+    y: number;
+    width?: number;
+    height?: number;
+    figmaOrigin?: 'topLeft' | 'foot';
+  };
   portal: { x: number; y: number };
   kisses: [number, number][];
   timers: [number, number][];
@@ -27,6 +35,7 @@ export type LevelGameplay = {
 
 export type LevelLayout = {
   level: string;
+  variant: 'mobile' | 'desktop';
   figmaArtboard: string;
   figmaNodeId: string;
   width: number;

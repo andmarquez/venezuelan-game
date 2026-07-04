@@ -21,7 +21,9 @@ After you move or edit world components on **M02 — Gameplay (Level 1)**:
 | `public/assets/world/level-1/layout.json` | Positions + gameplay markers from M02 |
 | `public/assets/world/manifest.json` | Runtime index (auto-generated) |
 
-Phaser loads textures as `world:{assetKey}` (e.g. `world:blocks-1`). Missing files use colored placeholders.
+## Debug collision overlays
+
+Add `?debug=1` to the URL or press **H** during gameplay to toggle green collision slabs on terrain surfaces.
 
 ## Figma UI screens
 

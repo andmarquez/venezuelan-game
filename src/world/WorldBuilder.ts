@@ -1,67 +1,135 @@
 import Phaser from 'phaser';
 import { GAME_CONFIG } from '../config/gameConfig';
+import {
+  depthFromFootY,
+  getAssetRole,
+  isPlayableTerrain,
+  layerForRole,
+  WORLD_LAYERS,
+} from './layerConfig';
+import { TerrainSurface, type SurfaceSegment } from './TerrainSurface';
 import type { LevelLayout, WorldManifest, WorldPlacement } from './worldTypes';
 import { worldTextureKey } from './worldTypes';
 
-const CATEGORY_DEPTH: Record<string, number> = {
-  parallax: -15,
-  water: -8,
-  island: -4,
-  ground: 0,
-  platform: 2,
-  foliage: 4,
-  prop: 5,
-  character: 6,
+export type WorldBuildOptions = {
+  debug?: boolean;
 };
 
-const PARALLAX_KEYS = new Set(['bridge', 'm', 'm-1', 'm-2', 'm-3', 't-1', 't-2', 'island', 'c-1', 'c-2']);
-const PLATFORM_KEYS = new Set(['blocks-1', 'blocks-2']);
-
-type BuildResult = {
+export type BuildResult = {
   platforms: Phaser.Physics.Arcade.StaticGroup;
   layout: LevelLayout;
+  surfaceSegments: SurfaceSegment[];
+  toggleDebug: () => void;
 };
 
-/**
- * Builds Level 1 from Figma layout + exported component PNGs.
- * Missing textures fall back to colored placeholders so the game still runs.
- */
 export class WorldBuilder {
-  static build(scene: Phaser.Scene, layout: LevelLayout, manifest: WorldManifest | null): BuildResult {
+  static build(
+    scene: Phaser.Scene,
+    layout: LevelLayout,
+    manifest: WorldManifest | null,
+    options: WorldBuildOptions = {},
+  ): BuildResult {
     const platforms = scene.physics.add.staticGroup();
     const metaByKey = manifest?.textures ?? {};
+    const allSegments: SurfaceSegment[] = [];
+    const debugGraphics: Phaser.GameObjects.Graphics[] = [];
+    let debugVisible = options.debug ?? false;
 
     WorldBuilder.createSky(scene, layout.width);
 
-    const sorted = [...layout.placements].sort(
-      (a, b) => (CATEGORY_DEPTH[metaByKey[a.assetKey]?.category ?? 'prop'] ?? 5) -
-        (CATEGORY_DEPTH[metaByKey[b.assetKey]?.category ?? 'prop'] ?? 5),
-    );
+    const buckets: Record<string, WorldPlacement[]> = {
+      background: [],
+      water: [],
+      terrain: [],
+      foreground: [],
+      decoration: [],
+    };
 
-    for (const placement of sorted) {
-      const meta = metaByKey[placement.assetKey];
-      const category = meta?.category ?? 'prop';
-
-      if (PLATFORM_KEYS.has(placement.assetKey)) {
-        WorldBuilder.addPlatformCollider(platforms, placement, meta?.category ?? 'platform');
-        WorldBuilder.spawnSprite(scene, placement, category, meta?.scrollFactor);
-        continue;
-      }
-
-      if (PARALLAX_KEYS.has(placement.assetKey)) {
-        WorldBuilder.spawnSprite(scene, placement, 'parallax', meta?.scrollFactor ?? 0.3);
-        continue;
-      }
-
-      WorldBuilder.spawnSprite(scene, placement, category, meta?.scrollFactor);
+    for (const p of layout.placements) {
+      const role = getAssetRole(p.assetKey, metaByKey[p.assetKey]?.category);
+      buckets[role].push(p);
     }
+
+    const drawPass = (role: keyof typeof buckets, scrollOverride?: number) => {
+      for (const placement of buckets[role]) {
+        const meta = metaByKey[placement.assetKey];
+        const scroll =
+          role === 'background' ? (meta?.scrollFactor ?? scrollOverride ?? 0.28) : 1;
+
+        if (isPlayableTerrain(placement.assetKey, meta?.category)) {
+          const segments = TerrainSurface.buildSegments(scene, placement.assetKey, placement, {
+            columnStep: placement.assetKey.startsWith('blocks') ? 8 : 5,
+            bodyHeight: 12,
+          });
+          allSegments.push(...segments);
+          WorldBuilder.addSegmentsToPhysics(platforms, segments);
+          if (debugVisible) {
+            debugGraphics.push(WorldBuilder.drawDebugSegments(scene, segments));
+          }
+        }
+
+        WorldBuilder.spawnSprite(scene, placement, role as import('./layerConfig').AssetRole, scroll);
+      }
+    };
+
+    drawPass('background');
+    drawPass('water');
 
     for (const ground of layout.ground) {
-      WorldBuilder.addGroundCollider(platforms, ground);
-      WorldBuilder.drawGroundStrip(scene, ground);
+      const walkY = ground.surfaceY ?? ground.y + ground.height - 56;
+      const segments = TerrainSurface.flatTopSegment(
+        { x: ground.x, y: walkY - 4, width: ground.width, height: 8 },
+        16,
+        0,
+      );
+      allSegments.push(...segments);
+      WorldBuilder.addSegmentsToPhysics(platforms, segments);
+      if (debugVisible) {
+        debugGraphics.push(WorldBuilder.drawDebugSegments(scene, segments, 0x4caf50));
+      }
     }
 
-    return { platforms, layout };
+    drawPass('terrain');
+    drawPass('foreground');
+    drawPass('decoration');
+
+    const toggleDebug = () => {
+      debugVisible = !debugVisible;
+      if (debugVisible && debugGraphics.length === 0) {
+        for (const seg of allSegments) {
+          debugGraphics.push(WorldBuilder.drawDebugSegments(scene, [seg]));
+        }
+      }
+      debugGraphics.forEach((g) => g.setVisible(debugVisible));
+    };
+
+    if (debugVisible) {
+      scene.add
+        .text(16, layout.height - 36, 'DEBUG: collision surfaces (H to toggle, ?debug=1)', {
+          fontSize: '14px',
+          fontFamily: 'Nunito, sans-serif',
+          color: '#1b5e20',
+          backgroundColor: '#ffffffcc',
+          padding: { x: 8, y: 4 },
+        })
+        .setScrollFactor(0)
+        .setDepth(WORLD_LAYERS.debug);
+    }
+
+    return { platforms, layout, surfaceSegments: allSegments, toggleDebug };
+  }
+
+  static snapFootToSurface(
+    footX: number,
+    footY: number,
+    segments: SurfaceSegment[],
+    playerHeight = 64,
+  ): { x: number; y: number } {
+    const surfaceY = TerrainSurface.findSurfaceYAtX(segments, footX, footY);
+    if (surfaceY !== null) {
+      return { x: footX, y: surfaceY };
+    }
+    return { x: footX, y: footY - playerHeight };
   }
 
   private static createSky(scene: Phaser.Scene, worldW: number): void {
@@ -76,94 +144,76 @@ export class WorldBuilder {
     );
     sky.fillRect(0, 0, worldW, h);
     sky.setScrollFactor(0);
-    sky.setDepth(-20);
+    sky.setDepth(WORLD_LAYERS.sky);
   }
 
   private static spawnSprite(
     scene: Phaser.Scene,
     placement: WorldPlacement,
-    category: string,
-    scrollFactor = 1,
-  ): Phaser.GameObjects.GameObject | null {
+    role: ReturnType<typeof getAssetRole>,
+    scrollFactor: number,
+  ): Phaser.GameObjects.GameObject {
     const key = worldTextureKey(placement.assetKey);
     const cx = placement.x + placement.width / 2;
+    const footY = placement.y + placement.height;
     const cy = placement.y + placement.height / 2;
-    const depth = CATEGORY_DEPTH[category] ?? 5;
-    const factor = category === 'parallax' ? scrollFactor : 1;
+    const baseLayer = layerForRole(role);
+    const depth = role === 'terrain' || role === 'foreground'
+      ? depthFromFootY(footY, baseLayer)
+      : baseLayer;
 
     if (scene.textures.exists(key)) {
       const sprite = scene.add.image(cx, cy, key);
       sprite.setDisplaySize(placement.width, placement.height);
       sprite.setDepth(depth);
-      sprite.setScrollFactor(factor);
+      sprite.setScrollFactor(scrollFactor);
       return sprite;
     }
 
-    const alpha = category === 'parallax' ? 0.35 : 0.55;
-    const color =
-      category === 'water' ? 0x81d4fa :
-      category === 'foliage' ? 0x66bb6a :
-      category === 'island' ? 0xffcc80 :
-      category === 'platform' ? GAME_CONFIG.colors.platform :
-      0xc5cae9;
+    if (role === 'terrain') {
+      const placeholder = scene.add.rectangle(cx, cy, placement.width, placement.height, 0xffab91, 0.4);
+      placeholder.setDepth(depth);
+      return placeholder;
+    }
 
+    const alpha = role === 'background' ? 0.25 : 0.45;
+    const color = role === 'water' ? 0x81d4fa : 0xc5cae9;
     const placeholder = scene.add.rectangle(cx, cy, placement.width, placement.height, color, alpha);
     placeholder.setDepth(depth);
-    placeholder.setScrollFactor(factor);
+    placeholder.setScrollFactor(scrollFactor);
     return placeholder;
   }
 
-  private static addGroundCollider(
+  private static addSegmentsToPhysics(
     platforms: Phaser.Physics.Arcade.StaticGroup,
-    ground: { x: number; y: number; width: number; height: number },
+    segments: SurfaceSegment[],
   ): void {
-    const topY = ground.y;
-    const bodyH = 24;
-    const centerX = ground.x + ground.width / 2;
-    const centerY = topY + bodyH / 2;
-
-    const body = platforms.create(centerX, centerY, 'platform-tile') as Phaser.Physics.Arcade.Sprite;
-    body.setDisplaySize(ground.width, bodyH);
-    body.setVisible(false);
-    body.refreshBody();
-    body.setDepth(1);
+    for (const seg of segments) {
+      const body = platforms.create(
+        seg.x,
+        seg.y + seg.height / 2,
+        'platform-tile',
+      ) as Phaser.Physics.Arcade.Sprite;
+      body.setDisplaySize(seg.width, seg.height);
+      body.setVisible(false);
+      body.refreshBody();
+    }
   }
 
-  private static drawGroundStrip(
+  private static drawDebugSegments(
     scene: Phaser.Scene,
-    ground: { x: number; y: number; width: number; height: number },
-  ): void {
-    const cx = ground.x + ground.width / 2;
-    const cy = ground.y + ground.height / 2;
-    const strip = scene.add.rectangle(cx, cy, ground.width, ground.height, GAME_CONFIG.colors.ground, 0.92);
-    strip.setDepth(0);
-    strip.setStrokeStyle(2, GAME_CONFIG.colors.groundTop, 0.5);
+    segments: SurfaceSegment[],
+    color = 0x00e676,
+  ): Phaser.GameObjects.Graphics {
+    const g = scene.add.graphics();
+    g.setDepth(WORLD_LAYERS.debug);
 
-    const grass = scene.add.rectangle(
-      cx,
-      ground.y + 6,
-      ground.width,
-      10,
-      GAME_CONFIG.colors.groundTop,
-      0.9,
-    );
-    grass.setDepth(1);
-  }
-
-  private static addPlatformCollider(
-    platforms: Phaser.Physics.Arcade.StaticGroup,
-    placement: WorldPlacement,
-    category: string,
-  ): void {
-    const topY = placement.y;
-    const bodyH = Math.min(placement.height, 20);
-    const cx = placement.x + placement.width / 2;
-    const cy = topY + bodyH / 2;
-
-    const body = platforms.create(cx, cy, 'platform-tile') as Phaser.Physics.Arcade.Sprite;
-    body.setDisplaySize(placement.width, bodyH);
-    body.setVisible(false);
-    body.refreshBody();
-    body.setDepth(CATEGORY_DEPTH[category] ?? 2);
+    for (const seg of segments) {
+      g.fillStyle(color, 0.45);
+      g.fillRect(seg.x - seg.width / 2, seg.y, seg.width, seg.height);
+      g.lineStyle(2, color, 0.9);
+      g.strokeRect(seg.x - seg.width / 2, seg.y, seg.width, seg.height);
+    }
+    return g;
   }
 }
