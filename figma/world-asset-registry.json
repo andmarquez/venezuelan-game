@@ -1,47 +1,19 @@
 {
-  "$schema": "./world-asset-registry.schema.json",
   "figmaFileKey": "1zlB4dA4ktyuuBXzseo1ix",
   "figmaFileUrl": "https://www.figma.com/design/1zlB4dA4ktyuuBXzseo1ix",
-  "sourceArtboards": {
-    "mobile": "M02 — Gameplay (Level 1)",
-    "desktop": "D02 — Gameplay"
-  },
-  "version": 1,
-  "components": [
-    { "assetKey": "blocks-1", "figmaName": "Blocks-1", "figmaNodeId": "17:298", "category": "platform", "file": "components/blocks-1.png", "collider": true },
-    { "assetKey": "blocks-2", "figmaName": "Blocks-2", "figmaNodeId": "17:335", "category": "platform", "file": "components/blocks-2.png", "collider": true },
-    { "assetKey": "bridge", "figmaName": "bridge", "figmaNodeId": "17:483", "category": "parallax", "file": "components/bridge.png", "scrollFactor": 0.3 },
-    { "assetKey": "m", "figmaName": "m", "figmaNodeId": "17:547", "category": "parallax", "file": "components/m.png", "scrollFactor": 0.25 },
-    { "assetKey": "m-1", "figmaName": "m-1", "figmaNodeId": "17:546", "category": "parallax", "file": "components/m-1.png", "scrollFactor": 0.25 },
-    { "assetKey": "m-2", "figmaName": "m-2", "figmaNodeId": "17:548", "category": "parallax", "file": "components/m-2.png", "scrollFactor": 0.25 },
-    { "assetKey": "m-3", "figmaName": "m-3", "figmaNodeId": "17:549", "category": "parallax", "file": "components/m-3.png", "scrollFactor": 0.25 },
-    { "assetKey": "t-1", "figmaName": "t-1", "figmaNodeId": "17:539", "category": "parallax", "file": "components/t-1.png", "scrollFactor": 0.3 },
-    { "assetKey": "t-2", "figmaName": "t-2", "figmaNodeId": "17:540", "category": "parallax", "file": "components/t-2.png", "scrollFactor": 0.3 },
-    { "assetKey": "island", "figmaName": "island", "figmaNodeId": "17:506", "category": "parallax", "file": "components/island.png", "scrollFactor": 0.3 },
-    { "assetKey": "c-1", "figmaName": "c-1", "figmaNodeId": "17:515", "category": "parallax", "file": "components/c-1.png", "scrollFactor": 0.35 },
-    { "assetKey": "c-2", "figmaName": "c-2", "figmaNodeId": "17:516", "category": "parallax", "file": "components/c-2.png", "scrollFactor": 0.35 },
-    { "assetKey": "waves", "figmaName": "waves", "figmaNodeId": "17:514", "category": "water", "file": "components/waves.png" },
-    { "assetKey": "waves-2", "figmaName": "waves-2", "figmaNodeId": "17:575", "category": "water", "file": "components/waves-2.png" },
-    { "assetKey": "i-2", "figmaName": "i-2", "figmaNodeId": "17:480", "category": "terrain", "file": "components/i-2.png", "collider": true },
-    { "assetKey": "i-3", "figmaName": "i-3", "figmaNodeId": "17:481", "category": "terrain", "file": "components/i-3.png", "collider": true },
-    { "assetKey": "i-4", "figmaName": "i-4", "figmaNodeId": "17:484", "category": "terrain", "file": "components/i-4.png", "collider": true },
-    { "assetKey": "i-5", "figmaName": "i-5", "figmaNodeId": "17:487", "category": "terrain", "file": "components/i-5.png", "collider": true },
-    { "assetKey": "i-6", "figmaName": "i-6", "figmaNodeId": "17:486", "category": "terrain", "file": "components/i-6.png", "collider": true },
-    { "assetKey": "i-7", "figmaName": "i-7", "figmaNodeId": "17:488", "category": "terrain", "file": "components/i-7.png", "collider": true },
-    { "assetKey": "i-8", "figmaName": "i-8", "figmaNodeId": "17:491", "category": "terrain", "file": "components/i-8.png", "collider": true },
-    { "assetKey": "i-9", "figmaName": "i-9", "figmaNodeId": "17:494", "category": "terrain", "file": "components/i-9.png", "collider": true },
-    { "assetKey": "i-10", "figmaName": "i-10", "figmaNodeId": "17:510", "category": "terrain", "file": "components/i-10.png", "collider": true },
-    { "assetKey": "g", "figmaName": "g", "figmaNodeId": "17:485", "category": "foliage", "file": "components/g.png" },
-    { "assetKey": "g-1", "figmaName": "g-1", "figmaNodeId": "17:479", "category": "foliage", "file": "components/g-1.png" },
-    { "assetKey": "g-2", "figmaName": "g-2", "figmaNodeId": "17:489", "category": "foliage", "file": "components/g-2.png" },
-    { "assetKey": "g-3", "figmaName": "g-3", "figmaNodeId": "17:490", "category": "foliage", "file": "components/g-3.png" },
-    { "assetKey": "g-4", "figmaName": "g-4", "figmaNodeId": "17:522", "category": "foliage", "file": "components/g-4.png" },
-    { "assetKey": "g-5", "figmaName": "g-5", "figmaNodeId": "17:523", "category": "foliage", "file": "components/g-5.png" },
-    { "assetKey": "barril", "figmaName": "barril", "figmaNodeId": "17:492", "category": "prop", "file": "components/barril.png" },
-    { "assetKey": "flag", "figmaName": "flag", "figmaNodeId": "17:493", "category": "prop", "file": "components/flag.png" },
-    { "assetKey": "pipe-1", "figmaName": "pipe-1", "figmaNodeId": "17:504", "category": "prop", "file": "components/pipe-1.png" },
-    { "assetKey": "pipe-2", "figmaName": "pipe-2", "figmaNodeId": "17:505", "category": "prop", "file": "components/pipe-2.png" },
-    { "assetKey": "rocks", "figmaName": "rocks", "figmaNodeId": "17:518", "category": "prop", "file": "components/rocks.png" },
-    { "assetKey": "guacamaya", "figmaName": "Guacamaya", "figmaNodeId": "17:339", "category": "character", "file": "components/guacamaya.png" }
-  ]
+  "version": 2,
+  "backgrounds": [
+    {
+      "assetKey": "level-1-mobile",
+      "figmaName": "- 1",
+      "figmaNodeId": "24:328",
+      "file": "background/level-1-mobile.png",
+      "textureKey": "world:level-1-background",
+      "artboard": "M02 — Gameplay (Level 1)",
+      "artboardNodeId": "13:2"
+    }
+  ],
+  "gameplayZonesNodeId": "26:178",
+  "platformsFrameNodeId": "26:179",
+  "markersFrameNodeId": "26:180"
 }

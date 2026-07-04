@@ -1,10 +1,9 @@
 import Phaser from 'phaser';
 import { GAME_CONFIG } from '../config/gameConfig';
 import type { WorldManifest } from '../world/worldTypes';
-import { worldTextureKey } from '../world/worldTypes';
 
 /**
- * BootScene — loads Figma world assets + generates gameplay placeholders.
+ * BootScene — loads Figma world background + generates gameplay placeholders.
  */
 export class BootScene extends Phaser.Scene {
   private worldManifest: WorldManifest | null = null;
@@ -21,17 +20,17 @@ export class BootScene extends Phaser.Scene {
 
   create(): void {
     this.worldManifest = this.cache.json.get('world-manifest') as WorldManifest | null;
-    this.loadWorldTextures(() => {
+    this.loadWorldBackgrounds(() => {
       this.generatePlaceholderTextures();
       this.registry.set('worldManifest', this.worldManifest);
       this.scene.start('MenuScene');
     });
   }
 
-  /** Load exported Figma component PNGs listed in manifest (skip missing files). */
-  private loadWorldTextures(onComplete: () => void): void {
-    const textures = this.worldManifest?.textures ?? {};
-    const entries = Object.values(textures).filter((t) => t.present);
+  /** Load exported Figma background PNGs listed in manifest (skip missing files). */
+  private loadWorldBackgrounds(onComplete: () => void): void {
+    const backgrounds = this.worldManifest?.backgrounds ?? {};
+    const entries = Object.values(backgrounds).filter((b) => b.present);
 
     if (entries.length === 0) {
       onComplete();
@@ -39,7 +38,7 @@ export class BootScene extends Phaser.Scene {
     }
 
     entries.forEach((entry) => {
-      this.load.image(worldTextureKey(entry.key), entry.path);
+      this.load.image(entry.key, entry.path);
     });
 
     this.load.once('complete', onComplete);

@@ -9,10 +9,10 @@ Layer **🎯 Gameplay Zones** on:
 
 | Group | Items | Style |
 |-------|-------|--------|
-| **Platforms (collision)** | `platform_start`, `platform_01`…`05`, `floating_platform_01`…`08`, `goal_platform` | Green dashed rectangles + name labels |
-| **Markers** | `player_spawn`, `portal_goal`, `kiss_1`…, `timer_1`…, `enemy_1`… | Colored ellipses + labels |
+| **Platforms (collision)** | `platform_start`, `platform_01`…`07`, `floating_platform_01`…`08`, `goal_platform` | Green dashed rectangles (names on the layer, no text labels) |
+| **Markers** | `player_spawn`, `portal_goal`, `kiss_1`…, `timer_1`…, `enemy_1`… | Colored ellipses |
 
-Move the green rectangles until they sit on the walkable tops in the artwork.
+Move the green rectangles until they sit on the walkable tops in the artwork. The visible level art is the single **`- 1`** background image (`24:328`) — no per-component PNG exports.
 
 ## Sync to the game
 

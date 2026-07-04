@@ -1,15 +1,12 @@
 #!/usr/bin/env node
 /**
- * Sync world assets from Figma → public/assets/world/
+ * Sync world background from Figma → public/assets/world/background/
  *
- * WORKFLOW (after editing components in Figma):
- * 1. Re-export PNGs: paste URLs in figma/export-urls.json (from Figma MCP export)
- *    OR set FIGMA_ACCESS_TOKEN and run: npm run assets:export
- * 2. Download:        npm run assets:download
- * 3. Manifest:        npm run assets:manifest
- *
- * Component names in Figma MUST match figma/world-asset-registry.json
- * (Blocks-1 → blocks-1.png, waves → waves.png, etc.) so re-exports overwrite files.
+ * WORKFLOW (after editing M02 in Figma):
+ * 1. Export background layer "- 1" (node 24:328) via Figma MCP download_assets
+ * 2. Save as public/assets/world/background/level-1-mobile.png
+ * 3. Update layout-mobile.json platforms/markers from 🎯 Gameplay Zones (26:178)
+ * 4. Regenerate manifest: npm run assets:manifest
  */
 
 import fs from 'node:fs';
@@ -22,35 +19,31 @@ const REGISTRY_PATH = path.join(ROOT, 'figma/world-asset-registry.json');
 const WORLD_DIR = path.join(ROOT, 'public/assets/world');
 const MANIFEST_PATH = path.join(WORLD_DIR, 'manifest.json');
 const EXPORT_URLS_PATH = path.join(ROOT, 'figma/export-urls.json');
-const LAYOUT_PATH = path.join(WORLD_DIR, 'level-1/layout.json');
+const LAYOUT_MOBILE_PATH = path.join(WORLD_DIR, 'level-1/layout-mobile.json');
 
 function readRegistry() {
   return JSON.parse(fs.readFileSync(REGISTRY_PATH, 'utf8'));
 }
 
-/** Build manifest.json from files on disk + registry metadata */
+/** Build manifest.json from background files on disk + registry metadata */
 function buildManifest() {
   const registry = readRegistry();
-  const textures = {};
+  const backgrounds = {};
 
-  for (const comp of registry.components) {
-    const abs = path.join(WORLD_DIR, comp.file);
+  for (const bg of registry.backgrounds ?? []) {
+    const abs = path.join(WORLD_DIR, bg.file);
     const exists = fs.existsSync(abs);
-    textures[comp.assetKey] = {
-      key: comp.assetKey,
-      figmaName: comp.figmaName,
-      figmaNodeId: comp.figmaNodeId,
-      category: comp.category,
-      path: `/assets/world/${comp.file}`,
-      file: comp.file,
-      collider: comp.collider ?? false,
-      scrollFactor: comp.scrollFactor ?? 1,
+    backgrounds[bg.assetKey] = {
+      key: bg.textureKey,
+      path: `/assets/world/${bg.file}`,
+      figmaNodeId: bg.figmaNodeId,
+      figmaName: bg.figmaName,
       present: exists,
     };
   }
 
-  const layout = fs.existsSync(LAYOUT_PATH)
-    ? JSON.parse(fs.readFileSync(LAYOUT_PATH, 'utf8'))
+  const layout = fs.existsSync(LAYOUT_MOBILE_PATH)
+    ? JSON.parse(fs.readFileSync(LAYOUT_MOBILE_PATH, 'utf8'))
     : null;
 
   const manifest = {
@@ -58,47 +51,52 @@ function buildManifest() {
     figmaFileKey: registry.figmaFileKey,
     figmaFileUrl: registry.figmaFileUrl,
     version: registry.version,
-    textures,
+    backgrounds,
     layout: layout
-      ? { level: 'level-1', width: layout.width, height: layout.height, platformCount: layout.platforms?.length ?? 0 }
+      ? {
+          level: 'level-1',
+          width: layout.width,
+          height: layout.height,
+          platformCount: layout.platforms?.length ?? 0,
+        }
       : null,
   };
 
   fs.mkdirSync(WORLD_DIR, { recursive: true });
   fs.writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2));
-  const present = Object.values(textures).filter((t) => t.present).length;
-  console.log(`manifest.json — ${present}/${registry.components.length} textures on disk`);
+  const present = Object.values(backgrounds).filter((b) => b.present).length;
+  console.log(`manifest.json — ${present}/${registry.backgrounds?.length ?? 0} backgrounds on disk`);
 }
 
-/** Download PNGs from figma/export-urls.json { "blocks-1": "https://...", ... } */
+/** Download PNGs from figma/export-urls.json { "level-1-mobile": "https://...", ... } */
 async function downloadFromUrls() {
   if (!fs.existsSync(EXPORT_URLS_PATH)) {
-    console.error('Missing figma/export-urls.json — export URLs from Figma MCP first.');
+    console.error('Missing figma/export-urls.json — export URL from Figma MCP first.');
     process.exit(1);
   }
   const urls = JSON.parse(fs.readFileSync(EXPORT_URLS_PATH, 'utf8'));
   const registry = readRegistry();
   let ok = 0;
 
-  for (const comp of registry.components) {
-    const url = urls[comp.assetKey];
+  for (const bg of registry.backgrounds ?? []) {
+    const url = urls[bg.assetKey];
     if (!url) {
-      console.warn(`skip (no URL): ${comp.assetKey}`);
+      console.warn(`skip (no URL): ${bg.assetKey}`);
       continue;
     }
-    const dest = path.join(WORLD_DIR, comp.file);
+    const dest = path.join(WORLD_DIR, bg.file);
     fs.mkdirSync(path.dirname(dest), { recursive: true });
     const res = await fetch(url);
     if (!res.ok) {
-      console.error(`fail ${comp.assetKey}: HTTP ${res.status}`);
+      console.error(`fail ${bg.assetKey}: HTTP ${res.status}`);
       continue;
     }
     const buf = Buffer.from(await res.arrayBuffer());
     fs.writeFileSync(dest, buf);
-    console.log(`saved ${comp.file} (${buf.length} bytes)`);
+    console.log(`saved ${bg.file} (${buf.length} bytes)`);
     ok++;
   }
-  console.log(`Downloaded ${ok} assets`);
+  console.log(`Downloaded ${ok} backgrounds`);
   buildManifest();
 }
 
@@ -111,8 +109,8 @@ async function exportViaFigmaApi() {
   }
 
   const registry = readRegistry();
-  const ids = registry.components.map((c) => c.figmaNodeId).join(',');
-  const url = `https://api.figma.com/v1/images/${registry.figmaFileKey}?ids=${encodeURIComponent(ids)}&format=png&scale=2`;
+  const ids = (registry.backgrounds ?? []).map((b) => b.figmaNodeId).join(',');
+  const url = `https://api.figma.com/v1/images/${registry.figmaFileKey}?ids=${encodeURIComponent(ids)}&format=png&scale=1`;
 
   const res = await fetch(url, { headers: { 'X-Figma-Token': token } });
   if (!res.ok) {
@@ -122,9 +120,9 @@ async function exportViaFigmaApi() {
 
   const data = await res.json();
   const exportUrls = {};
-  for (const comp of registry.components) {
-    const imageUrl = data.images?.[comp.figmaNodeId];
-    if (imageUrl) exportUrls[comp.assetKey] = imageUrl;
+  for (const bg of registry.backgrounds ?? []) {
+    const imageUrl = data.images?.[bg.figmaNodeId];
+    if (imageUrl) exportUrls[bg.assetKey] = imageUrl;
   }
 
   fs.mkdirSync(path.dirname(EXPORT_URLS_PATH), { recursive: true });
@@ -135,10 +133,10 @@ async function exportViaFigmaApi() {
 
 function listRegistry() {
   const registry = readRegistry();
-  for (const c of registry.components) {
-    const abs = path.join(WORLD_DIR, c.file);
+  for (const bg of registry.backgrounds ?? []) {
+    const abs = path.join(WORLD_DIR, bg.file);
     const mark = fs.existsSync(abs) ? '✓' : ' ';
-    console.log(`${mark} ${c.assetKey.padEnd(12)} ${c.figmaNodeId.padEnd(10)} ${c.figmaName}`);
+    console.log(`${mark} ${bg.assetKey.padEnd(16)} ${bg.figmaNodeId.padEnd(10)} ${bg.figmaName}`);
   }
 }
 

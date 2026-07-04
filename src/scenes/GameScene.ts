@@ -11,7 +11,7 @@ import {
   type GameStats,
 } from '../config/gameConfig';
 import { WorldBuilder } from '../world/WorldBuilder';
-import type { LevelLayout, WorldManifest } from '../world/worldTypes';
+import type { LevelLayout } from '../world/worldTypes';
 import { getLevelLayoutCacheKey, isDebugMode } from '../world/layoutUtils';
 import { depthFromFootY, WORLD_LAYERS } from '../world/layerConfig';
 import { markerToFoot } from '../world/worldTypes';
@@ -64,14 +64,13 @@ export class GameScene extends Phaser.Scene {
 
     this.levelLayout = this.cache.json.get(getLevelLayoutCacheKey(this.game)) as LevelLayout;
     const worldW = this.levelLayout?.width ?? GAME_CONFIG.worldWidth;
-    const worldManifest = (this.registry.get('worldManifest') as WorldManifest | null) ?? null;
     const debug = isDebugMode();
 
     this.physics.world.setBounds(0, 0, worldW, GAME_CONFIG.worldHeight);
     this.cameras.main.setBounds(0, 0, worldW, GAME_CONFIG.worldHeight);
     this.cameras.main.setBackgroundColor('#b8e0f5');
 
-    const world = WorldBuilder.build(this, this.levelLayout, worldManifest, { debug });
+    const world = WorldBuilder.build(this, this.levelLayout, { debug });
     this.platforms = world.platforms;
     this.toggleDebug = world.toggleDebug;
     this.createPlayer();

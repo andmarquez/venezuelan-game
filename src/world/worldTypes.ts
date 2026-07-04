@@ -10,21 +10,12 @@ export type PlatformZone = {
 };
 
 export type BackgroundSection = {
-  /** Optional image path (stitched Figma export). Omitted when using composite sprites. */
-  path?: string;
+  key: string;
+  path: string;
   x: number;
   y: number;
   width: number;
   height: number;
-};
-
-export type VisualPlacement = {
-  assetKey: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  scrollFactor?: number;
 };
 
 export type EnemyMarker = {
@@ -51,25 +42,19 @@ export type LevelLayout = {
   height: number;
   /** Visual-only background (no physics). */
   background: {
-    mode: 'sections' | 'composite';
-    sections?: BackgroundSection[];
-    placements?: VisualPlacement[];
+    mode: 'sections';
+    sections: BackgroundSection[];
   };
   /** Invisible gameplay rectangles — source of truth for collisions. */
   platforms: PlatformZone[];
-  /** Foreground decorations drawn above the player. */
-  foreground?: VisualPlacement[];
   markers: LevelMarkers;
 };
 
-export type WorldTextureMeta = {
+export type WorldBackgroundMeta = {
   key: string;
-  figmaName: string;
-  figmaNodeId: string;
-  category: string;
   path: string;
-  collider?: boolean;
-  scrollFactor?: number;
+  figmaNodeId: string;
+  figmaName: string;
   present: boolean;
 };
 
@@ -78,11 +63,9 @@ export type WorldManifest = {
   figmaFileKey: string;
   figmaFileUrl: string;
   version: number;
-  textures: Record<string, WorldTextureMeta>;
+  backgrounds: Record<string, WorldBackgroundMeta>;
   layout: { level: string; width: number; height: number; platformCount: number } | null;
 };
-
-export const worldTextureKey = (assetKey: string): string => `world:${assetKey}`;
 
 /** Platform top-left (x,y) → Phaser static body center. */
 export const platformTopLeftToCenter = (p: PlatformZone) => ({
