@@ -12,9 +12,9 @@ import {
 } from '../config/gameConfig';
 import { WorldBuilder } from '../world/WorldBuilder';
 import type { LevelLayout, WorldManifest } from '../world/worldTypes';
-import { figmaFrameToFoot, getLevelLayoutCacheKey, isDebugMode } from '../world/layoutUtils';
+import { getLevelLayoutCacheKey, isDebugMode } from '../world/layoutUtils';
 import { depthFromFootY, WORLD_LAYERS } from '../world/layerConfig';
-import type { SurfaceSegment } from '../world/TerrainSurface';
+import { markerToFoot } from '../world/worldTypes';
 
 /**
  * GameScene — main Level 1 gameplay.
@@ -48,7 +48,6 @@ export class GameScene extends Phaser.Scene {
   private portalMessage?: Phaser.GameObjects.Text;
   private gameEnded = false;
   private levelLayout!: LevelLayout;
-  private surfaceSegments: SurfaceSegment[] = [];
   private toggleDebug?: () => void;
   private keyDebug!: Phaser.Input.Keyboard.Key;
 
@@ -74,7 +73,6 @@ export class GameScene extends Phaser.Scene {
 
     const world = WorldBuilder.build(this, this.levelLayout, worldManifest, { debug });
     this.platforms = world.platforms;
-    this.surfaceSegments = world.surfaceSegments;
     this.toggleDebug = world.toggleDebug;
     this.createPlayer();
     this.createCollectibles();
@@ -91,45 +89,38 @@ export class GameScene extends Phaser.Scene {
   }
 
   private createPlayer(): void {
-    const start = this.levelLayout.gameplay.playerStart;
-    let footX = start.x;
-    let footY = start.y;
-
-    if (start.figmaOrigin === 'topLeft' || (start.width && start.height)) {
-      const foot = figmaFrameToFoot(start.x, start.y, start.width ?? 48, start.height ?? 64);
-      footX = foot.x;
-      footY = foot.y;
-    }
-
-    const snapped = WorldBuilder.snapFootToSurface(footX, footY, this.surfaceSegments, 64);
-    this.player = new Player(this, snapped.x, snapped.y);
-    this.player.setDepth(depthFromFootY(snapped.y, WORLD_LAYERS.player));
+    const foot = markerToFoot(this.levelLayout.markers.player_spawn);
+    this.player = new Player(this, foot.x, foot.y);
+    this.player.setDepth(depthFromFootY(foot.y, WORLD_LAYERS.player));
   }
 
   private createCollectibles(): void {
-    this.levelLayout.gameplay.kisses.forEach(([x, y]) => {
+    this.levelLayout.markers.kiss_collectibles.forEach(({ x, y }) => {
       const kiss = new Collectible(this, x, y, 'kiss');
+      kiss.setDepth(WORLD_LAYERS.collectibles);
       this.collectibles.push(kiss);
     });
-    this.levelLayout.gameplay.timers.forEach(([x, y]) => {
+    this.levelLayout.markers.timer_collectibles.forEach(({ x, y }) => {
       const timer = new Collectible(this, x, y, 'timer');
+      timer.setDepth(WORLD_LAYERS.collectibles);
       this.collectibles.push(timer);
     });
   }
 
   private createEnemies(): void {
-    this.levelLayout.gameplay.enemies.forEach((e) => {
+    this.levelLayout.markers.enemies.forEach((e) => {
       const bug = new Enemy(this, e.x, e.y, e.min, e.max);
+      bug.setDepth(WORLD_LAYERS.enemies);
       this.enemies.push(bug);
     });
   }
 
   private createPortal(): void {
-    const { x, y } = this.levelLayout.gameplay.portal;
+    const { x, y } = this.levelLayout.markers.portal_goal;
     this.portal = this.physics.add.sprite(x, y, 'portal');
     this.portal.setImmovable(true);
     (this.portal.body as Phaser.Physics.Arcade.Body).setAllowGravity(false);
-    this.portal.setDepth(6);
+    this.portal.setDepth(WORLD_LAYERS.collectibles);
     this.portal.setScale(1.2);
 
     this.tweens.add({

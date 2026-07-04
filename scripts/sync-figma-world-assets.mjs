@@ -60,7 +60,7 @@ function buildManifest() {
     version: registry.version,
     textures,
     layout: layout
-      ? { level: 'level-1', width: layout.width, height: layout.height, placementCount: layout.placements.length }
+      ? { level: 'level-1', width: layout.width, height: layout.height, platformCount: layout.platforms?.length ?? 0 }
       : null,
   };
 

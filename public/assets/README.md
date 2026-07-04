@@ -1,47 +1,46 @@
-# Game Assets
+# Game Assets — Level 1
 
-## Figma world sync (Level 1)
+## Simplified level system
 
-**File:** https://www.figma.com/design/1zlB4dA4ktyuuBXzseo1ix
-
-After you move or edit world components on **M02 — Gameplay (Level 1)**:
-
-1. Keep component **names** aligned with `figma/world-asset-registry.json` (`Blocks-1` → `blocks-1`, `waves` → `waves`, etc.).
-2. Re-export PNGs:
-   - Ask Cursor to export via Figma MCP (writes `figma/export-urls.json`), **or**
-   - `FIGMA_ACCESS_TOKEN=… npm run assets:export`
-3. `npm run assets:sync` — downloads PNGs into `public/assets/world/components/` and rebuilds `manifest.json`.
-4. Update `public/assets/world/level-1/layout.json` when placements change (re-extract from M02 artboard).
-
-| Path | Purpose |
-|------|---------|
-| `figma/world-asset-registry.json` | Maps Figma component names → file names + node IDs |
-| `figma/export-urls.json` | Temporary export URLs (regenerated each sync) |
-| `public/assets/world/components/*.png` | Exported world sprites |
-| `public/assets/world/level-1/layout.json` | Positions + gameplay markers from M02 |
-| `public/assets/world/manifest.json` | Runtime index (auto-generated) |
-
-## Debug collision overlays
-
-Add `?debug=1` to the URL or press **H** during gameplay to toggle green collision slabs on terrain surfaces.
-
-## Figma UI screens
-
-| Page | Artboard size | Contents |
-|------|---------------|----------|
-| 🎨 Design Tokens | — | Brand colors + typography |
-| 📱 Screens — Mobile Landscape | **1280 × 720** | M01–M04 + touch controls |
-| 🖥️ Screens — Desktop | **1920 × 1080** | D01–D04 |
-| 🧩 Components | — | Andsiosa, HUD, world components |
-
-## Character / gameplay sprites
+Gameplay is driven by **named invisible platform rectangles** in the layout JSON.
+Background art is **visual only** (no physics).
 
 | File | Purpose |
 |------|---------|
-| `andsiosa.png` | Player spritesheet |
-| `deadline-bug.png` | Enemy |
-| `kiss.png` | Collectible |
-| `timer.png` | Power-up |
-| `portal.png` | Level end portal |
+| `level-1/layout-mobile.json` | M02 — platforms, markers, background (mobile) |
+| `level-1/layout-desktop.json` | D02 — same structure (desktop) |
+| `level-1/figma-visual-placements.json` | Figma sprite positions (visual rebuild source) |
+| `components/*.png` | Individual art layers (composite background) |
+| `background/level-1-section-*.png` | Optional stitched background strips |
 
-Swap placeholders in `src/scenes/BootScene.ts` — keep texture keys (`andsiosa-idle`, `kiss`, etc.).
+## Edit gameplay (easy)
+
+Open `layout-mobile.json` and edit the `platforms` array:
+
+```json
+{ "name": "platform_start", "x": 0, "y": 656, "width": 1000, "height": 20, "type": "platform" }
+```
+
+Markers for spawn, kisses, timers, enemies, portal:
+
+```json
+"markers": {
+  "player_spawn": { "x": 198, "y": 656 },
+  "portal_goal": { "x": 8459, "y": 545 },
+  ...
+}
+```
+
+Rebuild desktop copy: `npm run assets:layout`
+
+## Debug
+
+`?debug=1` or press **H** — shows green platform rectangles with names.
+
+## Figma sync (visual art only)
+
+1. Update components in Figma (M02 / D02)
+2. `npm run assets:sync` — re-export PNGs
+3. Update `figma-visual-placements.json` if positions moved
+4. `npm run assets:layout` — regenerate layout files
+5. Tune `platforms` rectangles to match the art

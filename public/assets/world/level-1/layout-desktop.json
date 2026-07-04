@@ -1,283 +1,421 @@
 {
   "level": "level-1",
+  "variant": "desktop",
   "figmaArtboard": "D02 — Gameplay",
   "figmaNodeId": "13:2",
   "width": 8553,
   "height": 720,
-  "ground": [
+  "background": {
+    "mode": "composite",
+    "placements": [
+      {
+        "assetKey": "bridge",
+        "x": 151,
+        "y": -52,
+        "width": 2790,
+        "height": 481
+      },
+      {
+        "assetKey": "m",
+        "x": 2138,
+        "y": 39,
+        "width": 1536,
+        "height": 426
+      },
+      {
+        "assetKey": "m-1",
+        "x": 3126,
+        "y": 139,
+        "width": 1032,
+        "height": 357
+      },
+      {
+        "assetKey": "m-2",
+        "x": 3877,
+        "y": 199,
+        "width": 599,
+        "height": 357
+      },
+      {
+        "assetKey": "m-3",
+        "x": 4433,
+        "y": 139,
+        "width": 829,
+        "height": 357
+      },
+      {
+        "assetKey": "t-1",
+        "x": 4984,
+        "y": 178,
+        "width": 1037,
+        "height": 364
+      },
+      {
+        "assetKey": "t-2",
+        "x": 5790,
+        "y": 139,
+        "width": 921,
+        "height": 364
+      },
+      {
+        "assetKey": "c-1",
+        "x": 7632,
+        "y": 199,
+        "width": 196,
+        "height": 114
+      },
+      {
+        "assetKey": "c-1",
+        "x": 2854,
+        "y": 92,
+        "width": 196,
+        "height": 114
+      },
+      {
+        "assetKey": "c-2",
+        "x": 7376,
+        "y": 157,
+        "width": 140,
+        "height": 83
+      },
+      {
+        "assetKey": "c-2",
+        "x": 38,
+        "y": 233,
+        "width": 140,
+        "height": 83
+      },
+      {
+        "assetKey": "island",
+        "x": 6532,
+        "y": 22,
+        "width": 796,
+        "height": 459
+      },
+      {
+        "assetKey": "waves",
+        "x": 0,
+        "y": 352,
+        "width": 685,
+        "height": 51
+      },
+      {
+        "assetKey": "waves",
+        "x": 619,
+        "y": 352,
+        "width": 685,
+        "height": 51
+      },
+      {
+        "assetKey": "waves",
+        "x": 1151,
+        "y": 352,
+        "width": 685,
+        "height": 51
+      },
+      {
+        "assetKey": "waves",
+        "x": 7915,
+        "y": 407,
+        "width": 685,
+        "height": 51
+      },
+      {
+        "assetKey": "waves-2",
+        "x": 7524,
+        "y": 574,
+        "width": 495,
+        "height": 51
+      },
+      {
+        "assetKey": "i-2",
+        "x": 427,
+        "y": 611,
+        "width": 356,
+        "height": 117
+      },
+      {
+        "assetKey": "i-2",
+        "x": 7576,
+        "y": 474,
+        "width": 356,
+        "height": 117
+      },
+      {
+        "assetKey": "i-3",
+        "x": 853,
+        "y": 431,
+        "width": 552,
+        "height": 337
+      },
+      {
+        "assetKey": "i-4",
+        "x": 1568,
+        "y": 603,
+        "width": 671,
+        "height": 133
+      },
+      {
+        "assetKey": "i-4",
+        "x": 6532,
+        "y": 603,
+        "width": 671,
+        "height": 133
+      },
+      {
+        "assetKey": "i-5",
+        "x": 2869,
+        "y": 600,
+        "width": 151,
+        "height": 162
+      },
+      {
+        "assetKey": "i-5",
+        "x": 2970,
+        "y": 482,
+        "width": 170,
+        "height": 182
+      },
+      {
+        "assetKey": "i-5",
+        "x": 6629,
+        "y": 503,
+        "width": 151,
+        "height": 162
+      },
+      {
+        "assetKey": "i-6",
+        "x": 2356,
+        "y": 670,
+        "width": 396,
+        "height": 91
+      },
+      {
+        "assetKey": "i-7",
+        "x": 2981,
+        "y": 603,
+        "width": 436,
+        "height": 141
+      },
+      {
+        "assetKey": "i-8",
+        "x": 3365,
+        "y": 648,
+        "width": 396,
+        "height": 91
+      },
+      {
+        "assetKey": "i-8",
+        "x": 3718,
+        "y": 648,
+        "width": 396,
+        "height": 91
+      },
+      {
+        "assetKey": "i-9",
+        "x": 4295,
+        "y": 600,
+        "width": 520,
+        "height": 140
+      },
+      {
+        "assetKey": "i-10",
+        "x": 7152,
+        "y": 600,
+        "width": 520,
+        "height": 140
+      },
+      {
+        "assetKey": "blocks-1",
+        "x": 329,
+        "y": 481,
+        "width": 195,
+        "height": 50
+      },
+      {
+        "assetKey": "blocks-1",
+        "x": 1500,
+        "y": 481,
+        "width": 195,
+        "height": 50
+      },
+      {
+        "assetKey": "blocks-1",
+        "x": 4977,
+        "y": 481,
+        "width": 195,
+        "height": 50
+      },
+      {
+        "assetKey": "blocks-1",
+        "x": 6908,
+        "y": 481,
+        "width": 195,
+        "height": 50
+      },
+      {
+        "assetKey": "blocks-2",
+        "x": 2239,
+        "y": 483,
+        "width": 195,
+        "height": 50
+      },
+      {
+        "assetKey": "blocks-2",
+        "x": 3916,
+        "y": 513,
+        "width": 195,
+        "height": 50
+      }
+    ],
+    "sections": [
+      {
+        "path": "/assets/world/background/level-1-section-1.png",
+        "x": 0,
+        "y": 0,
+        "width": 2850,
+        "height": 720
+      },
+      {
+        "path": "/assets/world/background/level-1-section-2.png",
+        "x": 2850,
+        "y": 0,
+        "width": 2850,
+        "height": 720
+      },
+      {
+        "path": "/assets/world/background/level-1-section-3.png",
+        "x": 5700,
+        "y": 0,
+        "width": 2853,
+        "height": 720
+      }
+    ]
+  },
+  "platforms": [
     {
-      "name": "Ground",
+      "name": "platform_start",
       "x": 0,
-      "y": 364,
-      "width": 3086,
-      "height": 356
+      "y": 656,
+      "width": 1000,
+      "height": 20,
+      "type": "platform"
     },
     {
-      "name": "Ground2",
+      "name": "floating_platform_01",
+      "x": 329,
+      "y": 531,
+      "width": 195,
+      "height": 20,
+      "type": "platform"
+    },
+    {
+      "name": "platform_01",
+      "x": 1000,
+      "y": 656,
+      "width": 500,
+      "height": 20,
+      "type": "platform"
+    },
+    {
+      "name": "floating_platform_02",
+      "x": 853,
+      "y": 600,
+      "width": 480,
+      "height": 20,
+      "type": "platform"
+    },
+    {
+      "name": "platform_02",
+      "x": 1500,
+      "y": 656,
+      "width": 1586,
+      "height": 20,
+      "type": "platform"
+    },
+    {
+      "name": "floating_platform_03",
+      "x": 1500,
+      "y": 531,
+      "width": 195,
+      "height": 20,
+      "type": "platform"
+    },
+    {
+      "name": "floating_platform_04",
+      "x": 2239,
+      "y": 533,
+      "width": 195,
+      "height": 20,
+      "type": "platform"
+    },
+    {
+      "name": "platform_03",
       "x": 3086,
-      "y": 419,
-      "width": 3625,
-      "height": 301
+      "y": 664,
+      "width": 1400,
+      "height": 20,
+      "type": "platform"
     },
     {
-      "name": "Ground3",
+      "name": "floating_platform_05",
+      "x": 2970,
+      "y": 530,
+      "width": 170,
+      "height": 20,
+      "type": "platform"
+    },
+    {
+      "name": "floating_platform_06",
+      "x": 3916,
+      "y": 553,
+      "width": 195,
+      "height": 20,
+      "type": "platform"
+    },
+    {
+      "name": "platform_04",
+      "x": 4486,
+      "y": 664,
+      "width": 2225,
+      "height": 20,
+      "type": "platform"
+    },
+    {
+      "name": "floating_platform_07",
+      "x": 4977,
+      "y": 531,
+      "width": 195,
+      "height": 20,
+      "type": "platform"
+    },
+    {
+      "name": "platform_05",
       "x": 6711,
-      "y": 419,
-      "width": 1842,
-      "height": 301
+      "y": 664,
+      "width": 1290,
+      "height": 20,
+      "type": "platform"
+    },
+    {
+      "name": "floating_platform_08",
+      "x": 6908,
+      "y": 531,
+      "width": 195,
+      "height": 20,
+      "type": "platform"
+    },
+    {
+      "name": "goal_platform",
+      "x": 8000,
+      "y": 664,
+      "width": 553,
+      "height": 20,
+      "type": "platform"
     }
   ],
-  "placements": [
+  "foreground": [
     {
-      "figmaId": "17:483",
-      "assetKey": "bridge",
-      "x": 151,
-      "y": -52,
-      "width": 2790,
-      "height": 481
-    },
-    {
-      "figmaId": "17:547",
-      "assetKey": "m",
-      "x": 2138,
-      "y": 39,
-      "width": 1536,
-      "height": 426
-    },
-    {
-      "figmaId": "17:546",
-      "assetKey": "m-1",
-      "x": 3126,
-      "y": 139,
-      "width": 1032,
-      "height": 357
-    },
-    {
-      "figmaId": "17:548",
-      "assetKey": "m-2",
-      "x": 3877,
-      "y": 199,
-      "width": 599,
-      "height": 357
-    },
-    {
-      "figmaId": "17:549",
-      "assetKey": "m-3",
-      "x": 4433,
-      "y": 139,
-      "width": 829,
-      "height": 357
-    },
-    {
-      "figmaId": "17:539",
-      "assetKey": "t-1",
-      "x": 4984,
-      "y": 178,
-      "width": 1037,
-      "height": 364
-    },
-    {
-      "figmaId": "17:540",
-      "assetKey": "t-2",
-      "x": 5790,
-      "y": 139,
-      "width": 921,
-      "height": 364
-    },
-    {
-      "figmaId": "17:515",
-      "assetKey": "c-1",
-      "x": 7632,
-      "y": 199,
-      "width": 196,
-      "height": 114
-    },
-    {
-      "figmaId": "17:541",
-      "assetKey": "c-1",
-      "x": 2854,
-      "y": 92,
-      "width": 196,
-      "height": 114
-    },
-    {
-      "figmaId": "17:516",
-      "assetKey": "c-2",
-      "x": 7376,
-      "y": 157,
-      "width": 140,
-      "height": 83
-    },
-    {
-      "figmaId": "17:542",
-      "assetKey": "c-2",
-      "x": 38,
-      "y": 233,
-      "width": 140,
-      "height": 83
-    },
-    {
-      "figmaId": "17:506",
-      "assetKey": "island",
-      "x": 6532,
-      "y": 22,
-      "width": 796,
-      "height": 459
-    },
-    {
-      "figmaId": "17:556",
-      "assetKey": "waves",
-      "x": 0,
-      "y": 352,
-      "width": 685,
-      "height": 51
-    },
-    {
-      "figmaId": "17:559",
-      "assetKey": "waves",
-      "x": 619,
-      "y": 352,
-      "width": 685,
-      "height": 51
-    },
-    {
-      "figmaId": "17:561",
-      "assetKey": "waves",
-      "x": 1151,
-      "y": 352,
-      "width": 685,
-      "height": 51
-    },
-    {
-      "figmaId": "17:514",
-      "assetKey": "waves",
-      "x": 7915,
-      "y": 407,
-      "width": 685,
-      "height": 51
-    },
-    {
-      "figmaId": "17:575",
-      "assetKey": "waves-2",
-      "x": 7524,
-      "y": 574,
-      "width": 495,
-      "height": 51
-    },
-    {
-      "figmaId": "17:480",
-      "assetKey": "i-2",
-      "x": 427,
-      "y": 611,
-      "width": 356,
-      "height": 117
-    },
-    {
-      "figmaId": "17:511",
-      "assetKey": "i-2",
-      "x": 7576,
-      "y": 474,
-      "width": 356,
-      "height": 117
-    },
-    {
-      "figmaId": "17:481",
-      "assetKey": "i-3",
-      "x": 853,
-      "y": 431,
-      "width": 552,
-      "height": 337
-    },
-    {
-      "figmaId": "17:484",
-      "assetKey": "i-4",
-      "x": 1568,
-      "y": 603,
-      "width": 671,
-      "height": 133
-    },
-    {
-      "figmaId": "17:508",
-      "assetKey": "i-4",
-      "x": 6532,
-      "y": 603,
-      "width": 671,
-      "height": 133
-    },
-    {
-      "figmaId": "17:487",
-      "assetKey": "i-5",
-      "x": 2869,
-      "y": 600,
-      "width": 151,
-      "height": 162
-    },
-    {
-      "figmaId": "17:580",
-      "assetKey": "i-5",
-      "x": 2970,
-      "y": 482,
-      "width": 170,
-      "height": 182
-    },
-    {
-      "figmaId": "17:569",
-      "assetKey": "i-5",
-      "x": 6629,
-      "y": 503,
-      "width": 151,
-      "height": 162
-    },
-    {
-      "figmaId": "17:486",
-      "assetKey": "i-6",
-      "x": 2356,
-      "y": 670,
-      "width": 396,
-      "height": 91
-    },
-    {
-      "figmaId": "17:488",
-      "assetKey": "i-7",
-      "x": 2981,
-      "y": 603,
-      "width": 436,
-      "height": 141
-    },
-    {
-      "figmaId": "17:491",
-      "assetKey": "i-8",
-      "x": 3365,
-      "y": 648,
-      "width": 396,
-      "height": 91
-    },
-    {
-      "figmaId": "17:578",
-      "assetKey": "i-8",
-      "x": 3718,
-      "y": 648,
-      "width": 396,
-      "height": 91
-    },
-    {
-      "figmaId": "17:494",
-      "assetKey": "i-9",
-      "x": 4295,
-      "y": 600,
-      "width": 520,
-      "height": 140
-    },
-    {
-      "figmaId": "17:510",
-      "assetKey": "i-10",
-      "x": 7152,
-      "y": 600,
-      "width": 520,
-      "height": 140
-    },
-    {
-      "figmaId": "17:479",
       "assetKey": "g-1",
       "x": -29,
       "y": 548,
@@ -285,7 +423,6 @@
       "height": 134
     },
     {
-      "figmaId": "17:519",
       "assetKey": "g-1",
       "x": 6609,
       "y": 390,
@@ -293,7 +430,6 @@
       "height": 134
     },
     {
-      "figmaId": "17:485",
       "assetKey": "g",
       "x": 1771,
       "y": 548,
@@ -301,7 +437,6 @@
       "height": 91
     },
     {
-      "figmaId": "17:532",
       "assetKey": "g",
       "x": 5939,
       "y": 464,
@@ -309,7 +444,6 @@
       "height": 91
     },
     {
-      "figmaId": "17:535",
       "assetKey": "g",
       "x": 5171,
       "y": 585,
@@ -317,7 +451,6 @@
       "height": 91
     },
     {
-      "figmaId": "17:489",
       "assetKey": "g-2",
       "x": 3073,
       "y": 547,
@@ -325,7 +458,6 @@
       "height": 87
     },
     {
-      "figmaId": "17:524",
       "assetKey": "g-2",
       "x": 4372,
       "y": 291,
@@ -333,7 +465,6 @@
       "height": 87
     },
     {
-      "figmaId": "17:490",
       "assetKey": "g-3",
       "x": 3257,
       "y": 572,
@@ -341,7 +472,6 @@
       "height": 74
     },
     {
-      "figmaId": "17:528",
       "assetKey": "g-3",
       "x": 4352,
       "y": 232,
@@ -349,7 +479,6 @@
       "height": 74
     },
     {
-      "figmaId": "17:576",
       "assetKey": "g-3",
       "x": 4595,
       "y": 487,
@@ -357,7 +486,6 @@
       "height": 74
     },
     {
-      "figmaId": "17:522",
       "assetKey": "g-4",
       "x": 3825,
       "y": 362,
@@ -365,7 +493,6 @@
       "height": 66
     },
     {
-      "figmaId": "17:526",
       "assetKey": "g-4",
       "x": 4377,
       "y": 199,
@@ -373,7 +500,6 @@
       "height": 66
     },
     {
-      "figmaId": "17:537",
       "assetKey": "g-4",
       "x": 5725,
       "y": 273,
@@ -381,7 +507,6 @@
       "height": 66
     },
     {
-      "figmaId": "17:523",
       "assetKey": "g-5",
       "x": 3041,
       "y": 440,
@@ -389,7 +514,6 @@
       "height": 52
     },
     {
-      "figmaId": "17:492",
       "assetKey": "barril",
       "x": 3397,
       "y": 525,
@@ -397,7 +521,6 @@
       "height": 145
     },
     {
-      "figmaId": "17:530",
       "assetKey": "barril",
       "x": 4964,
       "y": 335,
@@ -405,7 +528,6 @@
       "height": 106
     },
     {
-      "figmaId": "17:493",
       "assetKey": "flag",
       "x": 3838,
       "y": 226,
@@ -413,7 +535,6 @@
       "height": 145
     },
     {
-      "figmaId": "17:504",
       "assetKey": "pipe-1",
       "x": 6157,
       "y": 533,
@@ -421,7 +542,6 @@
       "height": 143
     },
     {
-      "figmaId": "17:505",
       "assetKey": "pipe-2",
       "x": 2483,
       "y": 555,
@@ -429,102 +549,49 @@
       "height": 157
     },
     {
-      "figmaId": "17:518",
       "assetKey": "rocks",
       "x": 6532,
       "y": 431,
       "width": 326,
       "height": 65
-    },
-    {
-      "figmaId": "17:340",
-      "assetKey": "blocks-1",
-      "x": 329,
-      "y": 481,
-      "width": 195,
-      "height": 50
-    },
-    {
-      "figmaId": "17:353",
-      "assetKey": "blocks-1",
-      "x": 1500,
-      "y": 481,
-      "width": 195,
-      "height": 50
-    },
-    {
-      "figmaId": "17:439",
-      "assetKey": "blocks-1",
-      "x": 4977,
-      "y": 481,
-      "width": 195,
-      "height": 50
-    },
-    {
-      "figmaId": "17:456",
-      "assetKey": "blocks-1",
-      "x": 6908,
-      "y": 481,
-      "width": 195,
-      "height": 50
-    },
-    {
-      "figmaId": "17:365",
-      "assetKey": "blocks-2",
-      "x": 2239,
-      "y": 483,
-      "width": 195,
-      "height": 50
-    },
-    {
-      "figmaId": "17:390",
-      "assetKey": "blocks-2",
-      "x": 3916,
-      "y": 513,
-      "width": 195,
-      "height": 50
     }
   ],
-  "gameplay": {
-    "playerStart": {
-      "x": 174,
-      "y": 600,
-      "width": 48,
-      "height": 64,
-      "figmaOrigin": "topLeft"
+  "markers": {
+    "player_spawn": {
+      "x": 198,
+      "y": 656
     },
-    "portal": {
+    "portal_goal": {
       "x": 8459,
       "y": 545
     },
-    "kisses": [
-      [
-        262,
-        612
-      ],
-      [
-        427,
-        440
-      ],
-      [
-        762,
-        382
-      ]
+    "kiss_collectibles": [
+      {
+        "x": 262,
+        "y": 620
+      },
+      {
+        "x": 427,
+        "y": 440
+      },
+      {
+        "x": 762,
+        "y": 382
+      }
     ],
-    "timers": [
-      [
-        864,
-        384
-      ]
+    "timer_collectibles": [
+      {
+        "x": 864,
+        "y": 384
+      }
     ],
     "enemies": [
       {
-        "x": 500,
-        "y": 610,
+        "x": 520,
+        "y": 640,
         "min": 350,
         "max": 750
       }
     ]
-  },
-  "variant": "desktop"
+  }
 }

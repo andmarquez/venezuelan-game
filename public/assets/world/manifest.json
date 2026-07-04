@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-04T02:57:24.708Z",
+  "generatedAt": "2026-07-04T03:40:06.303Z",
   "figmaFileKey": "1zlB4dA4ktyuuBXzseo1ix",
   "figmaFileUrl": "https://www.figma.com/design/1zlB4dA4ktyuuBXzseo1ix",
   "version": 1,
@@ -394,6 +394,6 @@
     "level": "level-1",
     "width": 8553,
     "height": 720,
-    "placementCount": 57
+    "platformCount": 15
   }
 }
