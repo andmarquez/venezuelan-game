@@ -65,7 +65,7 @@ export function isIphone16Class(): boolean {
   return short >= 390 && short <= 440 && long >= 840 && long <= 940;
 }
 
-/** Mobile fills the screen; desktop keeps the full frame letterboxed. */
+/** Mobile fills screen (crop edges); desktop letterboxes — never stretches. */
 export function resolveScaleMode(): number {
   return isMobileViewport() ? Phaser.Scale.ENVELOP : Phaser.Scale.FIT;
 }
