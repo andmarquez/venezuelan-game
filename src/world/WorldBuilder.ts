@@ -73,7 +73,7 @@ export class WorldBuilder {
       1,
     );
     sky.fillRect(0, 0, worldW, h);
-    sky.setScrollFactor(0);
+    sky.setScrollFactor(1);
     sky.setDepth(WORLD_LAYERS.sky);
   }
 
@@ -81,12 +81,23 @@ export class WorldBuilder {
     for (const section of layout.background.sections) {
       if (!scene.textures.exists(section.key)) continue;
 
+      const displayW = Math.min(section.width, layout.width);
+      const texture = scene.textures.get(section.key);
+      const frame = texture.get();
+      const cropW =
+        frame.width > displayW
+          ? Math.round(frame.width * (displayW / section.width))
+          : frame.width;
+
       const img = scene.add.image(
-        section.x + section.width / 2,
+        section.x + displayW / 2,
         section.y + section.height / 2,
         section.key,
       );
-      img.setDisplaySize(section.width, section.height);
+      if (cropW < frame.width) {
+        img.setCrop(0, 0, cropW, frame.height);
+      }
+      img.setDisplaySize(displayW, section.height);
       img.setDepth(WORLD_LAYERS.background);
       img.setScrollFactor(1);
     }

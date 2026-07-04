@@ -85,8 +85,11 @@ export class GameScene extends Phaser.Scene {
     this.createPortraitOverlay();
 
     const isMobile = shouldShowMobileControls(this.game);
+    const deadzone = isMobile
+      ? GAME_CONFIG.mobileCameraDeadzone
+      : GAME_CONFIG.desktopCameraDeadzone;
     this.cameras.main.startFollow(this.player, true, GAME_CONFIG.cameraLerp, GAME_CONFIG.cameraLerp);
-    this.cameras.main.setDeadzone(isMobile ? 100 : 200, isMobile ? 70 : 100);
+    this.cameras.main.setDeadzone(deadzone.width, deadzone.height);
   }
 
   private createPlayer(): void {
@@ -380,9 +383,9 @@ export class GameScene extends Phaser.Scene {
     const pad = GAME_CONFIG.safePadding;
     const safe = safeAreaInsetsInGame(this.scale);
     const vp = getUiViewport(this.scale);
-    const topY = vp.y + safe.top + (isMobile ? GAME_CONFIG.mobileHudTopInset : pad);
+    const topY = vp.y + safe.top + (isMobile ? GAME_CONFIG.mobileHudTopInset : 8);
     const hudBg = this.hud.getAt(0) as Phaser.GameObjects.Rectangle;
-    const barH = isMobile ? 46 : 52;
+    const barH = isMobile ? 46 : 44;
 
     hudBg.setPosition(vp.x + vp.width / 2, topY + barH / 2);
     hudBg.setSize(vp.width - pad * 2 - safe.left - safe.right, barH);
@@ -400,30 +403,45 @@ export class GameScene extends Phaser.Scene {
       this.hudTexts.time.setFontSize('18px');
       this.hudTexts.lives.setFontSize('18px');
     } else {
+      const rowY = topY + 12;
+      const left = vp.x + pad + 12;
+      const right = vp.x + vp.width - pad - 12;
+      const center = vp.x + vp.width / 2;
+
       this.hudTexts.kisses.setOrigin(0, 0);
-      this.hudTexts.time.setOrigin(0, 0);
-      this.hudTexts.lives.setOrigin(0, 0);
+      this.hudTexts.time.setOrigin(0.5, 0);
+      this.hudTexts.projects.setOrigin(0.5, 0);
+      this.hudTexts.lives.setOrigin(1, 0);
       this.hudTexts.projects.setVisible(true);
-      this.hudTexts.score.setVisible(true);
-      this.hudTexts.kisses.setPosition(vp.x + pad + 8, topY + 8);
-      this.hudTexts.time.setPosition(vp.x + vp.width / 2 - 80, topY + 8);
-      this.hudTexts.projects.setPosition(vp.x + vp.width / 2 + 40, topY + 8);
-      this.hudTexts.lives.setPosition(vp.x + vp.width - pad - 130, topY + 8);
-      this.hudTexts.score.setPosition(vp.x + pad + 8, topY + 30);
-      this.hudTexts.kisses.setFontSize('17px');
-      this.hudTexts.time.setFontSize('17px');
-      this.hudTexts.lives.setFontSize('17px');
+      this.hudTexts.score.setVisible(false);
+
+      this.hudTexts.kisses.setPosition(left, rowY);
+      this.hudTexts.time.setPosition(center - 70, rowY);
+      this.hudTexts.projects.setPosition(center + 10, rowY);
+      this.hudTexts.lives.setPosition(right, rowY);
+      this.hudTexts.kisses.setFontSize('16px');
+      this.hudTexts.time.setFontSize('16px');
+      this.hudTexts.projects.setFontSize('16px');
+      this.hudTexts.lives.setFontSize('16px');
     }
   }
 
   private updateHUD(): void {
-    this.hudTexts.kisses.setText(`♥ ${this.stats.kisses}`);
+    const isMobile = shouldShowMobileControls(this.game);
+    if (isMobile) {
+      this.hudTexts.kisses.setText(`♥ ${this.stats.kisses}`);
+    } else {
+      this.hudTexts.kisses.setText(`♥ ${this.stats.kisses}   Score: ${this.stats.score}`);
+    }
     this.hudTexts.time.setText(`⏱ ${Math.ceil(this.stats.timeRemaining)}s`);
     this.hudTexts.projects.setText(
       `Projects: ${this.stats.projectsCompleted}/${GAME_CONFIG.requiredProjects}`,
     );
     this.hudTexts.lives.setText(`❤ x${this.stats.lives}`);
-    this.hudTexts.score.setText(`Score: ${this.stats.score}`);
+
+    if (!isMobile) {
+      this.hudTexts.score.setText('');
+    }
 
     if (this.stats.timeRemaining <= 10) {
       this.hudTexts.time.setColor('#c62828');

@@ -55,6 +55,10 @@ export const GAME_CONFIG = {
   /** Camera follow smoothing (lower = snappier) */
   cameraLerp: 0.1,
 
+  /** Desktop camera deadzone — keeps more level art visible while following */
+  desktopCameraDeadzone: { width: 280, height: 120 },
+  mobileCameraDeadzone: { width: 100, height: 70 },
+
   /** Safe area padding for mobile notches (CSS pixels, scaled in-game) */
   safePadding: 16,
 
