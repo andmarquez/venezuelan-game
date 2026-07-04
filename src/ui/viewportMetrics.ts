@@ -65,9 +65,9 @@ export function isIphone16Class(): boolean {
   return short >= 390 && short <= 440 && long >= 840 && long <= 940;
 }
 
-/** Always FIT — keeps the full 1280×720 frame visible on every device/orientation. */
+/** Mobile fills the screen; desktop keeps the full frame letterboxed. */
 export function resolveScaleMode(): number {
-  return Phaser.Scale.FIT;
+  return isMobileViewport() ? Phaser.Scale.ENVELOP : Phaser.Scale.FIT;
 }
 
 /** Re-run after orientation/viewport settles (iOS needs delayed refresh). */

@@ -72,6 +72,9 @@ export const GAME_CONFIG = {
   /** Lift touch controls above the bottom edge (browser bars, thumbs) */
   mobileControlsLift: 88,
 
+  /** Bias camera down on mobile landscape so ENVELOP crop keeps ground visible */
+  mobileLandscapeCameraFollowOffsetY: 48,
+
   /**
    * Wild Rift–style mobile control layout.
    * Left = move joystick, right = attack + ability arc.

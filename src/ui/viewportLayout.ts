@@ -18,7 +18,8 @@ export function getUiViewport(scale: Phaser.Scale.ScaleManager): UiViewport {
 
   const gameW = scale.width || GAME_CONFIG.width;
   const gameH = scale.height || GAME_CONFIG.height;
-  const { width: parentW, height: parentH } = getViewportSize();
+  const parentW = scale.parentSize?.width || getViewportSize().width;
+  const parentH = scale.parentSize?.height || getViewportSize().height;
   const zoom = Math.max(parentW / gameW, parentH / gameH);
   const visibleW = parentW / zoom;
   const visibleH = parentH / zoom;

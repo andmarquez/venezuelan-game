@@ -93,6 +93,9 @@ export class GameScene extends Phaser.Scene {
       : GAME_CONFIG.desktopCameraDeadzone;
     this.cameras.main.startFollow(this.player, true, GAME_CONFIG.cameraLerp, GAME_CONFIG.cameraLerp);
     this.cameras.main.setDeadzone(deadzone.width, deadzone.height);
+    if (isMobile && isLandscapeViewport()) {
+      this.cameras.main.setFollowOffset(0, GAME_CONFIG.mobileLandscapeCameraFollowOffsetY);
+    }
   }
 
   private createPlayer(): void {

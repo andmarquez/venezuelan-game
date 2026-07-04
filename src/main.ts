@@ -26,32 +26,13 @@ const applyViewportClasses = () => {
   document.documentElement.dataset.viewport = `${width}x${height}`;
   document.documentElement.dataset.orientation = landscape ? 'landscape' : 'portrait';
   document.documentElement.classList.toggle('is-iphone16-class', isIphone16Class());
-};
 
-const syncGameContainerToVisualViewport = () => {
-  const container = document.getElementById('game-container');
-  if (!container) return;
-
-  if (!isMobileViewport()) {
-    container.style.width = '';
-    container.style.height = '';
-    container.style.left = '';
-    container.style.top = '';
-    return;
-  }
-
-  const vv = window.visualViewport;
-  if (!vv) return;
-
-  container.style.width = `${Math.round(vv.width)}px`;
-  container.style.height = `${Math.round(vv.height)}px`;
-  container.style.left = `${Math.round(vv.offsetLeft)}px`;
-  container.style.top = `${Math.round(vv.offsetTop)}px`;
+  const theme = mobile && !landscape ? '#f8c8dc' : '#b8e0f5';
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme);
 };
 
 const applyScaleMode = () => {
   applyViewportClasses();
-  syncGameContainerToVisualViewport();
   if (!game.isBooted) return;
   const next = resolveScaleMode();
   if (game.scale.scaleMode !== next) {
