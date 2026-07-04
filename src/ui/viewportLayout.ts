@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_CONFIG } from '../config/gameConfig';
 import { getUiLayoutRect } from './scaleMode';
+import { getViewportSize } from './viewportMetrics';
 
 export type UiViewport = {
   x: number;
@@ -17,8 +18,7 @@ export function getUiViewport(scale: Phaser.Scale.ScaleManager): UiViewport {
 
   const gameW = scale.width || GAME_CONFIG.width;
   const gameH = scale.height || GAME_CONFIG.height;
-  const parentW = scale.parentSize?.width || window.innerWidth;
-  const parentH = scale.parentSize?.height || window.innerHeight;
+  const { width: parentW, height: parentH } = getViewportSize();
   const zoom = Math.max(parentW / gameW, parentH / gameH);
   const visibleW = parentW / zoom;
   const visibleH = parentH / zoom;

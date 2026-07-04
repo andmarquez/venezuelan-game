@@ -41,12 +41,23 @@
         background: #b8e0f5;
       }
 
+      html.is-mobile-view.is-portrait-view,
+      html.is-mobile-view.is-portrait-view body {
+        background: #f8c8dc;
+      }
+
       #game-container {
         position: fixed;
         inset: 0;
         width: 100%;
         height: 100%;
         overflow: hidden;
+      }
+
+      html.is-mobile-view #game-container {
+        inset: auto;
+        right: auto;
+        bottom: auto;
       }
 
       canvas {

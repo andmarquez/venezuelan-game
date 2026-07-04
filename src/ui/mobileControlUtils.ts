@@ -1,4 +1,5 @@
 import type Phaser from 'phaser';
+import { getViewportSize } from './viewportMetrics';
 import { isMobileViewport } from './scaleMode';
 
 /**
@@ -9,7 +10,8 @@ export function shouldShowMobileControls(game?: Phaser.Game): boolean {
   if (isMobileViewport()) return true;
 
   if (game?.device.input.touch) {
-    const shortSide = Math.min(window.innerWidth, window.innerHeight);
+    const { width, height } = getViewportSize();
+    const shortSide = Math.min(width, height);
     return shortSide <= 900;
   }
 

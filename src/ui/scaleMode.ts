@@ -1,29 +1,20 @@
 import Phaser from 'phaser';
 import { GAME_CONFIG } from '../config/gameConfig';
+import {
+  getViewportSize,
+  isLandscapeViewport,
+  isMobileViewport,
+  onViewportChange,
+  resolveScaleMode,
+} from './viewportMetrics';
 
-/** True for phone/tablet or forced mobile preview (`?mobile=1`). */
-export function isMobileViewport(): boolean {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('mobile') === '1') return true;
-
-  const shortSide = Math.min(window.innerWidth, window.innerHeight);
-  const touch =
-    typeof window !== 'undefined' &&
-    ('ontouchstart' in window || navigator.maxTouchPoints > 0);
-
-  return touch && shortSide <= 900;
-}
-
-/** True when the device/browser viewport is wider than tall. */
-export function isLandscapeViewport(): boolean {
-  return window.innerWidth >= window.innerHeight;
-}
-
-/** Mobile landscape uses FIT so the full level (platforms + ground) stays visible. */
-export function resolveScaleMode(): number {
-  if (!isMobileViewport()) return Phaser.Scale.FIT;
-  return isLandscapeViewport() ? Phaser.Scale.FIT : Phaser.Scale.ENVELOP;
-}
+export {
+  getViewportSize,
+  isLandscapeViewport,
+  isMobileViewport,
+  onViewportChange,
+  resolveScaleMode,
+};
 
 /** Full design canvas in game coordinates. */
 export function getUiLayoutRect(scale: Phaser.Scale.ScaleManager) {

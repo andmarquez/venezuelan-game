@@ -5,7 +5,58 @@ import { GameScene } from './scenes/GameScene';
 import { GameOverScene } from './scenes/GameOverScene';
 import { WinScene } from './scenes/WinScene';
 import { GAME_CONFIG } from './config/gameConfig';
-import { isLandscapeViewport, isMobileViewport, resolveScaleMode } from './ui/scaleMode';
+import {
+  getViewportSize,
+  isLandscapeViewport,
+  isMobileViewport,
+  onViewportChange,
+  resolveScaleMode,
+} from './ui/viewportMetrics';
+
+const applyViewportClasses = () => {
+  const mobile = isMobileViewport();
+  const landscape = isLandscapeViewport();
+  const { width, height } = getViewportSize();
+
+  document.documentElement.classList.toggle('is-mobile-view', mobile);
+  document.documentElement.classList.toggle('is-desktop-view', !mobile);
+  document.documentElement.classList.toggle('is-landscape-view', landscape);
+  document.documentElement.classList.toggle('is-portrait-view', !landscape);
+  document.documentElement.dataset.viewport = `${width}x${height}`;
+  document.documentElement.dataset.orientation = landscape ? 'landscape' : 'portrait';
+};
+
+const syncGameContainerToVisualViewport = () => {
+  const container = document.getElementById('game-container');
+  if (!container) return;
+
+  if (!isMobileViewport()) {
+    container.style.width = '';
+    container.style.height = '';
+    container.style.left = '';
+    container.style.top = '';
+    return;
+  }
+
+  const vv = window.visualViewport;
+  if (!vv) return;
+
+  container.style.width = `${Math.round(vv.width)}px`;
+  container.style.height = `${Math.round(vv.height)}px`;
+  container.style.left = `${Math.round(vv.offsetLeft)}px`;
+  container.style.top = `${Math.round(vv.offsetTop)}px`;
+};
+
+const applyScaleMode = () => {
+  applyViewportClasses();
+  syncGameContainerToVisualViewport();
+  if (!game.isBooted) return;
+  const next = resolveScaleMode();
+  if (game.scale.scaleMode !== next) {
+    game.scale.scaleMode = next;
+  }
+  game.scale.refresh();
+};
 
 const game = new Phaser.Game({
   type: Phaser.AUTO,
@@ -38,36 +89,16 @@ const game = new Phaser.Game({
   },
 });
 
-const applyScaleMode = () => {
-  const next = resolveScaleMode();
-  const mobile = isMobileViewport();
-  const landscape = isLandscapeViewport();
-  document.documentElement.classList.toggle('is-mobile-view', mobile);
-  document.documentElement.classList.toggle('is-desktop-view', !mobile);
-  document.documentElement.classList.toggle('is-landscape-view', landscape);
-  document.documentElement.classList.toggle('is-portrait-view', !landscape);
-  if (game.scale.scaleMode !== next) {
-    game.scale.scaleMode = next;
-  }
-  game.scale.refresh();
-};
-
-window.addEventListener('resize', applyScaleMode);
-window.addEventListener('orientationchange', applyScaleMode);
-const bootMobile = isMobileViewport();
-const bootLandscape = isLandscapeViewport();
-document.documentElement.classList.add(bootMobile ? 'is-mobile-view' : 'is-desktop-view');
-document.documentElement.classList.add(bootLandscape ? 'is-landscape-view' : 'is-portrait-view');
+applyViewportClasses();
+onViewportChange(applyScaleMode);
 
 game.events.once('ready', () => {
   applyScaleMode();
-  // Leave capture off so iOS delivers reliable tap/pointer events to the canvas.
   if (game.input.touch) {
     game.input.touch.capture = false;
   }
 });
 
-// Block page scroll during play — do NOT preventDefault on touchend (breaks Phaser taps on iOS).
 document.addEventListener(
   'touchmove',
   (e) => {
