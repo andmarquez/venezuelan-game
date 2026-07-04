@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { GAME_CONFIG } from '../config/gameConfig';
+import { type MobileLayoutInsets } from './scaleMode';
 import { type UiViewport } from './viewportLayout';
 
 /**
@@ -15,6 +16,7 @@ export class VirtualJoystick {
   private centerY = 0;
   private pointerId: number | null = null;
   private axisX = 0;
+  private hitScale = 1;
 
   constructor(scene: Phaser.Scene, parent: Phaser.GameObjects.Container) {
     this.container = scene.add.container(0, 0);
@@ -34,16 +36,23 @@ export class VirtualJoystick {
     this.container.add([this.baseRing, this.base, this.thumb]);
   }
 
-  layout(viewport: UiViewport, safeBottom = 0): void {
+  layout(viewport: UiViewport, safeBottom = 0, insets?: MobileLayoutInsets): void {
     const cfg = GAME_CONFIG.mobileWildRift.joystick;
     const pad = GAME_CONFIG.safePadding;
-    const lift = Math.max(GAME_CONFIG.mobileControlsLift, 72);
+    const layout = insets;
+    const lift = layout?.controlsLift ?? Math.max(GAME_CONFIG.mobileControlsLift, 72);
+    const bottomInset = layout?.joystickBottomInset ?? cfg.bottomInset;
+    const scale = layout?.controlScale ?? 1;
+    this.hitScale = scale;
 
     this.centerX = viewport.x + viewport.width * cfg.xRatio + pad;
-    this.centerY = viewport.y + viewport.height - safeBottom - lift - cfg.bottomInset;
+    this.centerY = viewport.y + viewport.height - safeBottom - lift - bottomInset;
 
     this.baseRing.setPosition(this.centerX, this.centerY);
     this.base.setPosition(this.centerX, this.centerY);
+    this.baseRing.setScale(scale);
+    this.base.setScale(scale);
+    this.thumb.setScale(scale);
     this.resetThumb();
   }
 
@@ -51,7 +60,7 @@ export class VirtualJoystick {
     if (this.pointerId !== null) return false;
     const cfg = GAME_CONFIG.mobileWildRift.joystick;
     const dist = Phaser.Math.Distance.Between(uiX, uiY, this.centerX, this.centerY);
-    if (dist > cfg.baseRadius + 28) return false;
+    if (dist > (cfg.baseRadius + 28) * this.hitScale) return false;
 
     this.pointerId = pointer.id;
     this.updateThumb(uiX, uiY);

@@ -5,6 +5,7 @@ import { Collectible } from '../objects/Collectible';
 import { KissProjectile } from '../objects/KissProjectile';
 import { MobileControls } from '../ui/MobileControls';
 import { shouldShowMobileControls } from '../ui/mobileControlUtils';
+import { getMobileLayoutInsets, isLandscapeViewport } from '../ui/scaleMode';
 import { safeAreaInsetsInGame } from '../ui/safeAreaUtils';
 import { getUiViewport } from '../ui/viewportLayout';
 import {
@@ -86,7 +87,9 @@ export class GameScene extends Phaser.Scene {
 
     const isMobile = shouldShowMobileControls(this.game);
     const deadzone = isMobile
-      ? GAME_CONFIG.mobileCameraDeadzone
+      ? isLandscapeViewport()
+        ? { width: 200, height: 100 }
+        : GAME_CONFIG.mobileCameraDeadzone
       : GAME_CONFIG.desktopCameraDeadzone;
     this.cameras.main.startFollow(this.player, true, GAME_CONFIG.cameraLerp, GAME_CONFIG.cameraLerp);
     this.cameras.main.setDeadzone(deadzone.width, deadzone.height);
@@ -383,7 +386,7 @@ export class GameScene extends Phaser.Scene {
     const pad = GAME_CONFIG.safePadding;
     const safe = safeAreaInsetsInGame(this.scale);
     const vp = getUiViewport(this.scale);
-    const topY = vp.y + safe.top + (isMobile ? GAME_CONFIG.mobileHudTopInset : 8);
+    const topY = vp.y + safe.top + (isMobile ? getMobileLayoutInsets().hudTopInset : 8);
     const hudBg = this.hud.getAt(0) as Phaser.GameObjects.Rectangle;
     const barH = isMobile ? 46 : 44;
 
@@ -487,16 +490,15 @@ export class GameScene extends Phaser.Scene {
     this.portraitOverlay.add([bg, msg]);
 
     const update = () => {
-      const w = this.scale.width;
-      const h = this.scale.height;
-      const portrait = h > w;
-      this.portraitOverlay?.setVisible(portrait);
-      bg.setPosition(w / 2, h / 2);
-      bg.setSize(w, h);
-      msg.setPosition(w / 2, h / 2);
+      const vp = getUiViewport(this.scale);
+      const portrait = !isLandscapeViewport();
+      this.portraitOverlay?.setVisible(portrait && shouldShowMobileControls(this.game));
+      bg.setPosition(vp.x + vp.width / 2, vp.y + vp.height / 2);
+      bg.setSize(vp.width, vp.height);
+      msg.setPosition(vp.x + vp.width / 2, vp.y + vp.height / 2);
     };
     update();
-    this.scale.on('resize', update);
+    this.scale.on(Phaser.Scale.Events.RESIZE, update);
   }
 
   update(_time: number, delta: number): void {

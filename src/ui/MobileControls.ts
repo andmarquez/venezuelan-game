@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { GAME_CONFIG } from '../config/gameConfig';
 import { safeAreaInsetsInGame } from './safeAreaUtils';
 import { getUiViewport, pointerToUiSpace } from './viewportLayout';
+import { getMobileLayoutInsets } from './scaleMode';
 import { VirtualJoystick } from './VirtualJoystick';
 
 export type TouchInput = {
@@ -34,6 +35,7 @@ export class MobileControls {
   private abilityPointers = new Map<number, AbilityId>();
   private jumpPressPending = false;
   private kissPressPending = false;
+  private controlScale = 1;
 
   input: TouchInput = {
     moveAxis: 0,
@@ -99,25 +101,31 @@ export class MobileControls {
     const vp = getUiViewport(this.scene.scale);
     const safe = safeAreaInsetsInGame(this.scene.scale);
     const pad = GAME_CONFIG.safePadding;
-    const lift = Math.max(GAME_CONFIG.mobileControlsLift, 72);
+    const layout = getMobileLayoutInsets();
     const cfg = GAME_CONFIG.mobileWildRift;
+    const scale = layout.controlScale;
+    this.controlScale = scale;
 
-    this.joystick.layout(vp, safe.bottom);
+    this.joystick.layout(vp, safe.bottom, layout);
 
-    const attackX = vp.x + vp.width - pad - safe.right - cfg.attackInsetX;
-    const attackY = vp.y + vp.height - safe.bottom - lift - cfg.attackInsetY;
+    const attackX = vp.x + vp.width - pad - safe.right - layout.attackInsetX;
+    const attackY = vp.y + vp.height - safe.bottom - layout.controlsLift - layout.attackInsetY;
     const jump = this.abilities.find((a) => a.id === 'jump')!;
     jump.btn.setPosition(attackX, attackY);
+    jump.btn.setScale(scale);
     jump.icon.setPosition(attackX, attackY);
+    jump.icon.setScale(scale);
 
     const arcButtons = this.abilities.filter((a) => a.id !== 'jump');
     arcButtons.forEach((ability, i) => {
       const slot = cfg.abilityArc[i];
       const rad = Phaser.Math.DegToRad(slot.angleDeg);
-      const x = attackX + Math.cos(rad) * slot.distance;
-      const y = attackY + Math.sin(rad) * slot.distance;
+      const x = attackX + Math.cos(rad) * slot.distance * scale;
+      const y = attackY + Math.sin(rad) * slot.distance * scale;
       ability.btn.setPosition(x, y);
+      ability.btn.setScale(scale);
       ability.icon.setPosition(x, y);
+      ability.icon.setScale(scale);
     });
   }
 
@@ -129,7 +137,7 @@ export class MobileControls {
       const sorted = [...this.abilities].sort((a, b) => a.radius - b.radius);
       for (const ability of sorted) {
         const dist = Phaser.Math.Distance.Between(x, y, ability.btn.x, ability.btn.y);
-        if (dist <= ability.radius + 6) return ability;
+        if (dist <= (ability.radius + 6) * this.controlScale) return ability;
       }
       return null;
     };

@@ -5,7 +5,7 @@ import { GameScene } from './scenes/GameScene';
 import { GameOverScene } from './scenes/GameOverScene';
 import { WinScene } from './scenes/WinScene';
 import { GAME_CONFIG } from './config/gameConfig';
-import { isMobileViewport, resolveScaleMode } from './ui/scaleMode';
+import { isLandscapeViewport, isMobileViewport, resolveScaleMode } from './ui/scaleMode';
 
 const game = new Phaser.Game({
   type: Phaser.AUTO,
@@ -41,8 +41,11 @@ const game = new Phaser.Game({
 const applyScaleMode = () => {
   const next = resolveScaleMode();
   const mobile = isMobileViewport();
+  const landscape = isLandscapeViewport();
   document.documentElement.classList.toggle('is-mobile-view', mobile);
   document.documentElement.classList.toggle('is-desktop-view', !mobile);
+  document.documentElement.classList.toggle('is-landscape-view', landscape);
+  document.documentElement.classList.toggle('is-portrait-view', !landscape);
   if (game.scale.scaleMode !== next) {
     game.scale.scaleMode = next;
   }
@@ -51,9 +54,13 @@ const applyScaleMode = () => {
 
 window.addEventListener('resize', applyScaleMode);
 window.addEventListener('orientationchange', applyScaleMode);
-document.documentElement.classList.add(isMobileViewport() ? 'is-mobile-view' : 'is-desktop-view');
+const bootMobile = isMobileViewport();
+const bootLandscape = isLandscapeViewport();
+document.documentElement.classList.add(bootMobile ? 'is-mobile-view' : 'is-desktop-view');
+document.documentElement.classList.add(bootLandscape ? 'is-landscape-view' : 'is-portrait-view');
 
 game.events.once('ready', () => {
+  applyScaleMode();
   // Leave capture off so iOS delivers reliable tap/pointer events to the canvas.
   if (game.input.touch) {
     game.input.touch.capture = false;

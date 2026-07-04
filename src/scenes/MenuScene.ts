@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_CONFIG } from '../config/gameConfig';
 import { shouldShowMobileControls } from '../ui/mobileControlUtils';
+import { isLandscapeViewport } from '../ui/scaleMode';
 import { getUiViewport } from '../ui/viewportLayout';
 
 /**
@@ -165,8 +166,7 @@ export class MenuScene extends Phaser.Scene {
     this.portraitHint?.setPosition(cx, hintY);
     this.portraitHint?.setWordWrapWidth(vp.width - 40);
 
-    const isPortrait = window.innerHeight > window.innerWidth;
-    if (isPortrait && shouldShowMobileControls(this.game)) {
+    if (!isLandscapeViewport() && shouldShowMobileControls(this.game)) {
       this.portraitHint?.setText('Turn your phone sideways for the best experience.');
     } else if (!shouldShowMobileControls(this.game)) {
       this.portraitHint?.setText('On desktop: add ?mobile=1 to preview touch controls.');
