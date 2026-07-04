@@ -245,8 +245,11 @@ export class GameScene extends Phaser.Scene {
       if (this.stats.projectsCompleted < GAME_CONFIG.requiredProjects) {
         this.stats.projectsCompleted += 1;
       }
+      const unlockedTriple = this.player.grantTripleJump();
       this.showFloatingMessage(
-        Phaser.Utils.Array.GetRandom([...GAME_CONFIG.timerMessages]),
+        unlockedTriple
+          ? 'Triple jump unlocked!'
+          : Phaser.Utils.Array.GetRandom([...GAME_CONFIG.timerMessages]),
       );
     }
 

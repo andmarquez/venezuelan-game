@@ -18,8 +18,12 @@ export const GAME_CONFIG = {
   playerHighJumpVelocity: -700,
   /** Second jump in mid-air (tap jump again while airborne) */
   playerDoubleJumpVelocity: -500,
+  /** Third jump after grabbing a timer prize */
+  playerTripleJumpVelocity: -420,
   /** Total jumps before landing (2 = single + one double) */
   maxJumps: 2,
+  /** Jumps allowed after collecting a timer prize */
+  maxJumpsWithPrize: 3,
   playerBounce: 0.1,
 
   /** Kiss blow attack */

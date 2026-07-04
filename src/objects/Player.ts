@@ -23,6 +23,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   private hurtTimer?: Phaser.Time.TimerEvent;
   private facingRight = true;
   private jumpsRemaining: number = GAME_CONFIG.maxJumps;
+  private maxJumpsAllowed: number = GAME_CONFIG.maxJumps;
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, 'andsiosa-idle');
@@ -97,7 +98,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     const jumpPressed = keys.jump;
 
     if (onFloor) {
-      this.jumpsRemaining = GAME_CONFIG.maxJumps;
+      this.jumpsRemaining = this.maxJumpsAllowed;
     }
 
     if (useAxis) {
@@ -121,21 +122,24 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     }
 
     if (jumpPressed && this.jumpsRemaining > 0) {
-      const isAirJump = !onFloor;
+      const jumpsBefore = this.jumpsRemaining;
       let jumpPower: number = GAME_CONFIG.playerJumpVelocity;
 
-      if (isAirJump) {
-        // Double jump — slightly smaller than the first leap
+      if (onFloor) {
+        jumpPower = keys.highJump
+          ? GAME_CONFIG.playerHighJumpVelocity
+          : GAME_CONFIG.playerJumpVelocity;
+      } else if (jumpsBefore === 1 && this.maxJumpsAllowed >= GAME_CONFIG.maxJumpsWithPrize) {
+        jumpPower = GAME_CONFIG.playerTripleJumpVelocity;
+      } else {
         jumpPower = GAME_CONFIG.playerDoubleJumpVelocity;
-      } else if (keys.highJump) {
-        jumpPower = GAME_CONFIG.playerHighJumpVelocity;
       }
 
       this.setVelocityY(jumpPower);
       this.jumpsRemaining -= 1;
       this.setAnimState('jump');
 
-      if (isAirJump) {
+      if (!onFloor) {
         // Brief pop on double jump — replace with sprite FX later
         const baseScale = Math.abs(this.scaleX);
         this.scene.tweens.add({
@@ -204,7 +208,28 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
   stompBounce(): void {
     this.setVelocityY(GAME_CONFIG.stompBounceVelocity);
-    this.jumpsRemaining = GAME_CONFIG.maxJumps - 1;
+    this.jumpsRemaining = this.maxJumpsAllowed - 1;
     this.setAnimState('jump');
+  }
+
+  /** Timer prize — unlock triple jump for the rest of the run. */
+  grantTripleJump(): boolean {
+    if (this.maxJumpsAllowed >= GAME_CONFIG.maxJumpsWithPrize) return false;
+
+    this.maxJumpsAllowed = GAME_CONFIG.maxJumpsWithPrize;
+    const onFloor = this.body?.blocked.down || this.body?.touching.down;
+    if (onFloor) {
+      this.jumpsRemaining = this.maxJumpsAllowed;
+    } else {
+      this.jumpsRemaining = Math.min(
+        this.maxJumpsAllowed,
+        this.jumpsRemaining + (GAME_CONFIG.maxJumpsWithPrize - GAME_CONFIG.maxJumps),
+      );
+    }
+    return true;
+  }
+
+  hasTripleJump(): boolean {
+    return this.maxJumpsAllowed >= GAME_CONFIG.maxJumpsWithPrize;
   }
 }
