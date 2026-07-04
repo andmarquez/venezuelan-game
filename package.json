@@ -6,7 +6,12 @@
     "dev": "vite --host 0.0.0.0",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --host 0.0.0.0",
-    "phone:tunnel": "bash scripts/phone-tunnel.sh"
+    "phone:tunnel": "bash scripts/phone-tunnel.sh",
+    "assets:manifest": "node scripts/sync-figma-world-assets.mjs manifest",
+    "assets:download": "node scripts/sync-figma-world-assets.mjs download",
+    "assets:export": "node scripts/sync-figma-world-assets.mjs export",
+    "assets:list": "node scripts/sync-figma-world-assets.mjs list",
+    "assets:sync": "node scripts/sync-figma-world-assets.mjs download && node scripts/sync-figma-world-assets.mjs manifest"
   },
   "dependencies": {
     "phaser": "^3.90.0"

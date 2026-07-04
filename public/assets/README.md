@@ -1,41 +1,45 @@
 # Game Assets
 
-Drop your custom art here when you are ready to replace placeholder graphics.
+## Figma world sync (Level 1)
 
-## Figma UI (edit screens here)
+**File:** https://www.figma.com/design/1zlB4dA4ktyuuBXzseo1ix
 
-**Andsiosa's Creative Quest — UI** (mobile landscape 1280×720):
+After you move or edit world components on **M02 — Gameplay (Level 1)**:
 
-https://www.figma.com/design/1zlB4dA4ktyuuBXzseo1ix
+1. Keep component **names** aligned with `figma/world-asset-registry.json` (`Blocks-1` → `blocks-1`, `waves` → `waves`, etc.).
+2. Re-export PNGs:
+   - Ask Cursor to export via Figma MCP (writes `figma/export-urls.json`), **or**
+   - `FIGMA_ACCESS_TOKEN=… npm run assets:export`
+3. `npm run assets:sync` — downloads PNGs into `public/assets/world/components/` and rebuilds `manifest.json`.
+4. Update `public/assets/world/level-1/layout.json` when placements change (re-extract from M02 artboard).
 
-Pages in the file:
+| Path | Purpose |
+|------|---------|
+| `figma/world-asset-registry.json` | Maps Figma component names → file names + node IDs |
+| `figma/export-urls.json` | Temporary export URLs (regenerated each sync) |
+| `public/assets/world/components/*.png` | Exported world sprites |
+| `public/assets/world/level-1/layout.json` | Positions + gameplay markers from M02 |
+| `public/assets/world/manifest.json` | Runtime index (auto-generated) |
+
+Phaser loads textures as `world:{assetKey}` (e.g. `world:blocks-1`). Missing files use colored placeholders.
+
+## Figma UI screens
 
 | Page | Artboard size | Contents |
 |------|---------------|----------|
-| 🎨 Design Tokens | — | Brand colors + typography notes |
-| 📱 Screens — Mobile Landscape | **1280 × 720** | M01 Start, M02 Gameplay, M03 Game Over, M04 Win (+ Wild Rift touch controls) |
-| 🖥️ Screens — Desktop | **1920 × 1080** | D01–D04 same screens, centered 1280×720 viewport, keyboard hints (no touch UI) |
-| 🧩 Components | — | Andsiosa states, HUD, Wild Rift controls |
+| 🎨 Design Tokens | — | Brand colors + typography |
+| 📱 Screens — Mobile Landscape | **1280 × 720** | M01–M04 + touch controls |
+| 🖥️ Screens — Desktop | **1920 × 1080** | D01–D04 |
+| 🧩 Components | — | Andsiosa, HUD, world components |
 
-After you update a screen in Figma, ask to sync changes back into the Phaser game.
-
-## Suggested files
+## Character / gameplay sprites
 
 | File | Purpose |
 |------|---------|
-| `andsiosa.png` | Spritesheet for Andsiosa (idle, run, jump, fall, hurt, victory) |
-| `deadline-bug.png` | Enemy spritesheet |
-| `kiss.png` | Kiss collectible |
-| `timer.png` | Timer power-up |
-| `portal.png` | Creative portal at level end |
-| `platform.png` | Platform tile |
-| `particle.png` | Particle sparkle |
+| `andsiosa.png` | Player spritesheet |
+| `deadline-bug.png` | Enemy |
+| `kiss.png` | Collectible |
+| `timer.png` | Power-up |
+| `portal.png` | Level end portal |
 
-## How to swap placeholders
-
-1. Add images to this folder.
-2. In `src/scenes/BootScene.ts`, load them in `preload()` instead of (or before) `generatePlaceholderTextures()`.
-3. Keep the same texture keys (`andsiosa-idle`, `kiss`, `timer`, etc.) so gameplay code keeps working.
-4. Update animation frame definitions in `src/objects/Player.ts` when using a real spritesheet.
-
-Placeholder shapes are generated at runtime so the game runs without any files in this folder.
+Swap placeholders in `src/scenes/BootScene.ts` — keep texture keys (`andsiosa-idle`, `kiss`, etc.).

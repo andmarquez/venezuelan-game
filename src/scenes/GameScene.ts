@@ -10,54 +10,8 @@ import {
   createInitialStats,
   type GameStats,
 } from '../config/gameConfig';
-
-type PlatformDef = { x: number; y: number; width: number; height?: number };
-
-/** Level 1 layout — platforms, gaps, collectibles, enemies */
-const LEVEL = {
-  groundSegments: [
-    { x: 0, width: 900 },
-    { x: 1050, width: 700 },
-    { x: 1900, width: 600 },
-    { x: 2650, width: 500 },
-    { x: 3300, width: 800 },
-    { x: 4250, width: 550 },
-  ] as { x: number; width: number }[],
-  platforms: [
-    { x: 400, y: 520, width: 180 },
-    { x: 700, y: 440, width: 140 },
-    { x: 1150, y: 480, width: 160 },
-    { x: 1400, y: 400, width: 120 },
-    { x: 1650, y: 340, width: 140 },
-    { x: 2100, y: 460, width: 180 },
-    { x: 2400, y: 380, width: 140 },
-    { x: 2750, y: 500, width: 160 },
-    { x: 3000, y: 420, width: 120 },
-    { x: 3450, y: 460, width: 200 },
-    { x: 3800, y: 380, width: 140 },
-    { x: 4050, y: 300, width: 160 },
-    { x: 4400, y: 500, width: 200 },
-  ] as PlatformDef[],
-  kisses: [
-    [200, 600], [450, 480], [750, 380], [500, 600], [1200, 420],
-    [1500, 340], [1750, 280], [2200, 400], [2500, 320], [2850, 440],
-    [3100, 360], [3550, 400], [3900, 320], [4200, 240], [4500, 440],
-    [1000, 600], [2000, 600], [3200, 600], [3600, 600],
-  ] as [number, number][],
-  timers: [
-    [850, 380], [1700, 280], [2550, 320], [3700, 320], [4100, 240],
-  ] as [number, number][],
-  enemies: [
-    { x: 500, y: 640, min: 420, max: 780 },
-    { x: 1300, y: 640, min: 1100, max: 1600 },
-    { x: 2200, y: 640, min: 1950, max: 2400 },
-    { x: 3000, y: 640, min: 2700, max: 3100 },
-    { x: 3600, y: 428, min: 3450, max: 3620 },
-    { x: 4500, y: 468, min: 4400, max: 4580 },
-  ],
-  portal: { x: 4680, y: 620 },
-  playerStart: { x: 120, y: 600 },
-};
+import { WorldBuilder } from '../world/WorldBuilder';
+import type { LevelLayout, WorldManifest } from '../world/worldTypes';
 
 /**
  * GameScene — main Level 1 gameplay.
@@ -90,7 +44,7 @@ export class GameScene extends Phaser.Scene {
   private portraitOverlay?: Phaser.GameObjects.Container;
   private portalMessage?: Phaser.GameObjects.Text;
   private gameEnded = false;
-  private parallaxLayers: Phaser.GameObjects.GameObject[] = [];
+  private levelLayout!: LevelLayout;
 
   constructor() {
     super({ key: 'GameScene' });
@@ -102,14 +56,17 @@ export class GameScene extends Phaser.Scene {
     this.enemies = [];
     this.collectibles = [];
     this.kissProjectiles = [];
-    this.parallaxLayers = [];
 
-    this.physics.world.setBounds(0, 0, GAME_CONFIG.worldWidth, GAME_CONFIG.worldHeight);
-    this.cameras.main.setBounds(0, 0, GAME_CONFIG.worldWidth, GAME_CONFIG.worldHeight);
+    this.levelLayout = this.cache.json.get('level-1-layout') as LevelLayout;
+    const worldW = this.levelLayout?.width ?? GAME_CONFIG.worldWidth;
+    const worldManifest = (this.registry.get('worldManifest') as WorldManifest | null) ?? null;
+
+    this.physics.world.setBounds(0, 0, worldW, GAME_CONFIG.worldHeight);
+    this.cameras.main.setBounds(0, 0, worldW, GAME_CONFIG.worldHeight);
     this.cameras.main.setBackgroundColor('#b8e0f5');
 
-    this.createParallaxBackground();
-    this.createPlatforms();
+    const world = WorldBuilder.build(this, this.levelLayout, worldManifest);
+    this.platforms = world.platforms;
     this.createPlayer();
     this.createCollectibles();
     this.createEnemies();
@@ -123,135 +80,31 @@ export class GameScene extends Phaser.Scene {
     this.cameras.main.setDeadzone(200, 100);
   }
 
-  private createParallaxBackground(): void {
-    const worldW = GAME_CONFIG.worldWidth;
-    const h = GAME_CONFIG.height;
-
-    const sky = this.add.graphics();
-    sky.fillGradientStyle(
-      GAME_CONFIG.colors.skyTop,
-      GAME_CONFIG.colors.skyTop,
-      GAME_CONFIG.colors.skyBottom,
-      GAME_CONFIG.colors.skyBottom,
-      1,
-    );
-    sky.fillRect(0, 0, worldW, h);
-    sky.setScrollFactor(0);
-    sky.setDepth(-20);
-
-    for (let i = 0; i < 12; i++) {
-      const cloud = this.add.ellipse(
-        i * 420 + 80,
-        60 + (i % 4) * 35,
-        100 + (i % 3) * 30,
-        44,
-        GAME_CONFIG.colors.cloud,
-        0.75,
-      );
-      cloud.setScrollFactor(0.1 + (i % 3) * 0.05);
-      cloud.setDepth(-15);
-      this.parallaxLayers.push(cloud);
-      this.tweens.add({
-        targets: cloud,
-        x: cloud.x + 40,
-        duration: 4000 + i * 300,
-        yoyo: true,
-        repeat: -1,
-      });
-    }
-
-    for (let i = 0; i < 5; i++) {
-      const hill = this.add.ellipse(
-        i * 1100 + 200,
-        h - 60,
-        900,
-        180,
-        i % 2 === 0 ? GAME_CONFIG.colors.hillFar : GAME_CONFIG.colors.hillNear,
-        0.5,
-      );
-      hill.setScrollFactor(0.2 + i * 0.05);
-      hill.setDepth(-12);
-      this.parallaxLayers.push(hill);
-    }
-  }
-
-  private createPlatforms(): void {
-    this.platforms = this.physics.add.staticGroup();
-
-    const groundY = 680;
-    const groundH = 80;
-
-    LEVEL.groundSegments.forEach((seg) => {
-      this.addPlatform(seg.x + seg.width / 2, groundY, seg.width, groundH, true);
-    });
-
-    LEVEL.platforms.forEach((p) => {
-      this.addPlatform(p.x, p.y, p.width, p.height ?? 32, false);
-    });
-  }
-
-  private addPlatform(
-    centerX: number,
-    centerY: number,
-    width: number,
-    height: number,
-    isGround: boolean,
-  ): void {
-    const tileW = 64;
-    const tiles = Math.ceil(width / tileW);
-    const startX = centerX - width / 2;
-
-    for (let i = 0; i < tiles; i++) {
-      const tile = this.platforms.create(
-        startX + i * tileW + tileW / 2,
-        centerY,
-        'platform-tile',
-      ) as Phaser.Physics.Arcade.Sprite;
-      tile.setDisplaySize(tileW, height);
-      tile.refreshBody();
-      tile.setDepth(1);
-    }
-
-    if (isGround) {
-      const grass = this.add.rectangle(
-        centerX,
-        centerY - height / 2 + 4,
-        width,
-        8,
-        GAME_CONFIG.colors.groundTop,
-      );
-      grass.setDepth(2);
-    }
-  }
-
   private createPlayer(): void {
-    this.player = new Player(
-      this,
-      LEVEL.playerStart.x,
-      LEVEL.playerStart.y,
-    );
+    const { x, y } = this.levelLayout.gameplay.playerStart;
+    this.player = new Player(this, x, y);
   }
 
   private createCollectibles(): void {
-    LEVEL.kisses.forEach(([x, y]) => {
+    this.levelLayout.gameplay.kisses.forEach(([x, y]) => {
       const kiss = new Collectible(this, x, y, 'kiss');
       this.collectibles.push(kiss);
     });
-    LEVEL.timers.forEach(([x, y]) => {
+    this.levelLayout.gameplay.timers.forEach(([x, y]) => {
       const timer = new Collectible(this, x, y, 'timer');
       this.collectibles.push(timer);
     });
   }
 
   private createEnemies(): void {
-    LEVEL.enemies.forEach((e) => {
+    this.levelLayout.gameplay.enemies.forEach((e) => {
       const bug = new Enemy(this, e.x, e.y, e.min, e.max);
       this.enemies.push(bug);
     });
   }
 
   private createPortal(): void {
-    const { x, y } = LEVEL.portal;
+    const { x, y } = this.levelLayout.gameplay.portal;
     this.portal = this.physics.add.sprite(x, y, 'portal');
     this.portal.setImmovable(true);
     (this.portal.body as Phaser.Physics.Arcade.Body).setAllowGravity(false);
