@@ -48,7 +48,7 @@ export class WorldBuilder {
 
     if (debugVisible) {
       scene.add
-        .text(16, layout.height - 36, 'DEBUG: platform zones (H to toggle, ?debug=1)', {
+        .text(16, layout.height - 36, 'Platform zones (H to toggle, ?zones=0 to hide)', {
           fontSize: '14px',
           fontFamily: 'Nunito, sans-serif',
           color: '#1b5e20',
@@ -78,25 +78,13 @@ export class WorldBuilder {
   }
 
   private static drawBackground(scene: Phaser.Scene, layout: LevelLayout): void {
-    for (const section of layout.background.sections) {
-      if (!scene.textures.exists(section.key)) continue;
+    const sections = layout.background?.sections ?? [];
+    for (const section of sections) {
+      const key = section.key;
+      if (!scene.textures.exists(key)) continue;
 
-      const displayW = Math.min(section.width, layout.width);
-      const texture = scene.textures.get(section.key);
-      const frame = texture.get();
-      const cropW =
-        frame.width > displayW
-          ? Math.round(frame.width * (displayW / section.width))
-          : frame.width;
-
-      const img = scene.add.image(
-        section.x + displayW / 2,
-        section.y + section.height / 2,
-        section.key,
-      );
-      if (cropW < frame.width) {
-        img.setCrop(0, 0, cropW, frame.height);
-      }
+      const displayW = section.width;
+      const img = scene.add.image(section.x + displayW / 2, section.y + section.height / 2, key);
       img.setDisplaySize(displayW, section.height);
       img.setDepth(WORLD_LAYERS.background);
       img.setScrollFactor(1);
@@ -127,10 +115,70 @@ export class WorldBuilder {
     for (const zone of zones) {
       g.fillStyle(0x00e676, 0.35);
       g.fillRect(zone.x, zone.y, zone.width, zone.height);
-      g.lineStyle(2, 0x00c853, 0.95);
-      g.strokeRect(zone.x, zone.y, zone.width, zone.height);
+      WorldBuilder.strokeDashedRect(g, zone.x, zone.y, zone.width, zone.height, 0x009650, 2, 8, 6);
     }
 
     return { graphics: g, labels: [] };
+  }
+
+  /** Figma-style dashed green outline for gameplay zones. */
+  private static strokeDashedRect(
+    g: Phaser.GameObjects.Graphics,
+    x: number,
+    y: number,
+    w: number,
+    h: number,
+    color: number,
+    lineWidth: number,
+    dash: number,
+    gap: number,
+  ): void {
+    const edges: [number, number, number, number][] = [
+      [x, y, x + w, y],
+      [x + w, y, x + w, y + h],
+      [x + w, y + h, x, y + h],
+      [x, y + h, x, y],
+    ];
+
+    g.lineStyle(lineWidth, color, 0.95);
+    for (const [x1, y1, x2, y2] of edges) {
+      WorldBuilder.strokeDashedLine(g, x1, y1, x2, y2, dash, gap);
+    }
+  }
+
+  private static strokeDashedLine(
+    g: Phaser.GameObjects.Graphics,
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    dash: number,
+    gap: number,
+  ): void {
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const len = Math.hypot(dx, dy);
+    if (len === 0) return;
+
+    const ux = dx / len;
+    const uy = dy / len;
+    let dist = 0;
+    let draw = true;
+
+    while (dist < len) {
+      const seg = Math.min(draw ? dash : gap, len - dist);
+      const sx = x1 + ux * dist;
+      const sy = y1 + uy * dist;
+      const ex = x1 + ux * (dist + seg);
+      const ey = y1 + uy * (dist + seg);
+      if (draw) {
+        g.beginPath();
+        g.moveTo(sx, sy);
+        g.lineTo(ex, ey);
+        g.strokePath();
+      }
+      dist += seg;
+      draw = !draw;
+    }
   }
 }

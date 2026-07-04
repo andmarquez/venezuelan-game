@@ -15,7 +15,7 @@ import {
 } from '../config/gameConfig';
 import { WorldBuilder } from '../world/WorldBuilder';
 import type { LevelLayout } from '../world/worldTypes';
-import { getLevelLayoutCacheKey, isDebugMode } from '../world/layoutUtils';
+import { getLevelLayoutCacheKey, shouldShowPlatformZones } from '../world/layoutUtils';
 import { depthFromFootY, WORLD_LAYERS } from '../world/layerConfig';
 import { markerToFoot } from '../world/worldTypes';
 
@@ -67,7 +67,7 @@ export class GameScene extends Phaser.Scene {
 
     this.levelLayout = this.cache.json.get(getLevelLayoutCacheKey(this.game)) as LevelLayout;
     const worldW = this.levelLayout?.width ?? GAME_CONFIG.worldWidth;
-    const debug = isDebugMode();
+    const debug = shouldShowPlatformZones(this.game);
 
     this.physics.world.setBounds(0, 0, worldW, GAME_CONFIG.worldHeight);
     this.cameras.main.setBounds(0, 0, worldW, GAME_CONFIG.worldHeight);

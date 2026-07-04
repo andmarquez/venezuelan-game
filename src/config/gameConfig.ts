@@ -93,7 +93,7 @@ export const GAME_CONFIG = {
     attackInsetX: 64,
     attackInsetY: 40,
     /** Kiss (heart power) sits up-left from jump */
-    abilityArc: [{ angleDeg: 215, distance: 100 }],
+    abilityArc: [{ angleDeg: 225, distance: 138 }],
   },
 
   /** Timer pickup floating messages */
