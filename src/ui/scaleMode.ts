@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_CONFIG } from '../config/gameConfig';
 
-/** True for phone-sized or forced mobile preview (`?mobile=1`). */
+/** True for phone/tablet or forced mobile preview (`?mobile=1`). */
 export function isMobileViewport(): boolean {
   const params = new URLSearchParams(window.location.search);
   if (params.get('mobile') === '1') return true;
@@ -14,12 +14,12 @@ export function isMobileViewport(): boolean {
   return touch && shortSide <= 900;
 }
 
-/** Letterboxed fit keeps the full frame visible and aligned on phones. */
+/** Mobile fills the screen; desktop keeps the full frame letterboxed. */
 export function resolveScaleMode(): number {
-  return Phaser.Scale.FIT;
+  return isMobileViewport() ? Phaser.Scale.ENVELOP : Phaser.Scale.FIT;
 }
 
-/** Game-space rectangle used for HUD and touch UI (always 1280×720 design coords). */
+/** Full design canvas in game coordinates. */
 export function getUiLayoutRect(scale: Phaser.Scale.ScaleManager) {
   return {
     x: 0,

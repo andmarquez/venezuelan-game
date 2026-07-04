@@ -39,8 +39,8 @@ export class VirtualJoystick {
     const pad = GAME_CONFIG.safePadding;
     const lift = Math.max(GAME_CONFIG.mobileControlsLift, 72);
 
-    this.centerX = viewport.width * cfg.xRatio + pad;
-    this.centerY = viewport.height - safeBottom - lift - cfg.bottomInset;
+    this.centerX = viewport.x + viewport.width * cfg.xRatio + pad;
+    this.centerY = viewport.y + viewport.height - safeBottom - lift - cfg.bottomInset;
 
     this.baseRing.setPosition(this.centerX, this.centerY);
     this.base.setPosition(this.centerX, this.centerY);

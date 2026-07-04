@@ -104,8 +104,8 @@ export class MobileControls {
 
     this.joystick.layout(vp, safe.bottom);
 
-    const attackX = vp.width - pad - safe.right - cfg.attackInsetX;
-    const attackY = vp.height - safe.bottom - lift - cfg.attackInsetY;
+    const attackX = vp.x + vp.width - pad - safe.right - cfg.attackInsetX;
+    const attackY = vp.y + vp.height - safe.bottom - lift - cfg.attackInsetY;
     const jump = this.abilities.find((a) => a.id === 'jump')!;
     jump.btn.setPosition(attackX, attackY);
     jump.icon.setPosition(attackX, attackY);

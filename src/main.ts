@@ -7,10 +7,6 @@ import { WinScene } from './scenes/WinScene';
 import { GAME_CONFIG } from './config/gameConfig';
 import { isMobileViewport, resolveScaleMode } from './ui/scaleMode';
 
-/**
- * Entry point — creates the Phaser game instance.
- * All scenes are registered here; BootScene runs first.
- */
 const game = new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'game-container',
@@ -43,33 +39,33 @@ const game = new Phaser.Game({
 });
 
 const applyScaleMode = () => {
-  document.documentElement.classList.toggle('is-mobile-view', isMobileViewport());
+  const next = resolveScaleMode();
+  const mobile = isMobileViewport();
+  document.documentElement.classList.toggle('is-mobile-view', mobile);
+  document.documentElement.classList.toggle('is-desktop-view', !mobile);
+  if (game.scale.scaleMode !== next) {
+    game.scale.scaleMode = next;
+  }
   game.scale.refresh();
 };
 
 window.addEventListener('resize', applyScaleMode);
+window.addEventListener('orientationchange', applyScaleMode);
 document.documentElement.classList.add(isMobileViewport() ? 'is-mobile-view' : 'is-desktop-view');
 
-// Prevent accidental page scroll / zoom on mobile while playing
+game.events.once('ready', () => {
+  if (game.input.touch) {
+    game.input.touch.capture = true;
+  }
+});
+
+// Block page scroll during play — do NOT preventDefault on touchend (breaks Phaser taps on iOS).
 document.addEventListener(
   'touchmove',
   (e) => {
     if (game.scene.isActive('GameScene') || game.scene.isActive('MenuScene')) {
       e.preventDefault();
     }
-  },
-  { passive: false },
-);
-
-let lastTouchEnd = 0;
-document.addEventListener(
-  'touchend',
-  (e) => {
-    const now = Date.now();
-    if (now - lastTouchEnd <= 300) {
-      e.preventDefault();
-    }
-    lastTouchEnd = now;
   },
   { passive: false },
 );

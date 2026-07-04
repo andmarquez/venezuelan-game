@@ -15,17 +15,13 @@ export class MenuScene extends Phaser.Scene {
   create(): void {
     this.drawBackground();
     this.createTitle();
-    this.createStartPrompt();
+    this.createStartButton();
     this.createPortraitHint();
 
-    this.canStart = false;
-    this.time.delayedCall(400, () => {
-      this.canStart = true;
-    });
+    this.canStart = true;
 
     this.input.keyboard?.on('keydown-ENTER', () => this.startGame());
     this.input.keyboard?.on('keydown-SPACE', () => this.startGame());
-    this.input.on('pointerdown', () => this.startGame());
   }
 
   private drawBackground(): void {
@@ -89,7 +85,6 @@ export class MenuScene extends Phaser.Scene {
       ease: 'Sine.easeInOut',
     });
 
-    // Mini Andsiosa preview
     const preview = this.add.image(w / 2, 420, 'andsiosa-idle').setScale(2);
     this.tweens.add({
       targets: preview,
@@ -100,24 +95,43 @@ export class MenuScene extends Phaser.Scene {
     });
   }
 
-  private createStartPrompt(): void {
-    const prompt = this.add
-      .text(GAME_CONFIG.width / 2, 560, 'Press Enter / Tap to Start', {
-        fontSize: '28px',
+  private createStartButton(): void {
+    const w = GAME_CONFIG.width;
+    const label = shouldShowMobileControls(this.game) ? 'Tap to Start' : 'Press Enter / Tap to Start';
+    const btnW = 420;
+    const btnH = 72;
+    const cx = w / 2;
+    const cy = 560;
+
+    const bg = this.add
+      .rectangle(cx, cy, btnW, btnH, 0xffffff, 0.95)
+      .setStrokeStyle(3, GAME_CONFIG.colors.uiAccent)
+      .setInteractive({ useHandCursor: true });
+
+    const text = this.add
+      .text(cx, cy, label, {
+        fontSize: '26px',
         fontFamily: 'Nunito, sans-serif',
         color: '#ad1457',
-        backgroundColor: '#ffffffaa',
-        padding: { x: 20, y: 10 },
+        fontStyle: 'bold',
       })
       .setOrigin(0.5);
 
     this.tweens.add({
-      targets: prompt,
-      alpha: 0.4,
+      targets: [bg, text],
+      alpha: 0.65,
       duration: 700,
       yoyo: true,
       repeat: -1,
     });
+
+    const start = () => this.startGame();
+    bg.on('pointerup', start);
+    bg.on('pointerdown', start);
+
+    const zone = this.add.zone(cx, GAME_CONFIG.height / 2, w, GAME_CONFIG.height).setOrigin(0.5).setInteractive();
+    zone.on('pointerup', start);
+    zone.setDepth(-10);
   }
 
   private createPortraitHint(): void {
@@ -134,22 +148,22 @@ export class MenuScene extends Phaser.Scene {
       .setDepth(200);
 
     const updateHint = () => {
-      const isPortrait = this.scale.height > this.scale.width;
-      const mobileControls = shouldShowMobileControls(this.game);
-      if (isPortrait) {
+      const isPortrait = window.innerHeight > window.innerWidth;
+      if (isPortrait && shouldShowMobileControls(this.game)) {
         hint.setText('Turn your phone sideways for the best experience.');
-      } else if (!mobileControls && !this.game.device.input.touch) {
-        hint.setText('On desktop: add ?mobile=1 to the URL to preview touch controls.');
+      } else if (!shouldShowMobileControls(this.game)) {
+        hint.setText('On desktop: add ?mobile=1 to preview touch controls.');
       } else {
         hint.setText('');
       }
     };
     updateHint();
-    this.scale.on('resize', updateHint);
+    this.scale.on(Phaser.Scale.Events.RESIZE, updateHint);
   }
 
   private startGame(): void {
     if (!this.canStart) return;
+    this.canStart = false;
     this.scene.start('GameScene');
   }
 }

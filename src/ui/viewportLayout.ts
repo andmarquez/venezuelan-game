@@ -1,4 +1,5 @@
-import type Phaser from 'phaser';
+import Phaser from 'phaser';
+import { GAME_CONFIG } from '../config/gameConfig';
 import { getUiLayoutRect } from './scaleMode';
 
 export type UiViewport = {
@@ -8,12 +9,29 @@ export type UiViewport = {
   height: number;
 };
 
-/** Fixed UI layout rect in game coordinates (FIT shows the full rect). */
+/** Visible UI region — cropped when ENVELOP, full frame when FIT. */
 export function getUiViewport(scale: Phaser.Scale.ScaleManager): UiViewport {
-  return getUiLayoutRect(scale);
+  if (scale.scaleMode === Phaser.Scale.FIT) {
+    return getUiLayoutRect(scale);
+  }
+
+  const gameW = scale.width || GAME_CONFIG.width;
+  const gameH = scale.height || GAME_CONFIG.height;
+  const parentW = scale.parentSize?.width || window.innerWidth;
+  const parentH = scale.parentSize?.height || window.innerHeight;
+  const zoom = Math.max(parentW / gameW, parentH / gameH);
+  const visibleW = parentW / zoom;
+  const visibleH = parentH / zoom;
+
+  return {
+    x: (gameW - visibleW) / 2,
+    y: (gameH - visibleH) / 2,
+    width: visibleW,
+    height: visibleH,
+  };
 }
 
-/** Map screen pointers to UI space (scrollFactor 0 objects ignore camera scroll). */
+/** Map pointers to UI space (scrollFactor 0 objects ignore camera scroll). */
 export function pointerToUiSpace(
   pointer: Phaser.Input.Pointer,
   camera: Phaser.Cameras.Scene2D.Camera,
