@@ -54,8 +54,9 @@ window.addEventListener('orientationchange', applyScaleMode);
 document.documentElement.classList.add(isMobileViewport() ? 'is-mobile-view' : 'is-desktop-view');
 
 game.events.once('ready', () => {
+  // Leave capture off so iOS delivers reliable tap/pointer events to the canvas.
   if (game.input.touch) {
-    game.input.touch.capture = true;
+    game.input.touch.capture = false;
   }
 });
 

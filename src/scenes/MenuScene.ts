@@ -1,12 +1,19 @@
 import Phaser from 'phaser';
 import { GAME_CONFIG } from '../config/gameConfig';
 import { shouldShowMobileControls } from '../ui/mobileControlUtils';
+import { getUiViewport } from '../ui/viewportLayout';
 
 /**
  * MenuScene — title screen with keyboard and tap to start.
  */
 export class MenuScene extends Phaser.Scene {
   private canStart = false;
+  private titleGroup?: Phaser.GameObjects.Container;
+  private preview?: Phaser.GameObjects.Image;
+  private startBg?: Phaser.GameObjects.Rectangle;
+  private startText?: Phaser.GameObjects.Text;
+  private portraitHint?: Phaser.GameObjects.Text;
+  private onWindowKeydown?: (event: KeyboardEvent) => void;
 
   constructor() {
     super({ key: 'MenuScene' });
@@ -14,14 +21,17 @@ export class MenuScene extends Phaser.Scene {
 
   create(): void {
     this.drawBackground();
-    this.createTitle();
-    this.createStartButton();
-    this.createPortraitHint();
+    this.createUi();
+    this.layoutUi();
 
     this.canStart = true;
+    this.setupKeyboard();
+    this.setupPointer();
+    this.scale.on(Phaser.Scale.Events.RESIZE, this.layoutUi, this);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.cleanup, this);
 
-    this.input.keyboard?.on('keydown-ENTER', () => this.startGame());
-    this.input.keyboard?.on('keydown-SPACE', () => this.startGame());
+    this.game.canvas.setAttribute('tabindex', '0');
+    this.game.canvas.focus({ preventScroll: true });
   }
 
   private drawBackground(): void {
@@ -60,24 +70,25 @@ export class MenuScene extends Phaser.Scene {
     hill.setDepth(-1);
   }
 
-  private createTitle(): void {
-    const w = GAME_CONFIG.width;
-    const title = this.add.text(w / 2, 200, "Andsiosa's", {
+  private createUi(): void {
+    this.titleGroup = this.add.container(0, 0).setDepth(110);
+    const title = this.add.text(0, 0, "Andsiosa's", {
       fontSize: '64px',
       fontFamily: 'Nunito, sans-serif',
       color: '#e91e63',
       fontStyle: 'bold',
     }).setOrigin(0.5);
 
-    const subtitle = this.add.text(w / 2, 280, 'Creative Quest', {
+    const subtitle = this.add.text(0, 80, 'Creative Quest', {
       fontSize: '72px',
       fontFamily: 'Nunito, sans-serif',
       color: '#880e4f',
       fontStyle: 'bold',
     }).setOrigin(0.5);
 
+    this.titleGroup.add([title, subtitle]);
     this.tweens.add({
-      targets: [title, subtitle],
+      targets: this.titleGroup,
       y: '-=8',
       duration: 1200,
       yoyo: true,
@@ -85,81 +96,111 @@ export class MenuScene extends Phaser.Scene {
       ease: 'Sine.easeInOut',
     });
 
-    const preview = this.add.image(w / 2, 420, 'andsiosa-idle').setScale(2);
+    this.preview = this.add.image(0, 0, 'andsiosa-idle').setScale(2).setDepth(110);
     this.tweens.add({
-      targets: preview,
-      y: preview.y - 10,
+      targets: this.preview,
+      y: '-=10',
       duration: 800,
       yoyo: true,
       repeat: -1,
     });
-  }
 
-  private createStartButton(): void {
-    const w = GAME_CONFIG.width;
     const label = shouldShowMobileControls(this.game) ? 'Tap to Start' : 'Press Enter / Tap to Start';
-    const btnW = 420;
-    const btnH = 72;
-    const cx = w / 2;
-    const cy = 560;
-
-    const bg = this.add
-      .rectangle(cx, cy, btnW, btnH, 0xffffff, 0.95)
+    this.startBg = this.add
+      .rectangle(0, 0, 420, 72, 0xffffff, 0.95)
       .setStrokeStyle(3, GAME_CONFIG.colors.uiAccent)
-      .setInteractive({ useHandCursor: true });
+      .setInteractive({ useHandCursor: true })
+      .setDepth(120);
 
-    const text = this.add
-      .text(cx, cy, label, {
+    this.startText = this.add
+      .text(0, 0, label, {
         fontSize: '26px',
         fontFamily: 'Nunito, sans-serif',
         color: '#ad1457',
         fontStyle: 'bold',
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5)
+      .setDepth(121);
+
+    const start = () => this.startGame();
+    this.startBg.on('pointerdown', start);
+    this.startBg.on('pointerup', start);
 
     this.tweens.add({
-      targets: [bg, text],
+      targets: [this.startBg, this.startText],
       alpha: 0.65,
       duration: 700,
       yoyo: true,
       repeat: -1,
     });
 
-    const start = () => this.startGame();
-    bg.on('pointerup', start);
-    bg.on('pointerdown', start);
-
-    const zone = this.add.zone(cx, GAME_CONFIG.height / 2, w, GAME_CONFIG.height).setOrigin(0.5).setInteractive();
-    zone.on('pointerup', start);
-    zone.setDepth(-10);
-  }
-
-  private createPortraitHint(): void {
-    const hint = this.add
-      .text(GAME_CONFIG.width / 2, GAME_CONFIG.height - 40, '', {
+    this.portraitHint = this.add
+      .text(0, 0, '', {
         fontSize: '18px',
         fontFamily: 'Nunito, sans-serif',
         color: '#880e4f',
         align: 'center',
-        wordWrap: { width: GAME_CONFIG.width - 40 },
       })
       .setOrigin(0.5)
-      .setScrollFactor(0)
-      .setDepth(200);
+      .setDepth(110);
+  }
 
-    const updateHint = () => {
-      const isPortrait = window.innerHeight > window.innerWidth;
-      if (isPortrait && shouldShowMobileControls(this.game)) {
-        hint.setText('Turn your phone sideways for the best experience.');
-      } else if (!shouldShowMobileControls(this.game)) {
-        hint.setText('On desktop: add ?mobile=1 to preview touch controls.');
-      } else {
-        hint.setText('');
+  private layoutUi = (): void => {
+    const vp = getUiViewport(this.scale);
+    const cx = vp.x + vp.width / 2;
+    const btnW = Math.min(420, vp.width - 48);
+    const label = shouldShowMobileControls(this.game) ? 'Tap to Start' : 'Press Enter / Tap to Start';
+
+    const titleY = vp.y + vp.height * 0.22;
+    const previewY = vp.y + vp.height * 0.52;
+    const buttonY = vp.y + vp.height - 108;
+    const hintY = vp.y + vp.height - 28;
+
+    this.titleGroup?.setPosition(cx, titleY);
+    this.preview?.setPosition(cx, previewY);
+    this.startBg?.setPosition(cx, buttonY);
+    this.startBg?.setSize(btnW, 72);
+    this.startText?.setPosition(cx, buttonY);
+    this.startText?.setText(label);
+    this.portraitHint?.setPosition(cx, hintY);
+    this.portraitHint?.setWordWrapWidth(vp.width - 40);
+
+    const isPortrait = window.innerHeight > window.innerWidth;
+    if (isPortrait && shouldShowMobileControls(this.game)) {
+      this.portraitHint?.setText('Turn your phone sideways for the best experience.');
+    } else if (!shouldShowMobileControls(this.game)) {
+      this.portraitHint?.setText('On desktop: add ?mobile=1 to preview touch controls.');
+    } else {
+      this.portraitHint?.setText('');
+    }
+  };
+
+  private setupKeyboard(): void {
+    this.input.keyboard?.on('keydown-ENTER', () => this.startGame());
+    this.input.keyboard?.on('keydown-SPACE', () => this.startGame());
+
+    this.onWindowKeydown = (event: KeyboardEvent) => {
+      if (event.code === 'Enter' || event.code === 'Space') {
+        event.preventDefault();
+        this.startGame();
       }
     };
-    updateHint();
-    this.scale.on(Phaser.Scale.Events.RESIZE, updateHint);
+    window.addEventListener('keydown', this.onWindowKeydown);
   }
+
+  private setupPointer(): void {
+    const tryStart = () => this.startGame();
+    this.input.on('pointerdown', tryStart);
+    this.input.on('pointerup', tryStart);
+  }
+
+  private cleanup = (): void => {
+    this.scale.off(Phaser.Scale.Events.RESIZE, this.layoutUi, this);
+    if (this.onWindowKeydown) {
+      window.removeEventListener('keydown', this.onWindowKeydown);
+      this.onWindowKeydown = undefined;
+    }
+  };
 
   private startGame(): void {
     if (!this.canStart) return;

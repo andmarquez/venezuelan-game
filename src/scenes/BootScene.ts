@@ -38,12 +38,29 @@ export class BootScene extends Phaser.Scene {
       return;
     }
 
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      timeout.remove(false);
+      onComplete();
+    };
+
+    const timeout = this.time.delayedCall(12000, () => {
+      console.warn('[BootScene] Background load timed out — continuing to menu.');
+      finish();
+    });
+
+    this.load.on('loaderror', (file: Phaser.Loader.File) => {
+      console.warn('[BootScene] Failed to load asset:', file.key);
+    });
+
     entries.forEach((entry) => {
       const path = entry.path.startsWith('/') ? entry.path.slice(1) : entry.path;
       this.load.image(entry.key, assetUrl(path));
     });
 
-    this.load.once('complete', onComplete);
+    this.load.once('complete', finish);
     this.load.start();
   }
 
