@@ -2,8 +2,8 @@
 
 Layer **🎯 Gameplay Zones** on:
 
-- **M02 — Gameplay (Level 1)** (`13:2`)
-- **D02 — Gameplay** → inside **Game Viewport 1280×720** (`24:433`)
+- **M02 — Gameplay (Level 1)** (`13:2`) → `layout-mobile.json`
+- **D02 — Gameplay** → **Game Viewport 1280×720** (`24:433`) → `layout-desktop.json`
 
 ## Contents
 

@@ -11,9 +11,27 @@
       "textureKey": "world:level-1-background",
       "artboard": "M02 — Gameplay (Level 1)",
       "artboardNodeId": "13:2"
+    },
+    {
+      "assetKey": "level-1-desktop",
+      "figmaName": "- 1",
+      "figmaNodeId": "24:447",
+      "file": "background/level-1-desktop.png",
+      "textureKey": "world:level-1-desktop-background",
+      "artboard": "D02 — Gameplay",
+      "artboardNodeId": "24:433"
     }
   ],
-  "gameplayZonesNodeId": "26:178",
-  "platformsFrameNodeId": "26:179",
-  "markersFrameNodeId": "26:180"
+  "gameplayZones": {
+    "mobile": {
+      "nodeId": "26:178",
+      "platformsFrameNodeId": "26:179",
+      "markersFrameNodeId": "26:180"
+    },
+    "desktop": {
+      "nodeId": "26:2",
+      "platformsFrameNodeId": "26:3",
+      "markersFrameNodeId": "26:4"
+    }
+  }
 }

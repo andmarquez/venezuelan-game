@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-04T04:35:00.000Z",
+  "generatedAt": "2026-07-04T05:20:00.000Z",
   "figmaFileKey": "1zlB4dA4ktyuuBXzseo1ix",
   "figmaFileUrl": "https://www.figma.com/design/1zlB4dA4ktyuuBXzseo1ix",
   "version": 2,
@@ -8,6 +8,13 @@
       "key": "world:level-1-background",
       "path": "/assets/world/background/level-1-mobile.png",
       "figmaNodeId": "24:328",
+      "figmaName": "- 1",
+      "present": true
+    },
+    "level-1-desktop": {
+      "key": "world:level-1-desktop-background",
+      "path": "/assets/world/background/level-1-desktop.png",
+      "figmaNodeId": "24:447",
       "figmaName": "- 1",
       "present": true
     }

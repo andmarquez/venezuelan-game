@@ -2,293 +2,19 @@
   "level": "level-1",
   "variant": "desktop",
   "figmaArtboard": "D02 — Gameplay",
-  "figmaNodeId": "13:2",
-  "width": 8553,
+  "figmaNodeId": "24:433",
+  "width": 4895,
   "height": 720,
   "background": {
-    "mode": "composite",
-    "placements": [
-      {
-        "assetKey": "bridge",
-        "x": 151,
-        "y": -52,
-        "width": 2790,
-        "height": 481
-      },
-      {
-        "assetKey": "m",
-        "x": 2138,
-        "y": 39,
-        "width": 1536,
-        "height": 426
-      },
-      {
-        "assetKey": "m-1",
-        "x": 3126,
-        "y": 139,
-        "width": 1032,
-        "height": 357
-      },
-      {
-        "assetKey": "m-2",
-        "x": 3877,
-        "y": 199,
-        "width": 599,
-        "height": 357
-      },
-      {
-        "assetKey": "m-3",
-        "x": 4433,
-        "y": 139,
-        "width": 829,
-        "height": 357
-      },
-      {
-        "assetKey": "t-1",
-        "x": 4984,
-        "y": 178,
-        "width": 1037,
-        "height": 364
-      },
-      {
-        "assetKey": "t-2",
-        "x": 5790,
-        "y": 139,
-        "width": 921,
-        "height": 364
-      },
-      {
-        "assetKey": "c-1",
-        "x": 7632,
-        "y": 199,
-        "width": 196,
-        "height": 114
-      },
-      {
-        "assetKey": "c-1",
-        "x": 2854,
-        "y": 92,
-        "width": 196,
-        "height": 114
-      },
-      {
-        "assetKey": "c-2",
-        "x": 7376,
-        "y": 157,
-        "width": 140,
-        "height": 83
-      },
-      {
-        "assetKey": "c-2",
-        "x": 38,
-        "y": 233,
-        "width": 140,
-        "height": 83
-      },
-      {
-        "assetKey": "island",
-        "x": 6532,
-        "y": 22,
-        "width": 796,
-        "height": 459
-      },
-      {
-        "assetKey": "waves",
-        "x": 0,
-        "y": 352,
-        "width": 685,
-        "height": 51
-      },
-      {
-        "assetKey": "waves",
-        "x": 619,
-        "y": 352,
-        "width": 685,
-        "height": 51
-      },
-      {
-        "assetKey": "waves",
-        "x": 1151,
-        "y": 352,
-        "width": 685,
-        "height": 51
-      },
-      {
-        "assetKey": "waves",
-        "x": 7915,
-        "y": 407,
-        "width": 685,
-        "height": 51
-      },
-      {
-        "assetKey": "waves-2",
-        "x": 7524,
-        "y": 574,
-        "width": 495,
-        "height": 51
-      },
-      {
-        "assetKey": "i-2",
-        "x": 427,
-        "y": 611,
-        "width": 356,
-        "height": 117
-      },
-      {
-        "assetKey": "i-2",
-        "x": 7576,
-        "y": 474,
-        "width": 356,
-        "height": 117
-      },
-      {
-        "assetKey": "i-3",
-        "x": 853,
-        "y": 431,
-        "width": 552,
-        "height": 337
-      },
-      {
-        "assetKey": "i-4",
-        "x": 1568,
-        "y": 603,
-        "width": 671,
-        "height": 133
-      },
-      {
-        "assetKey": "i-4",
-        "x": 6532,
-        "y": 603,
-        "width": 671,
-        "height": 133
-      },
-      {
-        "assetKey": "i-5",
-        "x": 2869,
-        "y": 600,
-        "width": 151,
-        "height": 162
-      },
-      {
-        "assetKey": "i-5",
-        "x": 2970,
-        "y": 482,
-        "width": 170,
-        "height": 182
-      },
-      {
-        "assetKey": "i-5",
-        "x": 6629,
-        "y": 503,
-        "width": 151,
-        "height": 162
-      },
-      {
-        "assetKey": "i-6",
-        "x": 2356,
-        "y": 670,
-        "width": 396,
-        "height": 91
-      },
-      {
-        "assetKey": "i-7",
-        "x": 2981,
-        "y": 603,
-        "width": 436,
-        "height": 141
-      },
-      {
-        "assetKey": "i-8",
-        "x": 3365,
-        "y": 648,
-        "width": 396,
-        "height": 91
-      },
-      {
-        "assetKey": "i-8",
-        "x": 3718,
-        "y": 648,
-        "width": 396,
-        "height": 91
-      },
-      {
-        "assetKey": "i-9",
-        "x": 4295,
-        "y": 600,
-        "width": 520,
-        "height": 140
-      },
-      {
-        "assetKey": "i-10",
-        "x": 7152,
-        "y": 600,
-        "width": 520,
-        "height": 140
-      },
-      {
-        "assetKey": "blocks-1",
-        "x": 329,
-        "y": 481,
-        "width": 195,
-        "height": 50
-      },
-      {
-        "assetKey": "blocks-1",
-        "x": 1500,
-        "y": 481,
-        "width": 195,
-        "height": 50
-      },
-      {
-        "assetKey": "blocks-1",
-        "x": 4977,
-        "y": 481,
-        "width": 195,
-        "height": 50
-      },
-      {
-        "assetKey": "blocks-1",
-        "x": 6908,
-        "y": 481,
-        "width": 195,
-        "height": 50
-      },
-      {
-        "assetKey": "blocks-2",
-        "x": 2239,
-        "y": 483,
-        "width": 195,
-        "height": 50
-      },
-      {
-        "assetKey": "blocks-2",
-        "x": 3916,
-        "y": 513,
-        "width": 195,
-        "height": 50
-      }
-    ],
+    "mode": "sections",
     "sections": [
       {
-        "path": "/assets/world/background/level-1-section-1.png",
+        "key": "world:level-1-desktop-background",
+        "path": "/assets/world/background/level-1-desktop.png",
         "x": 0,
-        "y": 0,
-        "width": 2850,
-        "height": 720
-      },
-      {
-        "path": "/assets/world/background/level-1-section-2.png",
-        "x": 2850,
-        "y": 0,
-        "width": 2850,
-        "height": 720
-      },
-      {
-        "path": "/assets/world/background/level-1-section-3.png",
-        "x": 5700,
-        "y": 0,
-        "width": 2853,
-        "height": 720
+        "y": 141,
+        "width": 5335,
+        "height": 449
       }
     ]
   },
@@ -296,264 +22,170 @@
     {
       "name": "platform_start",
       "x": 0,
-      "y": 656,
-      "width": 1000,
+      "y": 551,
+      "width": 232,
       "height": 20,
       "type": "platform"
     },
     {
       "name": "floating_platform_01",
-      "x": 329,
+      "x": 203,
+      "y": 442,
+      "width": 125,
+      "height": 31,
+      "type": "platform"
+    },
+    {
+      "name": "floating_platform_02",
+      "x": 300,
       "y": 531,
-      "width": 195,
+      "width": 179,
       "height": 20,
       "type": "platform"
     },
     {
       "name": "platform_01",
-      "x": 1000,
-      "y": 656,
-      "width": 500,
-      "height": 20,
-      "type": "platform"
-    },
-    {
-      "name": "floating_platform_02",
-      "x": 853,
-      "y": 600,
-      "width": 480,
+      "x": 539,
+      "y": 486,
+      "width": 114,
       "height": 20,
       "type": "platform"
     },
     {
       "name": "platform_02",
-      "x": 1500,
-      "y": 656,
-      "width": 1586,
+      "x": 653,
+      "y": 561,
+      "width": 196,
       "height": 20,
       "type": "platform"
     },
     {
       "name": "floating_platform_03",
-      "x": 1500,
+      "x": 995,
       "y": 531,
-      "width": 195,
+      "width": 387,
       "height": 20,
       "type": "platform"
     },
     {
       "name": "floating_platform_04",
-      "x": 2239,
-      "y": 533,
-      "width": 195,
-      "height": 20,
+      "x": 934,
+      "y": 442,
+      "width": 126,
+      "height": 31,
       "type": "platform"
     },
     {
       "name": "platform_03",
-      "x": 3086,
-      "y": 664,
-      "width": 1400,
+      "x": 1472,
+      "y": 567,
+      "width": 239,
       "height": 20,
       "type": "platform"
     },
     {
       "name": "floating_platform_05",
-      "x": 2970,
-      "y": 530,
-      "width": 170,
-      "height": 20,
+      "x": 1400,
+      "y": 442,
+      "width": 123,
+      "height": 31,
       "type": "platform"
     },
     {
       "name": "floating_platform_06",
-      "x": 3916,
-      "y": 553,
-      "width": 195,
-      "height": 20,
-      "type": "platform"
-    },
-    {
-      "name": "platform_04",
-      "x": 4486,
-      "y": 664,
-      "width": 2225,
+      "x": 1782,
+      "y": 529,
+      "width": 328,
       "height": 20,
       "type": "platform"
     },
     {
       "name": "floating_platform_07",
-      "x": 4977,
-      "y": 531,
-      "width": 195,
+      "x": 1854,
+      "y": 458,
+      "width": 102,
       "height": 20,
       "type": "platform"
     },
     {
-      "name": "platform_05",
-      "x": 6711,
-      "y": 664,
-      "width": 1290,
+      "name": "platform_04",
+      "x": 2110,
+      "y": 551,
+      "width": 455,
       "height": 20,
       "type": "platform"
     },
     {
       "name": "floating_platform_08",
-      "x": 6908,
-      "y": 531,
-      "width": 195,
+      "x": 2440,
+      "y": 461,
+      "width": 123,
+      "height": 32,
+      "type": "platform"
+    },
+    {
+      "name": "platform_05",
+      "x": 2686,
+      "y": 547,
+      "width": 1407,
+      "height": 20,
+      "type": "platform"
+    },
+    {
+      "name": "floating_platform_09",
+      "x": 3107,
+      "y": 445,
+      "width": 123,
+      "height": 32,
+      "type": "platform"
+    },
+    {
+      "name": "floating_platform_10",
+      "x": 3838,
+      "y": 477,
+      "width": 64,
+      "height": 32,
+      "type": "platform"
+    },
+    {
+      "name": "platform_06",
+      "x": 4093,
+      "y": 527,
+      "width": 389,
+      "height": 20,
+      "type": "platform"
+    },
+    {
+      "name": "floating_platform_11",
+      "x": 4143,
+      "y": 461,
+      "width": 84,
+      "height": 32,
+      "type": "platform"
+    },
+    {
+      "name": "floating_platform_12",
+      "x": 4308,
+      "y": 443,
+      "width": 123,
+      "height": 32,
+      "type": "platform"
+    },
+    {
+      "name": "platform_07",
+      "x": 4464,
+      "y": 547,
+      "width": 314,
       "height": 20,
       "type": "platform"
     },
     {
       "name": "goal_platform",
-      "x": 8000,
-      "y": 664,
-      "width": 553,
+      "x": 4757,
+      "y": 449,
+      "width": 138,
       "height": 20,
       "type": "platform"
-    }
-  ],
-  "foreground": [
-    {
-      "assetKey": "g-1",
-      "x": -29,
-      "y": 548,
-      "width": 203,
-      "height": 134
-    },
-    {
-      "assetKey": "g-1",
-      "x": 6609,
-      "y": 390,
-      "width": 203,
-      "height": 134
-    },
-    {
-      "assetKey": "g",
-      "x": 1771,
-      "y": 548,
-      "width": 133,
-      "height": 91
-    },
-    {
-      "assetKey": "g",
-      "x": 5939,
-      "y": 464,
-      "width": 133,
-      "height": 91
-    },
-    {
-      "assetKey": "g",
-      "x": 5171,
-      "y": 585,
-      "width": 133,
-      "height": 91
-    },
-    {
-      "assetKey": "g-2",
-      "x": 3073,
-      "y": 547,
-      "width": 121,
-      "height": 87
-    },
-    {
-      "assetKey": "g-2",
-      "x": 4372,
-      "y": 291,
-      "width": 121,
-      "height": 87
-    },
-    {
-      "assetKey": "g-3",
-      "x": 3257,
-      "y": 572,
-      "width": 129,
-      "height": 74
-    },
-    {
-      "assetKey": "g-3",
-      "x": 4352,
-      "y": 232,
-      "width": 129,
-      "height": 74
-    },
-    {
-      "assetKey": "g-3",
-      "x": 4595,
-      "y": 487,
-      "width": 129,
-      "height": 74
-    },
-    {
-      "assetKey": "g-4",
-      "x": 3825,
-      "y": 362,
-      "width": 104,
-      "height": 66
-    },
-    {
-      "assetKey": "g-4",
-      "x": 4377,
-      "y": 199,
-      "width": 104,
-      "height": 66
-    },
-    {
-      "assetKey": "g-4",
-      "x": 5725,
-      "y": 273,
-      "width": 104,
-      "height": 66
-    },
-    {
-      "assetKey": "g-5",
-      "x": 3041,
-      "y": 440,
-      "width": 82,
-      "height": 52
-    },
-    {
-      "assetKey": "barril",
-      "x": 3397,
-      "y": 525,
-      "width": 127,
-      "height": 145
-    },
-    {
-      "assetKey": "barril",
-      "x": 4964,
-      "y": 335,
-      "width": 93,
-      "height": 106
-    },
-    {
-      "assetKey": "flag",
-      "x": 3838,
-      "y": 226,
-      "width": 156,
-      "height": 145
-    },
-    {
-      "assetKey": "pipe-1",
-      "x": 6157,
-      "y": 533,
-      "width": 99,
-      "height": 143
-    },
-    {
-      "assetKey": "pipe-2",
-      "x": 2483,
-      "y": 555,
-      "width": 129,
-      "height": 157
-    },
-    {
-      "assetKey": "rocks",
-      "x": 6532,
-      "y": 431,
-      "width": 326,
-      "height": 65
     }
   ],
   "markers": {
@@ -562,8 +194,8 @@
       "y": 656
     },
     "portal_goal": {
-      "x": 8459,
-      "y": 545
+      "x": 4826,
+      "y": 459
     },
     "kiss_collectibles": [
       {
@@ -589,8 +221,8 @@
       {
         "x": 520,
         "y": 640,
-        "min": 350,
-        "max": 750
+        "min": 200,
+        "max": 900
       }
     ]
   }
