@@ -225,5 +225,77 @@
         "max": 900
       }
     ]
-  }
+  },
+  "clouds": [
+    {
+      "name": "cloud_01",
+      "x": 110,
+      "y": 80,
+      "width": 165,
+      "height": 70
+    },
+    {
+      "name": "cloud_02",
+      "x": 413,
+      "y": 120,
+      "width": 202,
+      "height": 85
+    },
+    {
+      "name": "cloud_03",
+      "x": 826,
+      "y": 60,
+      "width": 184,
+      "height": 75
+    },
+    {
+      "name": "cloud_04",
+      "x": 1239,
+      "y": 100,
+      "width": 174,
+      "height": 68
+    },
+    {
+      "name": "cloud_05",
+      "x": 1652,
+      "y": 140,
+      "width": 220,
+      "height": 90
+    },
+    {
+      "name": "cloud_06",
+      "x": 2202,
+      "y": 70,
+      "width": 193,
+      "height": 80
+    },
+    {
+      "name": "cloud_07",
+      "x": 2844,
+      "y": 110,
+      "width": 184,
+      "height": 72
+    },
+    {
+      "name": "cloud_08",
+      "x": 3487,
+      "y": 55,
+      "width": 211,
+      "height": 88
+    },
+    {
+      "name": "cloud_09",
+      "x": 4129,
+      "y": 95,
+      "width": 179,
+      "height": 70
+    },
+    {
+      "name": "cloud_10",
+      "x": 4679,
+      "y": 130,
+      "width": 165,
+      "height": 65
+    }
+  ]
 }

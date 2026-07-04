@@ -12,6 +12,9 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
 const OUT = path.join(ROOT, 'public/assets/world/level-1/layout-mobile.json');
+const OUT_DESKTOP = path.join(ROOT, 'public/assets/world/level-1/layout-desktop.json');
+const DESKTOP_W = 4895;
+const MOBILE_W = 5335;
 
 const PLATFORM_FRAME_Y = -100;
 const MARKERS_FRAME_X = 35;
@@ -173,3 +176,16 @@ fs.writeFileSync(OUT, `${JSON.stringify(layout, null, 2)}\n`);
 console.log(
   `Wrote ${OUT} — ${layout.platforms.length} zones (${pipeCount} pipes), ${clouds.length} clouds, ${layout.markers.kiss_collectibles.length} kisses`,
 );
+
+/** Mirror clouds into desktop layout (scaled X/width). */
+if (fs.existsSync(OUT_DESKTOP)) {
+  const desktop = JSON.parse(fs.readFileSync(OUT_DESKTOP, 'utf8'));
+  const scale = DESKTOP_W / MOBILE_W;
+  desktop.clouds = clouds.map((c) => ({
+    ...c,
+    x: Math.round(c.x * scale),
+    width: Math.round(c.width * scale),
+  }));
+  fs.writeFileSync(OUT_DESKTOP, `${JSON.stringify(desktop, null, 2)}\n`);
+  console.log(`Updated ${OUT_DESKTOP} — ${desktop.clouds.length} clouds`);
+}

@@ -35,4 +35,8 @@ Or ask to **extract zones from Figma** and the agent will read positions from th
 
 ## Debug in-game
 
-`?debug=1` or press **H** — green = platforms, blue = pipes, white = clouds.
+`?debug=1` or press **H** — green = platforms, blue = pipes. **Purple dashed = clouds** (look up in the sky area).
+
+Force cloud boxes: `?clouds=1` (desktop). Hide all zones: `?zones=0&clouds=0`.
+
+In Figma, open layer **Clouds (decorative)** on M02 — lavender dashed rounded rects.

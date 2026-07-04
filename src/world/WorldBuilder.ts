@@ -6,6 +6,7 @@ import { platformTopLeftToCenter } from './worldTypes';
 
 export type WorldBuildOptions = {
   debug?: boolean;
+  cloudZones?: boolean;
 };
 
 export type BuildResult = {
@@ -14,6 +15,9 @@ export type BuildResult = {
   toggleDebug: () => void;
 };
 
+const CLOUD_FILL = 0xce93d8;
+const CLOUD_STROKE = 0x8e24aa;
+
 export class WorldBuilder {
   static build(
     scene: Phaser.Scene,
@@ -21,43 +25,48 @@ export class WorldBuilder {
     options: WorldBuildOptions = {},
   ): BuildResult {
     const platforms = scene.physics.add.staticGroup();
-    const debugLabels: Phaser.GameObjects.Text[] = [];
-    const debugGraphics: Phaser.GameObjects.Graphics[] = [];
-    let debugVisible = options.debug ?? false;
+    const platformGraphics: Phaser.GameObjects.Graphics[] = [];
+    const platformLabels: Phaser.GameObjects.Text[] = [];
+    const cloudGraphics: Phaser.GameObjects.Graphics[] = [];
+    const cloudLabels: Phaser.GameObjects.Text[] = [];
+    let platformDebugVisible = options.debug ?? false;
 
     WorldBuilder.createSky(scene, layout.width);
     WorldBuilder.drawBackground(scene, layout);
     WorldBuilder.createPlatformBodies(platforms, layout.platforms);
 
-    if (debugVisible) {
+    const renderPlatformDebug = () => {
       const { graphics, labels } = WorldBuilder.drawPlatformDebug(scene, layout.platforms);
-      debugGraphics.push(graphics);
-      debugLabels.push(...labels);
-      if (layout.clouds?.length) {
-        debugGraphics.push(WorldBuilder.drawCloudDebug(scene, layout.clouds));
-      }
-    }
-
-    const toggleDebug = () => {
-      debugVisible = !debugVisible;
-      if (debugVisible && debugGraphics.length === 0) {
-        const { graphics, labels } = WorldBuilder.drawPlatformDebug(scene, layout.platforms);
-        debugGraphics.push(graphics);
-        debugLabels.push(...labels);
-        if (layout.clouds?.length) {
-          debugGraphics.push(WorldBuilder.drawCloudDebug(scene, layout.clouds));
-        }
-      }
-      debugGraphics.forEach((g) => g.setVisible(debugVisible));
-      debugLabels.forEach((t) => t.setVisible(debugVisible));
+      platformGraphics.push(graphics);
+      platformLabels.push(...labels);
     };
 
-    if (debugVisible) {
+    const renderCloudDebug = () => {
+      if (!layout.clouds?.length) return;
+      const { graphics, labels } = WorldBuilder.drawCloudDebug(scene, layout.clouds);
+      cloudGraphics.push(graphics);
+      cloudLabels.push(...labels);
+    };
+
+    if (platformDebugVisible) renderPlatformDebug();
+    if (options.cloudZones) renderCloudDebug();
+
+    const toggleDebug = () => {
+      platformDebugVisible = !platformDebugVisible;
+      if (platformDebugVisible && platformGraphics.length === 0) renderPlatformDebug();
+      platformGraphics.forEach((g) => g.setVisible(platformDebugVisible));
+      platformLabels.forEach((t) => t.setVisible(platformDebugVisible));
+    };
+
+    if (platformDebugVisible || options.cloudZones) {
+      const hints: string[] = [];
+      if (platformDebugVisible) hints.push('green=platform, blue=pipe');
+      if (options.cloudZones) hints.push('purple=cloud');
       scene.add
-        .text(16, layout.height - 36, 'Zones: green=platform, blue=pipe, white=cloud (H to toggle)', {
+        .text(16, layout.height - 36, `Zones: ${hints.join(', ')}  |  ?clouds=1  H toggles platforms`, {
           fontSize: '14px',
           fontFamily: 'Nunito, sans-serif',
-          color: '#1b5e20',
+          color: '#4a148c',
           backgroundColor: '#ffffffcc',
           padding: { x: 8, y: 4 },
         })
@@ -138,13 +147,17 @@ export class WorldBuilder {
     return { graphics: g, labels: [] };
   }
 
-  private static drawCloudDebug(scene: Phaser.Scene, zones: CloudZone[]): Phaser.GameObjects.Graphics {
+  private static drawCloudDebug(
+    scene: Phaser.Scene,
+    zones: CloudZone[],
+  ): { graphics: Phaser.GameObjects.Graphics; labels: Phaser.GameObjects.Text[] } {
     const g = scene.add.graphics();
-    g.setDepth(WORLD_LAYERS.debug - 1);
+    g.setDepth(WORLD_LAYERS.platformDebug);
+    const labels: Phaser.GameObjects.Text[] = [];
 
     for (const zone of zones) {
       const r = Math.min(zone.height / 2, 40);
-      g.fillStyle(0xffffff, 0.28);
+      g.fillStyle(CLOUD_FILL, 0.52);
       g.fillRoundedRect(zone.x, zone.y, zone.width, zone.height, r);
       WorldBuilder.strokeDashedRoundedRect(
         g,
@@ -153,14 +166,25 @@ export class WorldBuilder {
         zone.width,
         zone.height,
         r,
-        0xb8e0f5,
+        CLOUD_STROKE,
         2,
         8,
         6,
       );
+
+      const label = scene.add
+        .text(zone.x + zone.width / 2, zone.y + zone.height / 2, zone.name.replace('cloud_', '☁'), {
+          fontSize: '13px',
+          fontFamily: 'Nunito, sans-serif',
+          color: '#4a148c',
+          fontStyle: 'bold',
+        })
+        .setOrigin(0.5)
+        .setDepth(WORLD_LAYERS.platformDebug + 1);
+      labels.push(label);
     }
 
-    return g;
+    return { graphics: g, labels };
   }
 
   private static strokeDashedRoundedRect(
@@ -175,7 +199,6 @@ export class WorldBuilder {
     dash: number,
     gap: number,
   ): void {
-    // Approximate rounded rect outline with four straight dashed edges
     const r = Math.min(radius, w / 2, h / 2);
     const edges: [number, number, number, number][] = [
       [x + r, y, x + w - r, y],
@@ -183,13 +206,12 @@ export class WorldBuilder {
       [x + w - r, y + h, x + r, y + h],
       [x, y + h - r, x, y + r],
     ];
-    g.lineStyle(lineWidth, color, 0.9);
+    g.lineStyle(lineWidth, color, 0.95);
     for (const [x1, y1, x2, y2] of edges) {
       WorldBuilder.strokeDashedLine(g, x1, y1, x2, y2, dash, gap);
     }
   }
 
-  /** Figma-style dashed green outline for gameplay zones. */
   private static strokeDashedRect(
     g: Phaser.GameObjects.Graphics,
     x: number,

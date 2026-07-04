@@ -16,6 +16,15 @@ export function shouldShowPlatformZones(game?: Phaser.Game): boolean {
   return shouldShowMobileControls(game);
 }
 
+/** Lavender cloud placement boxes — visible with zones, ?clouds=1, or on mobile. */
+export function shouldShowCloudZones(game?: Phaser.Game): boolean {
+  if (typeof window === 'undefined') return false;
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('clouds') === '0') return false;
+  if (params.get('clouds') === '1' || isDebugMode()) return true;
+  return shouldShowPlatformZones(game);
+}
+
 export function getLevelLayoutCacheKey(game: Phaser.Game): string {
   return shouldShowMobileControls(game) ? 'level-1-layout-mobile' : 'level-1-layout-desktop';
 }
