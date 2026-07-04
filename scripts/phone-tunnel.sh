@@ -19,11 +19,14 @@ fi
 
 if pgrep -f "cloudflared tunnel --url http://127.0.0.1:5173" >/dev/null 2>&1; then
   URL=$(grep -o 'https://[^ ]*trycloudflare.com' "$LOG" 2>/dev/null | tail -1)
-  if [ -n "$URL" ]; then
+  if [ -n "$URL" ] && curl -sf -o /dev/null --connect-timeout 8 "$URL/"; then
     echo "$URL" | tee "$URL_FILE"
     echo "Cloudflare tunnel already running."
     exit 0
   fi
+  echo "Stale tunnel detected — restarting cloudflared..."
+  pkill -f "cloudflared tunnel --url http://127.0.0.1:5173" 2>/dev/null || true
+  sleep 2
 fi
 
 : > "$LOG"
