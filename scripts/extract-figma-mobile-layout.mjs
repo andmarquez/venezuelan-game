@@ -25,13 +25,13 @@ const WORLD_H = 720;
  * zoneType: 'platform' | 'pipe'
  */
 const PLATFORMS_RAW = [
-  ['26:181', 'ground_floor', 'platform', -1, 766, 5336, 56],
+  ['26:181', 'ground_floor', 'platform', -1, 786, 5336, 36],
   ['49:2', 'platform_start', 'platform', -1, 684, 231, 36],
   ['54:2', 'platform_start_1', 'platform', 303, 666, 174, 54],
   ['54:3', 'platform_start_2', 'platform', 540, 620, 113, 100],
   ['54:4', 'platform_start_3', 'platform', 653, 691, 195, 29],
   ['26:183', 'floating_platform_01', 'platform', 207, 572, 121, 29],
-  ['26:185', 'platform_01', 'platform', 996, 656, 391, 113],
+  ['26:185', 'platform_01', 'platform', 996, 656, 391, 132],
   ['26:187', 'floating_platform_02', 'platform', 935, 569, 122, 34],
   ['26:189', 'platform_02', 'platform', 1472, 696, 246, 73],
   ['54:5', 'pipe_1', 'pipe', 1564, 633, 56, 73],
@@ -58,16 +58,16 @@ const GOAL_PLATFORM = ['26:209', 'goal_platform', 'platform', 5172 + MARKERS_FRA
  * No physics; white dashed boxes for art placement.
  */
 const CLOUDS_RAW = [
-  ['55:3', 'cloud_01', 120, 80, 180, 70],
-  ['55:4', 'cloud_02', 450, 120, 220, 85],
-  ['55:5', 'cloud_03', 900, 60, 200, 75],
-  ['55:6', 'cloud_04', 1350, 100, 190, 68],
-  ['55:7', 'cloud_05', 1800, 140, 240, 90],
-  ['55:8', 'cloud_06', 2400, 70, 210, 80],
-  ['55:9', 'cloud_07', 3100, 110, 200, 72],
-  ['55:10', 'cloud_08', 3800, 55, 230, 88],
-  ['55:11', 'cloud_09', 4500, 95, 195, 70],
-  ['55:12', 'cloud_10', 5100, 130, 180, 65],
+  ['55:3', 'cloud_01', 120, 156, 180, 58],
+  ['55:4', 'cloud_02', 450, 189, 220, 71],
+  ['55:5', 'cloud_03', 900, 139, 200, 63],
+  ['55:6', 'cloud_04', 1350, 173, 190, 56],
+  ['55:7', 'cloud_05', 1800, 206, 240, 75],
+  ['55:8', 'cloud_06', 2400, 148, 210, 66],
+  ['55:9', 'cloud_07', 3100, 181, 200, 60],
+  ['55:10', 'cloud_08', 3800, 135, 230, 73],
+  ['55:11', 'cloud_09', 4500, 168, 195, 59],
+  ['55:12', 'cloud_10', 5100, 198, 180, 54],
 ];
 
 const COLLECTIBLES = {

@@ -22,9 +22,9 @@
     {
       "name": "ground_floor",
       "x": 0,
-      "y": 666,
+      "y": 686,
       "width": 5336,
-      "height": 54,
+      "height": 34,
       "type": "platform"
     },
     {
@@ -224,72 +224,72 @@
     {
       "name": "cloud_01",
       "x": 120,
-      "y": 80,
+      "y": 156,
       "width": 180,
-      "height": 70
+      "height": 58
     },
     {
       "name": "cloud_02",
       "x": 450,
-      "y": 120,
+      "y": 189,
       "width": 220,
-      "height": 85
+      "height": 71
     },
     {
       "name": "cloud_03",
       "x": 900,
-      "y": 60,
+      "y": 139,
       "width": 200,
-      "height": 75
+      "height": 63
     },
     {
       "name": "cloud_04",
       "x": 1350,
-      "y": 100,
+      "y": 173,
       "width": 190,
-      "height": 68
+      "height": 56
     },
     {
       "name": "cloud_05",
       "x": 1800,
-      "y": 140,
+      "y": 206,
       "width": 240,
-      "height": 90
+      "height": 75
     },
     {
       "name": "cloud_06",
       "x": 2400,
-      "y": 70,
+      "y": 148,
       "width": 210,
-      "height": 80
+      "height": 66
     },
     {
       "name": "cloud_07",
       "x": 3100,
-      "y": 110,
+      "y": 181,
       "width": 200,
-      "height": 72
+      "height": 60
     },
     {
       "name": "cloud_08",
       "x": 3800,
-      "y": 55,
+      "y": 135,
       "width": 230,
-      "height": 88
+      "height": 73
     },
     {
       "name": "cloud_09",
       "x": 4500,
-      "y": 95,
+      "y": 168,
       "width": 195,
-      "height": 70
+      "height": 59
     },
     {
       "name": "cloud_10",
       "x": 5100,
-      "y": 130,
+      "y": 198,
       "width": 180,
-      "height": 65
+      "height": 54
     }
   ],
   "markers": {
