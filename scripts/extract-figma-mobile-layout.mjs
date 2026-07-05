@@ -18,26 +18,45 @@ const MARKERS_JSON = path.join(ROOT, 'figma/figma-gameplay-markers.json');
 const DESKTOP_W = 4895;
 const MOBILE_W = 5335;
 
-const PLAYER_SPAWN_FALLBACK = { x: 233, y: 519 };
+const PLAYER_SPAWN_FALLBACK = { x: 267, y: 443 };
 
+const SPAWN_PLATFORM_PRIORITY = [
+  'floating_platform_01',
+  'platform_start_1',
+  'platform_start_2',
+  'platform_start_3',
+];
+
+/** Figma spawn marker gives X; foot Y snaps to the walk surface (platform zone top). */
 function resolvePlayerSpawn(platforms, markersData) {
-  if (markersData.player_spawn) {
-    return markersData.player_spawn;
+  const markerX = markersData.player_spawn?.x ?? PLAYER_SPAWN_FALLBACK.x;
+
+  const overlapping = platforms.filter(
+    (p) =>
+      p.type === 'platform' &&
+      markerX >= p.x &&
+      markerX <= p.x + p.width,
+  );
+
+  let platform =
+    SPAWN_PLATFORM_PRIORITY.map((name) => overlapping.find((p) => p.name === name)).find(Boolean) ??
+    overlapping.sort((a, b) => a.y - b.y)[0] ??
+    platforms.find((p) => p.name === 'floating_platform_01') ??
+    platforms.find((p) => p.name === 'platform_start_1');
+
+  if (platform) {
+    const margin = 16;
+    const x = Math.round(
+      Math.max(platform.x + margin, Math.min(markerX, platform.x + platform.width - margin)),
+    );
+    return { x, y: platform.y };
   }
 
-  const platformStart = platforms.find((p) => p.name === 'platform_start');
-  if (platformStart) {
+  const legacyStart = platforms.find((p) => p.name === 'platform_start');
+  if (legacyStart) {
     return {
-      x: platformStart.x + Math.round(platformStart.width / 2),
-      y: platformStart.y,
-    };
-  }
-
-  const platformStart1 = platforms.find((p) => p.name === 'platform_start_1');
-  if (platformStart1) {
-    return {
-      x: platformStart1.x + Math.round(platformStart1.width / 2),
-      y: platformStart1.y,
+      x: legacyStart.x + Math.round(legacyStart.width / 2),
+      y: legacyStart.y,
     };
   }
 

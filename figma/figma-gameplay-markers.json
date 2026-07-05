@@ -2,7 +2,7 @@
   "source": "Figma M02 — Gameplay (Level 1) node 13:2",
   "figmaFileKey": "1zlB4dA4ktyuuBXzseo1ix",
   "syncedAt": "2026-07-05T23:20:00.000Z",
-  "player_spawn": { "x": 233, "y": 519 },
+  "player_spawn": { "x": 233, "y": 443, "note": "x from Figma marker 26:211; y snapped to floating_platform_01 walk surface" },
   "kisses": [
     { "x": 194, "y": 580 },
     { "x": 375, "y": 561 },
