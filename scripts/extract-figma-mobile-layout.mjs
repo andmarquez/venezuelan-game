@@ -46,7 +46,7 @@ const PLATFORMS_RAW = [
   ['24:448', 'platform_06', 'platform', 4089, 675, 541, 68],
   ['26:205', 'platform_05', 'platform', 2687, 692, 1442, 51],
   ['54:8', 'pipe_3', 'pipe', 3845, 633, 56, 77],
-  ['26:207', 'floating_platform_08', 'platform', 4630, 573, 195, 70],
+  ['26:207', 'floating_platform_08', 'platform', 4590, 563, 195, 70],
 ];
 
 const GOAL_X = 5080 + MARKERS_FRAME_X;
@@ -76,7 +76,7 @@ const FINAL_BOSS = {
   max: GOAL_X + 203,
 };
 
-const PLAYER_SPAWN = { x: 233, y: 630 };
+const PLAYER_SPAWN_FALLBACK = { x: 174, y: 630 };
 
 function toPlatform([_nodeId, name, zoneType, x, y, w, h], frameY = PLATFORM_FRAME_Y) {
   let artY = Math.round(y + frameY);
@@ -126,6 +126,11 @@ const platforms = [
   ...PLATFORMS_RAW.map((row) => toPlatform(row)),
   toPlatform(GOAL_PLATFORM, 0),
 ];
+
+const platformStart = platforms.find((p) => p.name === 'platform_start');
+const PLAYER_SPAWN = platformStart
+  ? { x: platformStart.x + Math.round(platformStart.width / 2), y: platformStart.y }
+  : PLAYER_SPAWN_FALLBACK;
 
 const goal = platforms.find((p) => p.name === 'goal_platform');
 const pipeCount = platforms.filter((p) => p.type === 'pipe').length;

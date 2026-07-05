@@ -107,17 +107,9 @@ export const platformTopLeftToCenter = (p: PlatformZone) => ({
   cy: p.y + p.height / 2,
 });
 
-/** Gameplay collision — thin surface at top of zone (feet stand on zone.y). */
+/** Gameplay collision — full Figma zone; feet stand on zone.y (top edge). */
 export function getPlatformCollisionRect(zone: PlatformZone): PlatformZone {
-  if (zone.type === 'pipe' || zone.name === 'ground_floor') {
-    return zone;
-  }
-  const surfaceH = Math.min(zone.height, 18);
-  return {
-    ...zone,
-    y: zone.y,
-    height: surfaceH,
-  };
+  return zone;
 }
 
 /** Spawn marker y is the platform surface (foot Y). */

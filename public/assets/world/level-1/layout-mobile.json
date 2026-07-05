@@ -189,8 +189,8 @@
     },
     {
       "name": "floating_platform_08",
-      "x": 4630,
-      "y": 507,
+      "x": 4590,
+      "y": 497,
       "width": 195,
       "height": 70,
       "type": "platform"
@@ -371,8 +371,8 @@
       "name": "floating_platform_08",
       "key": "platform-art:floating_platform_08",
       "path": "/assets/world/platforms/floating_platform_08.png",
-      "x": 4630,
-      "y": 507,
+      "x": 4590,
+      "y": 497,
       "width": 195,
       "height": 70
     },
@@ -389,7 +389,7 @@
   "clouds": [],
   "markers": {
     "player_spawn": {
-      "x": 233,
+      "x": 115,
       "y": 630
     },
     "portal_goal": {
