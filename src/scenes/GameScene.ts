@@ -18,7 +18,7 @@ import { WorldBuilder } from '../world/WorldBuilder';
 import type { LevelLayout } from '../world/worldTypes';
 import { getLevelLayoutCacheKey, shouldShowCloudZones, shouldShowPlatformZones } from '../world/layoutUtils';
 import { depthFromFootY, WORLD_LAYERS } from '../world/layerConfig';
-import { markerToFoot, platformStandY } from '../world/worldTypes';
+import { markerToFoot } from '../world/worldTypes';
 
 /**
  * GameScene — main Level 1 gameplay.
@@ -87,7 +87,6 @@ export class GameScene extends Phaser.Scene {
     this.createFinalBoss();
     this.createPortal();
     this.setupCollisions();
-    this.settlePlayerOnSpawn();
     this.createHUD();
     this.setupInput();
     this.createPortraitOverlay();
@@ -109,18 +108,6 @@ export class GameScene extends Phaser.Scene {
     const foot = markerToFoot(this.levelLayout.markers.player_spawn);
     this.player = new Player(this, foot.x, foot.y);
     this.player.setDepth(depthFromFootY(foot.y, WORLD_LAYERS.player));
-  }
-
-  /** Plant feet on platform_start after colliders exist — avoids first-frame fall-through. */
-  private settlePlayerOnSpawn(): void {
-    const start = this.levelLayout.platforms.find((p) => p.name === 'platform_start');
-    if (!start) return;
-
-    const x = start.x + Math.round(start.width / 2);
-    const y = platformStandY(start) + 2;
-    this.player.setPosition(x, y);
-    this.player.setVelocity(0, 0);
-    (this.player.body as Phaser.Physics.Arcade.Body).updateFromGameObject();
   }
 
   private createCollectibles(): void {

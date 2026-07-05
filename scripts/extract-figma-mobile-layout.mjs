@@ -18,59 +18,7 @@ const MARKERS_JSON = path.join(ROOT, 'figma/figma-gameplay-markers.json');
 const DESKTOP_W = 4895;
 const MOBILE_W = 5335;
 
-const PLAYER_SPAWN_FALLBACK = { x: 115, y: 630 };
-
-const SPAWN_PLATFORM_PRIORITY = [
-  'platform_start',
-  'floating_platform_01',
-  'platform_start_1',
-  'platform_start_2',
-  'platform_start_3',
-];
-
-/** Figma spawn marker gives X; foot Y snaps to platform_start walk surface. */
-function resolvePlayerSpawn(platforms, markersData) {
-  const platformStart = platforms.find((p) => p.name === 'platform_start');
-  if (platformStart) {
-    return {
-      x: platformStart.x + Math.round(platformStart.width / 2),
-      y: platformStart.y,
-    };
-  }
-
-  const markerX = markersData.player_spawn?.x ?? PLAYER_SPAWN_FALLBACK.x;
-
-  const overlapping = platforms.filter(
-    (p) =>
-      p.type === 'platform' &&
-      markerX >= p.x &&
-      markerX <= p.x + p.width,
-  );
-
-  let platform =
-    SPAWN_PLATFORM_PRIORITY.map((name) => overlapping.find((p) => p.name === name)).find(Boolean) ??
-    overlapping.sort((a, b) => a.y - b.y)[0] ??
-    platforms.find((p) => p.name === 'floating_platform_01') ??
-    platforms.find((p) => p.name === 'platform_start_1');
-
-  if (platform) {
-    const margin = 16;
-    const x = Math.round(
-      Math.max(platform.x + margin, Math.min(markerX, platform.x + platform.width - margin)),
-    );
-    return { x, y: platform.y };
-  }
-
-  const legacyStart = platforms.find((p) => p.name === 'platform_start');
-  if (legacyStart) {
-    return {
-      x: legacyStart.x + Math.round(legacyStart.width / 2),
-      y: legacyStart.y,
-    };
-  }
-
-  return PLAYER_SPAWN_FALLBACK;
-}
+const PLAYER_SPAWN_FALLBACK = { x: 174, y: 630 };
 
 function loadMarkers() {
   if (!fs.existsSync(MARKERS_JSON)) {
@@ -109,7 +57,13 @@ const platformArt = platforms
     height: p.height,
   }));
 
-const PLAYER_SPAWN = resolvePlayerSpawn(platforms, markersData);
+const platformStart = platforms.find((p) => p.name === 'platform_start');
+const PLAYER_SPAWN = platformStart
+  ? {
+      x: platformStart.x + Math.round(platformStart.width / 2),
+      y: platformStart.y,
+    }
+  : PLAYER_SPAWN_FALLBACK;
 
 const pipeCount = platforms.filter((p) => p.type === 'pipe').length;
 

@@ -1,8 +1,7 @@
 {
   "source": "Figma M02 — Gameplay (Level 1) node 13:2",
   "figmaFileKey": "1zlB4dA4ktyuuBXzseo1ix",
-  "syncedAt": "2026-07-05T23:20:00.000Z",
-  "player_spawn": { "x": 115, "y": 630, "note": "center of platform_start walk surface" },
+  "syncedAt": "2026-07-05T21:30:00.000Z",
   "kisses": [
     { "x": 194, "y": 580 },
     { "x": 375, "y": 561 },
