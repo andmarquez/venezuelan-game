@@ -7,8 +7,8 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
-import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { computePlatformDisplayRect, readPngSize, roundPlatformRect } from './platform-display.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
@@ -123,12 +123,35 @@ function toCloud([_nodeId, name, x, y, w, h]) {
   };
 }
 
+const PLATFORMS_DIR = path.join(ROOT, 'public/assets/world/platforms');
+
 const platforms = [
   ...PLATFORMS_RAW.map((row) => toPlatform(row)),
   toPlatform(GOAL_PLATFORM, 0),
 ];
 
-/** Visual platform sprites — image fills on Figma collision rectangles. */
+/** Shrink platform zones to the fitted PNG display size (bottom-aligned in Figma frame). */
+function shrinkPlatformToDisplaySize(platform) {
+  if (platform.type !== 'platform' || platform.name === 'ground_floor') {
+    return platform;
+  }
+
+  const pngPath = path.join(PLATFORMS_DIR, `${platform.name}.png`);
+  if (!fs.existsSync(pngPath)) {
+    console.warn(`[layout] missing PNG for ${platform.name}, keeping Figma frame`);
+    return platform;
+  }
+
+  const { width: nativeW, height: nativeH } = readPngSize(pngPath);
+  const display = roundPlatformRect(computePlatformDisplayRect(platform, nativeW, nativeH));
+  return { ...platform, ...display };
+}
+
+for (let i = 0; i < platforms.length; i += 1) {
+  platforms[i] = shrinkPlatformToDisplaySize(platforms[i]);
+}
+
+/** Visual platform sprites — same bounds as shrunk collision zones. */
 const platformArt = platforms
   .filter((p) => p.type === 'platform' && p.name !== 'ground_floor')
   .map((p) => ({
@@ -140,22 +163,6 @@ const platformArt = platforms
     width: p.width,
     height: p.height,
   }));
-
-const standInsetScript = path.join(__dirname, 'compute-platform-stand-inset.py');
-const insetTmp = path.join(ROOT, '.tmp-platform-art.json');
-fs.writeFileSync(insetTmp, JSON.stringify({ platformArt }));
-const insetProc = spawnSync('python3', [standInsetScript, insetTmp], { encoding: 'utf8' });
-fs.unlinkSync(insetTmp);
-let standInsets = {};
-if (insetProc.status === 0) {
-  const match = insetProc.stdout.match(/\{[\s\S]*\}/);
-  if (match) standInsets = JSON.parse(match[0]);
-} else {
-  console.warn('[layout] standInset compute failed:', insetProc.stderr || insetProc.status);
-}
-for (const art of platformArt) {
-  art.standInset = standInsets[art.name] ?? 0;
-}
 
 const platformStart = platforms.find((p) => p.name === 'platform_start');
 const PLAYER_SPAWN = platformStart

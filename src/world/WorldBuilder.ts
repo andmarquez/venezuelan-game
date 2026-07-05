@@ -35,10 +35,10 @@ export class WorldBuilder {
     WorldBuilder.createSky(scene, layout.width);
     WorldBuilder.drawBackground(scene, layout);
     WorldBuilder.drawPlatformArt(scene, layout);
-    WorldBuilder.createPlatformBodies(platforms, layout.platforms, WorldBuilder.standInsetMap(layout));
+    WorldBuilder.createPlatformBodies(platforms, layout.platforms);
 
     const renderPlatformDebug = () => {
-      const { graphics, labels } = WorldBuilder.drawPlatformDebug(scene, layout.platforms, WorldBuilder.standInsetMap(layout));
+      const { graphics, labels } = WorldBuilder.drawPlatformDebug(scene, layout.platforms);
       platformGraphics.push(graphics);
       platformLabels.push(...labels);
     };
@@ -115,45 +115,19 @@ export class WorldBuilder {
     for (const art of layout.platformArt ?? []) {
       if (!scene.textures.exists(art.key)) continue;
 
-      const frame = scene.textures.get(art.key).get();
-      const nativeW = frame.width;
-      const nativeH = frame.height;
-      if (nativeW === 0 || nativeH === 0) continue;
-
-      const scaleW = art.width / nativeW;
-      let displayW = art.width;
-      let displayH = nativeH * scaleW;
-      if (displayH > art.height) {
-        const scaleH = art.height / nativeH;
-        displayH = art.height;
-        displayW = nativeW * scaleH;
-      }
-      const cx = art.x + art.width / 2;
-      const cy = art.y + art.height - displayH / 2;
-
-      const img = scene.add.image(cx, cy, art.key);
-      img.setDisplaySize(displayW, displayH);
+      const img = scene.add.image(art.x + art.width / 2, art.y + art.height / 2, art.key);
+      img.setDisplaySize(art.width, art.height);
       img.setDepth(WORLD_LAYERS.platformArt);
       img.setScrollFactor(1);
     }
   }
 
-  private static standInsetMap(layout: LevelLayout): Map<string, number> {
-    const map = new Map<string, number>();
-    for (const art of layout.platformArt ?? []) {
-      map.set(art.name, art.standInset ?? 0);
-    }
-    return map;
-  }
-
   private static createPlatformBodies(
     platforms: Phaser.Physics.Arcade.StaticGroup,
     zones: PlatformZone[],
-    standInsets: Map<string, number>,
   ): void {
     for (const zone of zones) {
-      const inset = standInsets.get(zone.name) ?? 0;
-      const collision = getPlatformCollisionRect(zone, inset);
+      const collision = getPlatformCollisionRect(zone);
       const { cx, cy } = platformTopLeftToCenter(collision);
       const body = platforms.create(cx, cy, 'platform-tile') as Phaser.Physics.Arcade.Sprite;
       body.setDisplaySize(collision.width, collision.height);
@@ -166,7 +140,6 @@ export class WorldBuilder {
   private static drawPlatformDebug(
     scene: Phaser.Scene,
     zones: PlatformZone[],
-    standInsets: Map<string, number>,
   ): { graphics: Phaser.GameObjects.Graphics; labels: Phaser.GameObjects.Text[] } {
     const g = scene.add.graphics();
     g.setDepth(WORLD_LAYERS.debug);
@@ -175,8 +148,7 @@ export class WorldBuilder {
 
     for (const zone of zones) {
       const isPipe = zone.type === 'pipe';
-      const inset = standInsets.get(zone.name) ?? 0;
-      const collision = getPlatformCollisionRect(zone, inset);
+      const collision = getPlatformCollisionRect(zone);
       const isPlatform = !isPipe && zone.name !== 'ground_floor';
 
       if (isPlatform) {
