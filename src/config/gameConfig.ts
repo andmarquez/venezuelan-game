@@ -4,7 +4,7 @@
  */
 export const GAME_CONFIG = {
   /** Bump after Figma asset sync so phones bypass CDN/browser cache */
-  worldAssetVersion: '20260705v',
+  worldAssetVersion: '20260705m',
   characterAssetVersion: '20260705l',
   enemyAssetVersion: '20260705l',
 

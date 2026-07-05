@@ -74,17 +74,17 @@ export class MenuScene extends Phaser.Scene {
 
   private createUi(): void {
     this.titleGroup = this.add.container(0, 0).setDepth(110);
-    const title = this.add.text(0, 0, "Andsiosa's", {
-      fontSize: '64px',
-      fontFamily: 'Nunito, sans-serif',
-      color: '#e91e63',
-      fontStyle: 'bold',
-    }).setOrigin(0.5);
-
-    const subtitle = this.add.text(0, 80, 'Creative Quest', {
+    const title = this.add.text(0, 0, 'TEPUY', {
       fontSize: '72px',
       fontFamily: 'Nunito, sans-serif',
       color: '#880e4f',
+      fontStyle: 'bold',
+    }).setOrigin(0.5);
+
+    const subtitle = this.add.text(0, 72, 'LEVEL 1', {
+      fontSize: '36px',
+      fontFamily: 'Nunito, sans-serif',
+      color: '#e91e63',
       fontStyle: 'bold',
     }).setOrigin(0.5);
 

@@ -3,7 +3,7 @@
   "figmaFileKey": "1zlB4dA4ktyuuBXzseo1ix",
   "figmaNodeId": "95:2",
   "platformFrameY": -66,
-  "syncedAt": "2026-07-05T20:00:00.000Z",
+  "syncedAt": "2026-07-05T21:30:00.000Z",
   "zones": [
     { "name": "platform_start", "type": "platform", "x": 11, "y": 630, "width": 207, "height": 36 },
     { "name": "platform_start_1", "type": "platform", "x": 300, "y": 612, "width": 174, "height": 54 },

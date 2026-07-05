@@ -17,11 +17,9 @@ Move the green rectangles until they sit on the walkable tops in the artwork. Th
 
 ## Sync to the game
 
-After repositioning in Figma, copy each rectangle’s **x, y, width, height** into:
+Marker positions → `figma/figma-gameplay-markers.json` (kisses, timer, spark, enemies, portal).
 
-`public/assets/world/level-1/layout-mobile.json` → `platforms[]` and `clouds[]`
-
-Marker positions → `markers` object (use ellipse center as `x`, `y`).
+Platform zones → `public/assets/world/level-1/figma-platform-zones.json`
 
 Then run:
 

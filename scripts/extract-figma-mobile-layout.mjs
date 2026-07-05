@@ -3,7 +3,7 @@
  * Extract M02 mobile gameplay zones from Figma into layout-mobile.json.
  *
  * Platform zones: `public/assets/world/level-1/figma-platform-zones.json`
- * (synced from Figma overlay "🟢 Platform zones (edit here)", node 95:2).
+ * Markers (kisses, timer, enemies): `figma/figma-gameplay-markers.json`
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -14,42 +14,18 @@ const ROOT = path.resolve(__dirname, '..');
 const OUT = path.join(ROOT, 'public/assets/world/level-1/layout-mobile.json');
 const OUT_DESKTOP = path.join(ROOT, 'public/assets/world/level-1/layout-desktop.json');
 const ZONES_JSON = path.join(ROOT, 'public/assets/world/level-1/figma-platform-zones.json');
+const MARKERS_JSON = path.join(ROOT, 'figma/figma-gameplay-markers.json');
 const DESKTOP_W = 4895;
 const MOBILE_W = 5335;
 
-const MARKERS_FRAME_X = 35;
-
-/** Figma marker positions (M02 → Markers frame, node 26:180). */
-const PORTAL_GOAL_MARKER = {
-  x: MARKERS_FRAME_X + 5127 + 20,
-  y: 484 + 20,
-};
-
-const FINAL_BOSS_MARKER = {
-  x: PORTAL_GOAL_MARKER.x,
-  y: PORTAL_GOAL_MARKER.y - 36,
-  min: PORTAL_GOAL_MARKER.x - 80,
-  max: PORTAL_GOAL_MARKER.x + 80,
-};
-
-/** Clouds frame removed from M02 — decorative clouds now baked into - 1 background. */
-const CLOUDS_RAW = [];
-
-const COLLECTIBLES = {
-  kiss: [
-    [250, 500, 46, 49],
-    [367, 448, 46, 49],
-    [655, 405, 46, 49],
-    [182, 568, 24, 24],
-    [363, 549, 24, 24],
-    [702, 561, 24, 24],
-  ],
-  timer: [[797, 475, 28, 28]],
-  spark: [[4845, 448, 28, 28]],
-  enemy: [[535, 487, 40, 32]],
-};
-
 const PLAYER_SPAWN_FALLBACK = { x: 174, y: 630 };
+
+function loadMarkers() {
+  if (!fs.existsSync(MARKERS_JSON)) {
+    throw new Error(`Missing ${MARKERS_JSON} — sync from Figma M02 first`);
+  }
+  return JSON.parse(fs.readFileSync(MARKERS_JSON, 'utf8'));
+}
 
 function loadPlatformZones() {
   if (!fs.existsSync(ZONES_JSON)) {
@@ -66,23 +42,9 @@ function loadPlatformZones() {
   }));
 }
 
-function center([x, y, w, h]) {
-  return { x: Math.round(x + w / 2), y: Math.round(y + h / 2) };
-}
-
-function toCloud([_nodeId, name, x, y, w, h]) {
-  return {
-    name,
-    x: Math.round(x),
-    y: Math.round(y),
-    width: Math.round(w),
-    height: Math.round(h),
-  };
-}
-
 const platforms = loadPlatformZones();
+const markersData = loadMarkers();
 
-/** Visual platform sprites — fit inside zone bounds (contain, bottom-aligned). */
 const platformArt = platforms
   .filter((p) => p.type === 'platform' && p.name !== 'ground_floor')
   .map((p) => ({
@@ -104,7 +66,6 @@ const PLAYER_SPAWN = platformStart
   : PLAYER_SPAWN_FALLBACK;
 
 const pipeCount = platforms.filter((p) => p.type === 'pipe').length;
-const clouds = CLOUDS_RAW.map((row) => toCloud(row));
 
 const layout = {
   level: 'level-1',
@@ -128,36 +89,25 @@ const layout = {
   },
   platforms,
   platformArt,
-  clouds,
+  clouds: [],
   markers: {
     player_spawn: PLAYER_SPAWN,
-    portal_goal: PORTAL_GOAL_MARKER,
-    kiss_collectibles: COLLECTIBLES.kiss.map(center),
-    timer_collectibles: COLLECTIBLES.timer.map(center),
-    boss_spark_collectibles: COLLECTIBLES.spark.map(center),
-    enemies: COLLECTIBLES.enemy.map((rect) => ({
-      ...center(rect),
-      min: 120,
-      max: 900,
-    })),
-    final_boss: FINAL_BOSS_MARKER,
+    portal_goal: markersData.portal_goal,
+    kiss_collectibles: markersData.kisses,
+    timer_collectibles: markersData.timer,
+    boss_spark_collectibles: markersData.spark,
+    enemies: markersData.enemies,
+    final_boss: markersData.final_boss,
   },
 };
 
 fs.writeFileSync(OUT, `${JSON.stringify(layout, null, 2)}\n`);
 console.log(
-  `Wrote ${OUT} — ${layout.platforms.length} zones (${pipeCount} pipes), ${platformArt.length} platform art, ${clouds.length} clouds, ${layout.markers.kiss_collectibles.length} kisses`,
+  `Wrote ${OUT} — ${layout.platforms.length} zones (${pipeCount} pipes), ${platformArt.length} platform art, ${layout.markers.kiss_collectibles.length} kisses`,
 );
 
-/** Mirror clouds into desktop layout (scaled X/width). */
 if (fs.existsSync(OUT_DESKTOP)) {
   const desktop = JSON.parse(fs.readFileSync(OUT_DESKTOP, 'utf8'));
-  const scale = DESKTOP_W / MOBILE_W;
-  desktop.clouds = clouds.map((c) => ({
-    ...c,
-    x: Math.round(c.x * scale),
-    width: Math.round(c.width * scale),
-  }));
+  desktop.clouds = [];
   fs.writeFileSync(OUT_DESKTOP, `${JSON.stringify(desktop, null, 2)}\n`);
-  console.log(`Updated ${OUT_DESKTOP} — ${desktop.clouds.length} clouds`);
 }
