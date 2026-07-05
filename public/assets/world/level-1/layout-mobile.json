@@ -212,7 +212,8 @@
       "x": 11,
       "y": 630,
       "width": 207,
-      "height": 36
+      "height": 36,
+      "standInset": 17
     },
     {
       "name": "platform_start_1",
@@ -221,7 +222,8 @@
       "x": 300,
       "y": 612,
       "width": 174,
-      "height": 54
+      "height": 54,
+      "standInset": 19
     },
     {
       "name": "platform_start_2",
@@ -230,7 +232,8 @@
       "x": 516,
       "y": 577,
       "width": 113,
-      "height": 90
+      "height": 90,
+      "standInset": 88
     },
     {
       "name": "platform_start_3",
@@ -239,7 +242,8 @@
       "x": 600,
       "y": 637,
       "width": 203,
-      "height": 29
+      "height": 29,
+      "standInset": 28
     },
     {
       "name": "floating_platform_01",
@@ -248,7 +252,8 @@
       "x": 206,
       "y": 453,
       "width": 123,
-      "height": 35
+      "height": 35,
+      "standInset": 0
     },
     {
       "name": "platform_01",
@@ -257,7 +262,8 @@
       "x": 775,
       "y": 608,
       "width": 391,
-      "height": 59
+      "height": 59,
+      "standInset": 57
     },
     {
       "name": "floating_platform_02",
@@ -266,7 +272,8 @@
       "x": 1205,
       "y": 453,
       "width": 122,
-      "height": 34
+      "height": 34,
+      "standInset": 0
     },
     {
       "name": "platform_02",
@@ -275,7 +282,8 @@
       "x": 1334,
       "y": 633,
       "width": 246,
-      "height": 35
+      "height": 35,
+      "standInset": 17
     },
     {
       "name": "floating_platform_03",
@@ -284,7 +292,8 @@
       "x": 1987,
       "y": 453,
       "width": 124,
-      "height": 34
+      "height": 34,
+      "standInset": 0
     },
     {
       "name": "floating_platform_04",
@@ -293,7 +302,8 @@
       "x": 1714,
       "y": 554,
       "width": 98,
-      "height": 56
+      "height": 56,
+      "standInset": 56
     },
     {
       "name": "platform_03",
@@ -302,7 +312,8 @@
       "x": 1643,
       "y": 604,
       "width": 314,
-      "height": 70
+      "height": 70,
+      "standInset": 63
     },
     {
       "name": "floating_platform_05",
@@ -311,7 +322,8 @@
       "x": 2968,
       "y": 505,
       "width": 120,
-      "height": 32
+      "height": 32,
+      "standInset": 0
     },
     {
       "name": "floating_platform_05b",
@@ -320,7 +332,8 @@
       "x": 2500,
       "y": 523,
       "width": 120,
-      "height": 32
+      "height": 32,
+      "standInset": 0
     },
     {
       "name": "floating_platform_06",
@@ -329,7 +342,8 @@
       "x": 4135,
       "y": 558,
       "width": 102,
-      "height": 70
+      "height": 70,
+      "standInset": 63
     },
     {
       "name": "platform_04",
@@ -338,7 +352,8 @@
       "x": 2159,
       "y": 639,
       "width": 219,
-      "height": 38
+      "height": 38,
+      "standInset": 18
     },
     {
       "name": "floating_platform_07",
@@ -347,7 +362,8 @@
       "x": 4358,
       "y": 535,
       "width": 122,
-      "height": 38
+      "height": 38,
+      "standInset": 0
     },
     {
       "name": "platform_06",
@@ -356,7 +372,8 @@
       "x": 4089,
       "y": 609,
       "width": 541,
-      "height": 68
+      "height": 68,
+      "standInset": 57
     },
     {
       "name": "platform_05",
@@ -365,7 +382,8 @@
       "x": 2687,
       "y": 626,
       "width": 1442,
-      "height": 51
+      "height": 51,
+      "standInset": 23
     },
     {
       "name": "floating_platform_08",
@@ -374,7 +392,8 @@
       "x": 4590,
       "y": 497,
       "width": 195,
-      "height": 70
+      "height": 70,
+      "standInset": 22
     },
     {
       "name": "goal_platform",
@@ -383,18 +402,19 @@
       "x": 5115,
       "y": 561,
       "width": 163,
-      "height": 20
+      "height": 20,
+      "standInset": 1
     }
   ],
   "clouds": [],
   "markers": {
     "player_spawn": {
       "x": 115,
-      "y": 630
+      "y": 647
     },
     "portal_goal": {
       "x": 5197,
-      "y": 551
+      "y": 552
     },
     "kiss_collectibles": [
       {

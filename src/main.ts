@@ -92,4 +92,8 @@ document.addEventListener(
   { passive: false },
 );
 
+if (typeof window !== 'undefined') {
+  (window as Window & { __PHASER_GAME__?: Phaser.Game }).__PHASER_GAME__ = game;
+}
+
 export default game;

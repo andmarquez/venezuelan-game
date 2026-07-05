@@ -7,6 +7,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -127,15 +128,6 @@ const platforms = [
   toPlatform(GOAL_PLATFORM, 0),
 ];
 
-const platformStart = platforms.find((p) => p.name === 'platform_start');
-const PLAYER_SPAWN = platformStart
-  ? { x: platformStart.x + Math.round(platformStart.width / 2), y: platformStart.y }
-  : PLAYER_SPAWN_FALLBACK;
-
-const goal = platforms.find((p) => p.name === 'goal_platform');
-const pipeCount = platforms.filter((p) => p.type === 'pipe').length;
-const clouds = CLOUDS_RAW.map((row) => toCloud(row));
-
 /** Visual platform sprites — image fills on Figma collision rectangles. */
 const platformArt = platforms
   .filter((p) => p.type === 'platform' && p.name !== 'ground_floor')
@@ -148,6 +140,36 @@ const platformArt = platforms
     width: p.width,
     height: p.height,
   }));
+
+const standInsetScript = path.join(__dirname, 'compute-platform-stand-inset.py');
+const insetTmp = path.join(ROOT, '.tmp-platform-art.json');
+fs.writeFileSync(insetTmp, JSON.stringify({ platformArt }));
+const insetProc = spawnSync('python3', [standInsetScript, insetTmp], { encoding: 'utf8' });
+fs.unlinkSync(insetTmp);
+let standInsets = {};
+if (insetProc.status === 0) {
+  const match = insetProc.stdout.match(/\{[\s\S]*\}/);
+  if (match) standInsets = JSON.parse(match[0]);
+} else {
+  console.warn('[layout] standInset compute failed:', insetProc.stderr || insetProc.status);
+}
+for (const art of platformArt) {
+  art.standInset = standInsets[art.name] ?? 0;
+}
+
+const platformStart = platforms.find((p) => p.name === 'platform_start');
+const startArt = platformArt.find((a) => a.name === 'platform_start');
+const PLAYER_SPAWN = platformStart
+  ? {
+      x: platformStart.x + Math.round(platformStart.width / 2),
+      y: platformStart.y + (startArt?.standInset ?? 0),
+    }
+  : PLAYER_SPAWN_FALLBACK;
+
+const goal = platforms.find((p) => p.name === 'goal_platform');
+const goalArt = platformArt.find((a) => a.name === 'goal_platform');
+const pipeCount = platforms.filter((p) => p.type === 'pipe').length;
+const clouds = CLOUDS_RAW.map((row) => toCloud(row));
 
 const layout = {
   level: 'level-1',
@@ -176,7 +198,7 @@ const layout = {
     player_spawn: PLAYER_SPAWN,
     portal_goal: {
       x: goal.x + Math.round(goal.width / 2),
-      y: goal.y - 10,
+      y: goal.y + (goalArt?.standInset ?? 0) - 10,
     },
     kiss_collectibles: COLLECTIBLES.kiss.map(center),
     timer_collectibles: COLLECTIBLES.timer.map(center),

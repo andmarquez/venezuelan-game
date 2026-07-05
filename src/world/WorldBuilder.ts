@@ -1,9 +1,9 @@
 import Phaser from 'phaser';
 import { GAME_CONFIG } from '../config/gameConfig';
 import { WORLD_LAYERS } from './layerConfig';
-import type { LevelLayout, PlatformZone, CloudZone } from './worldTypes';
 import { getPlatformZoneVisualAlpha } from './layoutUtils';
 import { getPlatformCollisionRect, platformTopLeftToCenter } from './worldTypes';
+import type { LevelLayout, PlatformZone, CloudZone } from './worldTypes';
 
 export type WorldBuildOptions = {
   debug?: boolean;
@@ -35,10 +35,10 @@ export class WorldBuilder {
     WorldBuilder.createSky(scene, layout.width);
     WorldBuilder.drawBackground(scene, layout);
     WorldBuilder.drawPlatformArt(scene, layout);
-    WorldBuilder.createPlatformBodies(platforms, layout.platforms);
+    WorldBuilder.createPlatformBodies(platforms, layout.platforms, WorldBuilder.standInsetMap(layout));
 
     const renderPlatformDebug = () => {
-      const { graphics, labels } = WorldBuilder.drawPlatformDebug(scene, layout.platforms);
+      const { graphics, labels } = WorldBuilder.drawPlatformDebug(scene, layout.platforms, WorldBuilder.standInsetMap(layout));
       platformGraphics.push(graphics);
       platformLabels.push(...labels);
     };
@@ -138,12 +138,22 @@ export class WorldBuilder {
     }
   }
 
+  private static standInsetMap(layout: LevelLayout): Map<string, number> {
+    const map = new Map<string, number>();
+    for (const art of layout.platformArt ?? []) {
+      map.set(art.name, art.standInset ?? 0);
+    }
+    return map;
+  }
+
   private static createPlatformBodies(
     platforms: Phaser.Physics.Arcade.StaticGroup,
     zones: PlatformZone[],
+    standInsets: Map<string, number>,
   ): void {
     for (const zone of zones) {
-      const collision = getPlatformCollisionRect(zone);
+      const inset = standInsets.get(zone.name) ?? 0;
+      const collision = getPlatformCollisionRect(zone, inset);
       const { cx, cy } = platformTopLeftToCenter(collision);
       const body = platforms.create(cx, cy, 'platform-tile') as Phaser.Physics.Arcade.Sprite;
       body.setDisplaySize(collision.width, collision.height);
@@ -156,6 +166,7 @@ export class WorldBuilder {
   private static drawPlatformDebug(
     scene: Phaser.Scene,
     zones: PlatformZone[],
+    standInsets: Map<string, number>,
   ): { graphics: Phaser.GameObjects.Graphics; labels: Phaser.GameObjects.Text[] } {
     const g = scene.add.graphics();
     g.setDepth(WORLD_LAYERS.debug);
@@ -164,7 +175,8 @@ export class WorldBuilder {
 
     for (const zone of zones) {
       const isPipe = zone.type === 'pipe';
-      const collision = getPlatformCollisionRect(zone);
+      const inset = standInsets.get(zone.name) ?? 0;
+      const collision = getPlatformCollisionRect(zone, inset);
       const isPlatform = !isPipe && zone.name !== 'ground_floor';
 
       if (isPlatform) {

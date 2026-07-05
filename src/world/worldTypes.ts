@@ -28,6 +28,8 @@ export type PlatformArt = {
   y: number;
   width: number;
   height: number;
+  /** Pixels from zone.y down to the visible walk surface (icing → body). */
+  standInset?: number;
 };
 
 export type BackgroundSection = {
@@ -107,9 +109,19 @@ export const platformTopLeftToCenter = (p: PlatformZone) => ({
   cy: p.y + p.height / 2,
 });
 
-/** Gameplay collision — full Figma zone; feet stand on zone.y (top edge). */
-export function getPlatformCollisionRect(zone: PlatformZone): PlatformZone {
-  return zone;
+/** Foot Y on the visible walk surface inside a Figma platform zone. */
+export const platformStandY = (zone: PlatformZone, standInset = 0): number =>
+  zone.y + standInset;
+
+/** Gameplay collision — stand on the visible icing top, not the Figma box top. */
+export function getPlatformCollisionRect(zone: PlatformZone, standInset = 0): PlatformZone {
+  if (zone.type === 'pipe' || zone.name === 'ground_floor') {
+    return zone;
+  }
+  const top = zone.y + standInset;
+  const remain = Math.max(1, zone.height - standInset);
+  const surfaceH = Math.min(remain, 18);
+  return { ...zone, y: top, height: surfaceH };
 }
 
 /** Spawn marker y is the platform surface (foot Y). */
