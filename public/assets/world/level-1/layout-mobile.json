@@ -12,9 +12,9 @@
         "key": "world:level-1-background",
         "path": "/assets/world/background/level-1-mobile.png",
         "x": 0,
-        "y": 171,
+        "y": 203,
         "width": 5335,
-        "height": 547
+        "height": 449
       }
     ]
   },
@@ -30,7 +30,7 @@
     {
       "name": "platform_start",
       "x": 11,
-      "y": 628,
+      "y": 630,
       "width": 207,
       "height": 36,
       "type": "platform"
@@ -38,7 +38,7 @@
     {
       "name": "platform_start_1",
       "x": 300,
-      "y": 610,
+      "y": 612,
       "width": 174,
       "height": 54,
       "type": "platform"
@@ -46,7 +46,7 @@
     {
       "name": "platform_start_2",
       "x": 516,
-      "y": 575,
+      "y": 576,
       "width": 113,
       "height": 90,
       "type": "platform"
@@ -54,7 +54,7 @@
     {
       "name": "platform_start_3",
       "x": 600,
-      "y": 636,
+      "y": 637,
       "width": 203,
       "height": 29,
       "type": "platform"
@@ -70,9 +70,9 @@
     {
       "name": "platform_01",
       "x": 775,
-      "y": 602,
+      "y": 606,
       "width": 391,
-      "height": 118,
+      "height": 59,
       "type": "platform"
     },
     {
@@ -210,7 +210,7 @@
       "key": "platform-art:platform_start",
       "path": "/assets/world/platforms/platform_start.png",
       "x": 11,
-      "y": 628,
+      "y": 630,
       "width": 207,
       "height": 36
     },
@@ -219,7 +219,7 @@
       "key": "platform-art:platform_start_1",
       "path": "/assets/world/platforms/platform_start_1.png",
       "x": 300,
-      "y": 610,
+      "y": 612,
       "width": 174,
       "height": 54
     },
@@ -228,7 +228,7 @@
       "key": "platform-art:platform_start_2",
       "path": "/assets/world/platforms/platform_start_2.png",
       "x": 516,
-      "y": 575,
+      "y": 576,
       "width": 113,
       "height": 90
     },
@@ -237,7 +237,7 @@
       "key": "platform-art:platform_start_3",
       "path": "/assets/world/platforms/platform_start_3.png",
       "x": 600,
-      "y": 636,
+      "y": 637,
       "width": 203,
       "height": 29
     },
@@ -255,9 +255,9 @@
       "key": "platform-art:platform_01",
       "path": "/assets/world/platforms/platform_01.png",
       "x": 775,
-      "y": 602,
+      "y": 606,
       "width": 391,
-      "height": 118
+      "height": 59
     },
     {
       "name": "floating_platform_02",
