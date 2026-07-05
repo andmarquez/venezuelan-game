@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Pick and trim character art from Figma exports into 48×64 cells."""
+"""Pick and trim character art from Figma exports into 96×128 cells (2× Figma 48×64)."""
 import json
 import sys
 import urllib.request
@@ -8,8 +8,8 @@ from io import BytesIO
 from PIL import Image
 
 USER_AGENT = 'performingtypography-asset-sync/1.0'
-FRAME_W = 48
-FRAME_H = 64
+FRAME_W = 96
+FRAME_H = 128
 
 
 def load_url(url: str) -> Image.Image:
@@ -27,12 +27,23 @@ def strip_background(img: Image.Image) -> Image.Image:
             if a < 20:
                 px[x, y] = (0, 0, 0, 0)
                 continue
-            # Figma exports often use solid white or light cyan padding.
             if r > 235 and g > 235 and b > 235:
                 px[x, y] = (0, 0, 0, 0)
             elif r > 180 and g > 200 and b > 200 and abs(r - g) < 30:
                 px[x, y] = (0, 0, 0, 0)
     return img
+
+
+def sole_row(img: Image.Image) -> int:
+    px = img.load()
+    w, h = img.size
+    x0 = int(w * 0.3)
+    x1 = int(w * 0.7)
+    for y in range(h - 1, -1, -1):
+        for x in range(x0, x1):
+            if px[x, y][3] > 200:
+                return y
+    return h - 1
 
 
 def fit_cell(trimmed: Image.Image) -> Image.Image:
@@ -42,8 +53,9 @@ def fit_cell(trimmed: Image.Image) -> Image.Image:
     resized = trimmed.resize((new_w, new_h), Image.Resampling.LANCZOS)
 
     cell = Image.new('RGBA', (FRAME_W, FRAME_H), (0, 0, 0, 0))
+    row = sole_row(resized)
     x = (FRAME_W - new_w) // 2
-    y = FRAME_H - new_h
+    y = FRAME_H - 1 - row
     cell.paste(resized, (x, y), resized)
     return cell
 

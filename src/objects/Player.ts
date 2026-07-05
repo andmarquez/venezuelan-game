@@ -1,6 +1,5 @@
 import Phaser from 'phaser';
 import { GAME_CONFIG } from '../config/gameConfig';
-import { getFootOriginY } from '../utils/footOrigin';
 
 export type PlayerAnimState =
   | 'idle'
@@ -40,6 +39,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.createAnimations();
     this.setAnimState('idle');
+    this.on(Phaser.Animations.Events.ANIMATION_UPDATE, this.onAnimationUpdate, this);
   }
 
   private createAnimations(): void {
@@ -252,10 +252,15 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     return this.maxJumpsAllowed >= GAME_CONFIG.maxJumpsWithPrize;
   }
 
-  /** Anchor sprite on scanned shoe soles, not transparent frame padding. */
+  /** Soles are bottom-aligned in export cells — fixed anchor keeps run frames stable. */
   private applyFootOrigin(): void {
-    const originY = getFootOriginY(this.scene.textures, this.texture.key);
-    this.setOrigin(0.5, originY);
+    this.setOrigin(0.5, 1);
+  }
+
+  private onAnimationUpdate(): void {
+    if (this.animState !== 'run') return;
+    this.setOrigin(0.5, 1);
+    this.fitDisplayScale();
   }
 
   /** Scale trimmed Figma art to consistent on-screen height with transparent padding. */

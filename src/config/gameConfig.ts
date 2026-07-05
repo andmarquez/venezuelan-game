@@ -5,7 +5,7 @@
 export const GAME_CONFIG = {
   /** Bump after Figma asset sync so phones bypass CDN/browser cache */
   worldAssetVersion: '20260705u',
-  characterAssetVersion: '20260705j',
+  characterAssetVersion: '20260705k',
 
   /** In-game Andsiosa display scale (Figma art is 48×64; 1.75 ≈ 84×112 px) */
   playerDisplayScale: 1.75,
@@ -95,12 +95,12 @@ export const GAME_CONFIG = {
    */
   /**
    * Wild Rift controls — anchors from Figma M02 gameplay zones (node 26:178).
-   * Joystick 13:16 center (107, 543), Jump 17:582 center (1194, 431), Kiss 17:583 (1094, 393).
+   * Joystick 13:16 center (107, 572), Jump 17:582 center (1194, 431), Kiss 17:583 (1094, 393).
    */
   mobileWildRift: {
     joystick: {
       xRatio: 107 / 1280,
-      yRatio: 543 / 720,
+      yRatio: 572 / 720,
       baseRadius: 74,
       thumbRadius: 30,
       maxDrag: 52,

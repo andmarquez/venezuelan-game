@@ -25,18 +25,29 @@ export class BootScene extends Phaser.Scene {
       this.load.image(`andsiosa-${state}`, assetUrl(`assets/character/andsiosa-${state}.png`, cv));
     });
     this.load.spritesheet('andsiosa-run', assetUrl('assets/character/andsiosa-run.png', cv), {
-      frameWidth: 48,
-      frameHeight: 64,
+      frameWidth: 96,
+      frameHeight: 128,
     });
   }
 
   create(): void {
+    this.applyCharacterTextureFilters();
     this.worldManifest = this.cache.json.get('world-manifest') as WorldManifest | null;
     this.loadWorldAssets(() => {
       this.generatePlaceholderTextures();
       this.registry.set('worldManifest', this.worldManifest);
       this.scene.start('MenuScene');
     });
+  }
+
+  /** Smooth scaling for 2× character exports on high-DPI phones. */
+  private applyCharacterTextureFilters(): void {
+    const keys = ['andsiosa-idle', 'andsiosa-run', 'andsiosa-jump', 'andsiosa-fall', 'andsiosa-hurt', 'andsiosa-victory'];
+    for (const key of keys) {
+      if (this.textures.exists(key)) {
+        this.textures.get(key).setFilter(Phaser.Textures.FilterMode.LINEAR);
+      }
+    }
   }
 
   /** Load Figma background PNGs + platform art sprites from layout JSON. */
