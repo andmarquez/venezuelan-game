@@ -164,14 +164,22 @@ export class WorldBuilder {
 
     for (const zone of zones) {
       const isPipe = zone.type === 'pipe';
+      const collision = getPlatformCollisionRect(zone);
+      const isPlatform = !isPipe && zone.name !== 'ground_floor';
+
+      if (isPlatform) {
+        g.fillStyle(0x00e676, fillAlpha * 0.25);
+        g.fillRect(zone.x, zone.y, zone.width, zone.height);
+      }
+
       g.fillStyle(isPipe ? 0x40c4ff : 0x00e676, fillAlpha);
-      g.fillRect(zone.x, zone.y, zone.width, zone.height);
+      g.fillRect(collision.x, collision.y, collision.width, collision.height);
       WorldBuilder.strokeDashedRect(
         g,
-        zone.x,
-        zone.y,
-        zone.width,
-        zone.height,
+        collision.x,
+        collision.y,
+        collision.width,
+        collision.height,
         isPipe ? 0x0288d1 : 0x009650,
         2,
         8,
