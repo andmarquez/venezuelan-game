@@ -1,14 +1,14 @@
 {
-  "generatedAt": "2026-07-04T15:03:00.217Z",
+  "generatedAt": "2026-07-05T02:01:39.894Z",
   "figmaFileKey": "1zlB4dA4ktyuuBXzseo1ix",
   "figmaFileUrl": "https://www.figma.com/design/1zlB4dA4ktyuuBXzseo1ix",
-  "version": 4,
+  "version": 5,
   "backgrounds": {
     "level-1-mobile": {
       "key": "world:level-1-background",
       "path": "/assets/world/background/level-1-mobile.png",
-      "figmaNodeId": "24:328",
-      "figmaName": "- 1",
+      "figmaNodeId": "13:2",
+      "figmaName": "M02 background composite",
       "present": true
     },
     "level-1-desktop": {
@@ -23,6 +23,6 @@
     "level": "level-1",
     "width": 5335,
     "height": 720,
-    "platformCount": 18
+    "platformCount": 25
   }
 }

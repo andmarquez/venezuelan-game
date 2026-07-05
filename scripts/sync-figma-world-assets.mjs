@@ -3,9 +3,9 @@
  * Sync world background from Figma → public/assets/world/background/
  *
  * WORKFLOW (after editing M02 in Figma):
- * 1. Export background layer "- 1" (node 24:328) via Figma MCP download_assets
- * 2. Save as public/assets/world/background/level-1-mobile.png
- * 3. Update layout-mobile.json platforms/markers from 🎯 Gameplay Zones (26:178)
+ * 1. Export background from artboard 13:2 (layer 24:328 may be hidden) via Figma MCP download_assets
+ * 2. Save largest scenery composite as public/assets/world/background/level-1-mobile.png
+ * 3. Run: npm run assets:layout:mobile — updates platforms/markers from 🎯 Gameplay Zones
  * 4. Regenerate manifest: npm run assets:manifest
  */
 

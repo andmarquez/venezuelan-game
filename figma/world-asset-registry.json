@@ -1,16 +1,18 @@
 {
   "figmaFileKey": "1zlB4dA4ktyuuBXzseo1ix",
   "figmaFileUrl": "https://www.figma.com/design/1zlB4dA4ktyuuBXzseo1ix",
-  "version": 4,
+  "version": 5,
   "backgrounds": [
     {
       "assetKey": "level-1-mobile",
-      "figmaName": "- 1",
-      "figmaNodeId": "24:328",
+      "figmaName": "M02 background composite",
+      "figmaNodeId": "13:2",
+      "legacyNodeId": "24:328",
       "file": "background/level-1-mobile.png",
       "textureKey": "world:level-1-background",
       "artboard": "M02 — Gameplay (Level 1)",
-      "artboardNodeId": "13:2"
+      "artboardNodeId": "13:2",
+      "notes": "Layer - 1 (24:328) is hidden; export uses artboard raw composite (4096×345 PNG stretched to 5335×449 in layout)."
     },
     {
       "assetKey": "level-1-desktop",

@@ -26,9 +26,9 @@ const WORLD_H = 720;
  */
 const PLATFORMS_RAW = [
   ['26:181', 'ground_floor', 'platform', -1, 786, 5336, 36],
-  ['74:6', 'platform_start', 'platform', -7, 680, 239, 40],
+  ['49:2', 'platform_start', 'platform', -1, 684, 231, 36],
   ['54:2', 'platform_start_1', 'platform', 303, 666, 174, 54],
-  ['54:3', 'platform_start_2', 'platform', 540, 620, 113, 100],
+  ['54:3', 'platform_start_2', 'platform', 540, 630, 113, 90],
   ['54:4', 'platform_start_3', 'platform', 653, 691, 195, 29],
   ['26:183', 'floating_platform_01', 'platform', 207, 572, 121, 29],
   ['26:185', 'platform_01', 'platform', 996, 656, 391, 132],

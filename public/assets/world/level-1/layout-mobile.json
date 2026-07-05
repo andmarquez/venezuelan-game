@@ -30,9 +30,9 @@
     {
       "name": "platform_start",
       "x": 0,
-      "y": 580,
-      "width": 239,
-      "height": 40,
+      "y": 584,
+      "width": 231,
+      "height": 36,
       "type": "platform"
     },
     {
@@ -46,9 +46,9 @@
     {
       "name": "platform_start_2",
       "x": 540,
-      "y": 520,
+      "y": 530,
       "width": 113,
-      "height": 100,
+      "height": 90,
       "type": "platform"
     },
     {

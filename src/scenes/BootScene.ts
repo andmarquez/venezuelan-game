@@ -17,6 +17,11 @@ export class BootScene extends Phaser.Scene {
     this.load.json('world-manifest', assetUrl('assets/world/manifest.json'));
     this.load.json('level-1-layout-mobile', assetUrl('assets/world/level-1/layout-mobile.json'));
     this.load.json('level-1-layout-desktop', assetUrl('assets/world/level-1/layout-desktop.json'));
+
+    const states = ['idle', 'run', 'jump', 'fall', 'hurt', 'victory'] as const;
+    states.forEach((state) => {
+      this.load.image(`andsiosa-${state}`, assetUrl(`assets/character/andsiosa-${state}.png`));
+    });
   }
 
   create(): void {
@@ -87,6 +92,9 @@ export class BootScene extends Phaser.Scene {
     const h = 64;
 
     states.forEach((state) => {
+      const key = `andsiosa-${state}`;
+      if (this.textures.exists(key)) return;
+
       const g = this.make.graphics({ x: 0, y: 0 });
       const red = GAME_CONFIG.colors.playerRed;
       const white = GAME_CONFIG.colors.playerWhite;
@@ -147,7 +155,7 @@ export class BootScene extends Phaser.Scene {
         this.drawStar(g, 24, 0, 4, 4, 2);
       }
 
-      g.generateTexture(`andsiosa-${state}`, w, h);
+      g.generateTexture(key, w, h);
       g.destroy();
     });
   }
