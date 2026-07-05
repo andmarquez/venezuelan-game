@@ -2,7 +2,7 @@
 /**
  * Extract M02 mobile gameplay zones from Figma into layout-mobile.json.
  *
- * Platforms frame (26:179) is at y=-100 inside artboard 13:2.
+ * Platforms frame (26:179) is at y=-66 inside artboard 13:2.
  * `pipe` zones are tall vertical collision (same arcade physics as platforms).
  */
 import fs from 'node:fs';
@@ -28,28 +28,29 @@ const PLATFORMS_RAW = [
   ['26:181', 'ground_floor', 'platform', -1, 786, 5336, 36],
   ['49:2', 'platform_start', 'platform', 11, 696, 207, 36],
   ['54:2', 'platform_start_1', 'platform', 300, 678, 174, 54],
-  ['54:3', 'platform_start_2', 'platform', 516, 642, 113, 90],
+  ['54:3', 'platform_start_2', 'platform', 516, 643, 113, 90],
   ['54:4', 'platform_start_3', 'platform', 600, 703, 203, 29],
-  ['26:183', 'floating_platform_01', 'platform', 206, 569, 123, 35],
-  ['26:185', 'platform_01', 'platform', 775, 672, 391, 59],
-  ['26:187', 'floating_platform_02', 'platform', 1205, 569, 122, 34],
+  ['26:183', 'floating_platform_01', 'platform', 206, 549, 123, 35],
+  ['26:185', 'platform_01', 'platform', 775, 674, 391, 59],
+  ['26:187', 'floating_platform_02', 'platform', 1205, 549, 122, 34],
   ['26:189', 'platform_02', 'platform', 1334, 699, 246, 35],
   ['54:5', 'pipe_1', 'pipe', 1499, 639, 56, 73],
-  ['26:191', 'floating_platform_03', 'platform', 1967, 579, 124, 34],
-  ['26:193', 'floating_platform_04', 'platform', 1714, 619, 98, 56],
+  ['26:191', 'floating_platform_03', 'platform', 1987, 559, 124, 34],
+  ['26:193', 'floating_platform_04', 'platform', 1714, 620, 98, 56],
   ['26:195', 'platform_03', 'platform', 1643, 670, 314, 70],
   ['26:197', 'floating_platform_05', 'platform', 2968, 571, 120, 32],
-  ['54:9', 'floating_platform_05b', 'platform', 2440, 589, 120, 32],
+  ['54:9', 'floating_platform_05b', 'platform', 2500, 589, 120, 32],
   ['26:199', 'floating_platform_06', 'platform', 4135, 624, 102, 70],
   ['26:201', 'platform_04', 'platform', 2159, 705, 219, 38],
-  ['26:203', 'floating_platform_07', 'platform', 4308, 585, 122, 38],
+  ['26:203', 'floating_platform_07', 'platform', 4358, 601, 122, 38],
   ['24:448', 'platform_06', 'platform', 4089, 675, 541, 68],
   ['26:205', 'platform_05', 'platform', 2687, 692, 1442, 51],
   ['54:8', 'pipe_3', 'pipe', 3845, 633, 56, 77],
-  ['26:207', 'floating_platform_08', 'platform', 4748, 593, 195, 70],
+  ['26:207', 'floating_platform_08', 'platform', 4630, 573, 195, 70],
 ];
 
-const GOAL_PLATFORM = ['26:209', 'goal_platform', 'platform', 5172 + MARKERS_FRAME_X, 561, 163, 20];
+const GOAL_X = 5080 + MARKERS_FRAME_X;
+const GOAL_PLATFORM = ['26:209', 'goal_platform', 'platform', GOAL_X, 561, 163, 20];
 
 /** Clouds frame removed from M02 — decorative clouds now baked into - 1 background. */
 const CLOUDS_RAW = [];
@@ -69,10 +70,10 @@ const COLLECTIBLES = {
 };
 
 const FINAL_BOSS = {
-  x: 5172 + MARKERS_FRAME_X + Math.round(163 / 2),
+  x: GOAL_X + Math.round(163 / 2),
   y: 561,
-  min: 5215,
-  max: 5365,
+  min: GOAL_X + 40,
+  max: GOAL_X + 203,
 };
 
 const PLAYER_SPAWN = { x: 233, y: 519 };
@@ -143,9 +144,9 @@ const layout = {
         key: 'world:level-1-background',
         path: '/assets/world/background/level-1-mobile.png',
         x: 0,
-        y: 203,
+        y: 95,
         width: 5335,
-        height: 449,
+        height: 665,
       },
     ],
   },

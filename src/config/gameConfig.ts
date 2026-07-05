@@ -4,7 +4,7 @@
  */
 export const GAME_CONFIG = {
   /** Bump after Figma asset sync so phones bypass CDN/browser cache */
-  worldAssetVersion: '20260705c',
+  worldAssetVersion: '20260705d',
 
   /** Internal design resolution — Phaser scales this to fit the screen */
   width: 1280,
