@@ -98,7 +98,7 @@ const platformStart = platforms.find((p) => p.name === 'platform_start');
 const PLAYER_SPAWN = platformStart
   ? {
       x: platformStart.x + Math.round(platformStart.width / 2),
-      y: platformStart.y + platformStart.height - Math.min(platformStart.height, 18),
+      y: platformStart.y,
     }
   : PLAYER_SPAWN_FALLBACK;
 

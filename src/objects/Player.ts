@@ -54,15 +54,28 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     states.forEach((state) => {
       const key = `andsiosa-anim-${state}`;
-      if (!this.scene.anims.exists(key)) {
-        // Single-frame placeholder anim — replace with multi-frame spritesheet later
+      if (this.scene.anims.exists(key)) return;
+
+      if (state === 'run') {
+        const frameTotal = this.scene.textures.get('andsiosa-run').frameTotal;
         this.scene.anims.create({
           key,
-          frames: [{ key: `andsiosa-${state}` }],
-          frameRate: 8,
-          repeat: state === 'idle' || state === 'run' ? -1 : 0,
+          frames: this.scene.anims.generateFrameNumbers('andsiosa-run', {
+            start: 0,
+            end: Math.max(0, frameTotal - 1),
+          }),
+          frameRate: 10,
+          repeat: -1,
         });
+        return;
       }
+
+      this.scene.anims.create({
+        key,
+        frames: [{ key: `andsiosa-${state}` }],
+        frameRate: 8,
+        repeat: state === 'idle' ? -1 : 0,
+      });
     });
   }
 
@@ -71,7 +84,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     if (this.animState === state) return;
 
     this.animState = state;
-    this.setTexture(`andsiosa-${state}`);
+    if (state === 'run') {
+      this.setTexture('andsiosa-run', 0);
+    } else {
+      this.setTexture(`andsiosa-${state}`);
+    }
     this.applyFootOrigin();
     this.fitDisplayScale();
     const animKey = `andsiosa-anim-${state}`;

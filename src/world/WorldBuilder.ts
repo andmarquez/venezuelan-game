@@ -115,24 +115,8 @@ export class WorldBuilder {
     for (const art of layout.platformArt ?? []) {
       if (!scene.textures.exists(art.key)) continue;
 
-      const frame = scene.textures.get(art.key).get();
-      const nativeW = frame.width;
-      const nativeH = frame.height;
-      if (nativeW === 0 || nativeH === 0) continue;
-
-      const scaleW = art.width / nativeW;
-      let displayW = art.width;
-      let displayH = nativeH * scaleW;
-      if (displayH > art.height) {
-        const scaleH = art.height / nativeH;
-        displayH = art.height;
-        displayW = nativeW * scaleH;
-      }
-
-      const cx = art.x + art.width / 2;
-      const cy = art.y + art.height - displayH / 2;
-      const img = scene.add.image(cx, cy, art.key);
-      img.setDisplaySize(displayW, displayH);
+      const img = scene.add.image(art.x + art.width / 2, art.y + art.height / 2, art.key);
+      img.setDisplaySize(art.width, art.height);
       img.setDepth(WORLD_LAYERS.platformArt);
       img.setScrollFactor(1);
     }

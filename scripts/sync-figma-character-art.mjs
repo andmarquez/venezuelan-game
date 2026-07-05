@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Sync Character/Andsiosa art from Figma → public/assets/character/
- * Uses transparent raw image fills (not opaque component exports).
+ * Run state: animated GIF → horizontal PNG spritesheet.
  */
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -12,7 +12,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
 const MANIFEST_PATH = path.join(ROOT, 'figma/export-character-manifest.json');
 const OUT_DIR = path.join(ROOT, 'public/assets/character');
+const META_PATH = path.join(OUT_DIR, 'andsiosa-run.meta.json');
 const PICKER = path.join(__dirname, 'pick-character-png.py');
+const GIF_SHEET = path.join(__dirname, 'gif-to-spritesheet.py');
 
 async function fetchBuffer(url) {
   const res = await fetch(url, {
@@ -62,12 +64,45 @@ function pickAndSave(state, entry) {
     });
 }
 
+function saveRunSpritesheet(entry) {
+  const url = entry.export || entry.raw?.[0];
+  if (!url) return false;
+
+  const proc = spawnSync('python3', [GIF_SHEET], {
+    input: JSON.stringify({ url }),
+    maxBuffer: 30 * 1024 * 1024,
+  });
+
+  if (proc.status !== 0 || !proc.stdout?.length) {
+    console.warn('run GIF spritesheet failed:', proc.stderr?.toString() || proc.status);
+    return false;
+  }
+
+  const dest = path.join(OUT_DIR, 'andsiosa-run.png');
+  fs.writeFileSync(dest, proc.stdout);
+
+  const metaLine = proc.stderr?.toString().trim().split('\n').pop();
+  let meta = { frameCount: entry.frameCount ?? 3, frameWidth: 48, frameHeight: 64 };
+  try {
+    if (metaLine) meta = { ...meta, ...JSON.parse(metaLine) };
+  } catch {
+    /* keep defaults */
+  }
+  fs.writeFileSync(META_PATH, `${JSON.stringify(meta, null, 2)}\n`);
+  console.log(`saved andsiosa-run.png spritesheet (${proc.stdout.length} bytes, ${meta.frameCount} frames)`);
+  return true;
+}
+
 async function main() {
   const manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'));
   fs.mkdirSync(OUT_DIR, { recursive: true });
 
   let ok = 0;
   for (const [state, entry] of Object.entries(manifest)) {
+    if (state === 'run' && entry.animated) {
+      if (saveRunSpritesheet(entry)) ok++;
+      continue;
+    }
     if (await pickAndSave(state, entry)) ok++;
   }
 

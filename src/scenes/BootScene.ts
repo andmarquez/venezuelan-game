@@ -20,9 +20,13 @@ export class BootScene extends Phaser.Scene {
     this.load.json('level-1-layout-mobile', assetUrl('assets/world/level-1/layout-mobile.json', v));
     this.load.json('level-1-layout-desktop', assetUrl('assets/world/level-1/layout-desktop.json', v));
 
-    const states = ['idle', 'run', 'jump', 'fall', 'hurt', 'victory'] as const;
-    states.forEach((state) => {
+    const singleFrameStates = ['idle', 'jump', 'fall', 'hurt', 'victory'] as const;
+    singleFrameStates.forEach((state) => {
       this.load.image(`andsiosa-${state}`, assetUrl(`assets/character/andsiosa-${state}.png`, cv));
+    });
+    this.load.spritesheet('andsiosa-run', assetUrl('assets/character/andsiosa-run.png', cv), {
+      frameWidth: 48,
+      frameHeight: 64,
     });
   }
 

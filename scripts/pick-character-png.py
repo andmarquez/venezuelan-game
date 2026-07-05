@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Pick and trim transparent character art from Figma raw image fills."""
+"""Pick and trim character art from Figma exports into 48×64 cells."""
 import json
 import sys
 import urllib.request
@@ -18,32 +18,66 @@ def load_url(url: str) -> Image.Image:
         return Image.open(BytesIO(res.read())).convert('RGBA')
 
 
-def score_image(img: Image.Image) -> tuple[int, Image.Image | None]:
+def strip_background(img: Image.Image) -> Image.Image:
+    px = img.load()
     w, h = img.size
-    if w > 1200 or h > 1200:
-        return -1, None
+    for y in range(h):
+        for x in range(w):
+            r, g, b, a = px[x, y]
+            if a < 20:
+                px[x, y] = (0, 0, 0, 0)
+                continue
+            # Figma exports often use solid white or light cyan padding.
+            if r > 235 and g > 235 and b > 235:
+                px[x, y] = (0, 0, 0, 0)
+            elif r > 180 and g > 200 and b > 200 and abs(r - g) < 30:
+                px[x, y] = (0, 0, 0, 0)
+    return img
 
-    alpha = img.split()[-1]
-    lo, _hi = alpha.getextrema()
-    if lo > 240:
-        return -1, None
 
+def fit_cell(trimmed: Image.Image) -> Image.Image:
+    scale = min(FRAME_W / trimmed.width, FRAME_H / trimmed.height)
+    new_w = max(1, int(round(trimmed.width * scale)))
+    new_h = max(1, int(round(trimmed.height * scale)))
+    resized = trimmed.resize((new_w, new_h), Image.Resampling.LANCZOS)
+
+    cell = Image.new('RGBA', (FRAME_W, FRAME_H), (0, 0, 0, 0))
+    x = (FRAME_W - new_w) // 2
+    y = FRAME_H - new_h
+    cell.paste(resized, (x, y), resized)
+    return cell
+
+
+def process_image(img: Image.Image) -> Image.Image | None:
+    w, h = img.size
+    if w > 2000 or h > 2000:
+        return None
+
+    img = strip_background(img)
     bbox = img.getbbox()
     if not bbox:
-        return -1, None
+        return None
 
     trimmed = img.crop(bbox)
-    tw, th = trimmed.size
-    if tw < 12 or th < 16:
+    if trimmed.width < 12 or trimmed.height < 16:
+        return None
+
+    return fit_cell(trimmed)
+
+
+def score_image(img: Image.Image) -> tuple[int, Image.Image | None]:
+    cell = process_image(img)
+    if cell is None:
         return -1, None
 
-    area = tw * th
-    zone_area = FRAME_W * FRAME_H
-    if area > zone_area * 120:
+    alpha = cell.split()[-1]
+    solid = alpha.getbbox()
+    if not solid:
         return -1, None
 
+    tw, th = solid[2] - solid[0], solid[3] - solid[1]
     size_penalty = abs(tw - FRAME_W) + abs(th - FRAME_H)
-    return area + size_penalty * 4, trimmed
+    return tw * th + size_penalty * 4, cell
 
 
 def main() -> None:
@@ -56,11 +90,11 @@ def main() -> None:
     for url in urls:
         try:
             img = load_url(url)
-            score, trimmed = score_image(img)
+            score, cell = score_image(img)
             if score < 0:
                 continue
             if best is None or score < best_score:
-                best = trimmed
+                best = cell
                 best_score = score
         except Exception:
             continue
