@@ -70,8 +70,8 @@ export class GameScene extends Phaser.Scene {
 
     this.levelLayout = this.cache.json.get(getLevelLayoutCacheKey(this.game)) as LevelLayout;
     const worldW = this.levelLayout?.width ?? GAME_CONFIG.worldWidth;
-    const debug = shouldShowPlatformZones(this.game);
-    const cloudZones = shouldShowCloudZones(this.game);
+    const debug = shouldShowPlatformZones();
+    const cloudZones = shouldShowCloudZones();
 
     this.physics.world.setBounds(0, 0, worldW, GAME_CONFIG.worldHeight);
     this.cameras.main.setBounds(0, 0, worldW, GAME_CONFIG.worldHeight);

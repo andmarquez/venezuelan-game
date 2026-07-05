@@ -7,13 +7,12 @@ export function isDebugMode(): boolean {
   return params.get('debug') === '1' || params.get('debug') === 'true';
 }
 
-/** Show Figma-style platform zone overlays (?zones=1 or debug). Collision always runs. */
-export function shouldShowPlatformZones(game?: Phaser.Game): boolean {
+/** Show Figma-style platform zone overlays only with ?zones=1 or ?debug=1. */
+export function shouldShowPlatformZones(): boolean {
   if (typeof window === 'undefined') return false;
   const params = new URLSearchParams(window.location.search);
   if (params.get('zones') === '0') return false;
-  if (params.get('zones') === '1' || isDebugMode()) return true;
-  return shouldShowMobileControls(game);
+  return params.get('zones') === '1' || isDebugMode();
 }
 
 /** 0 = invisible collision tuning on mobile; 0.35 = visible green/blue boxes (?zones=1). */
@@ -24,13 +23,13 @@ export function getPlatformZoneVisualAlpha(): number {
   return 0;
 }
 
-/** Lavender cloud placement boxes — visible with zones, ?clouds=1, or on mobile. */
-export function shouldShowCloudZones(game?: Phaser.Game): boolean {
+/** Lavender cloud placement boxes — visible with ?clouds=1 or ?debug=1 only. */
+export function shouldShowCloudZones(): boolean {
   if (typeof window === 'undefined') return false;
   const params = new URLSearchParams(window.location.search);
   if (params.get('clouds') === '0') return false;
   if (params.get('clouds') === '1' || isDebugMode()) return true;
-  return shouldShowPlatformZones(game);
+  return false;
 }
 
 export function getLevelLayoutCacheKey(game: Phaser.Game): string {

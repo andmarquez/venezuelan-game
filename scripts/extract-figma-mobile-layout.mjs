@@ -2,8 +2,8 @@
 /**
  * Extract M02 mobile gameplay zones from Figma into layout-mobile.json.
  *
- * Platforms frame (26:179) is at y=-66 inside artboard 13:2.
- * `pipe` zones are tall vertical collision (same arcade physics as platforms).
+ * Platform zones: `public/assets/world/level-1/figma-platform-zones.json`
+ * (synced from Figma overlay "🟢 Platform zones (edit here)", node 95:2).
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -13,44 +13,11 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
 const OUT = path.join(ROOT, 'public/assets/world/level-1/layout-mobile.json');
 const OUT_DESKTOP = path.join(ROOT, 'public/assets/world/level-1/layout-desktop.json');
+const ZONES_JSON = path.join(ROOT, 'public/assets/world/level-1/figma-platform-zones.json');
 const DESKTOP_W = 4895;
 const MOBILE_W = 5335;
 
-const PLATFORM_FRAME_Y = -66;
 const MARKERS_FRAME_X = 35;
-const WORLD_H = 720;
-
-/**
- * Figma 26:179 — [nodeId, layoutName, zoneType, x, y, width, height]
- * zoneType: 'platform' | 'pipe'
- */
-const PLATFORMS_RAW = [
-  ['26:181', 'ground_floor', 'platform', -1, 786, 5336, 36],
-  ['49:2', 'platform_start', 'platform', 11, 696, 207, 36],
-  ['54:2', 'platform_start_1', 'platform', 300, 678, 174, 54],
-  ['54:3', 'platform_start_2', 'platform', 516, 643, 113, 90],
-  ['54:4', 'platform_start_3', 'platform', 600, 703, 203, 29],
-  ['26:183', 'floating_platform_01', 'platform', 206, 519, 123, 35],
-  ['26:185', 'platform_01', 'platform', 775, 674, 391, 59],
-  ['26:187', 'floating_platform_02', 'platform', 1205, 519, 122, 34],
-  ['26:189', 'platform_02', 'platform', 1334, 699, 246, 35],
-  ['54:5', 'pipe_1', 'pipe', 1499, 639, 56, 73],
-  ['26:191', 'floating_platform_03', 'platform', 1987, 519, 124, 34],
-  ['26:193', 'floating_platform_04', 'platform', 1714, 620, 98, 56],
-  ['26:195', 'platform_03', 'platform', 1643, 670, 314, 70],
-  ['26:197', 'floating_platform_05', 'platform', 2968, 571, 120, 32],
-  ['54:9', 'floating_platform_05b', 'platform', 2500, 589, 120, 32],
-  ['26:199', 'floating_platform_06', 'platform', 4135, 624, 102, 70],
-  ['26:201', 'platform_04', 'platform', 2159, 705, 219, 38],
-  ['26:203', 'floating_platform_07', 'platform', 4358, 601, 122, 38],
-  ['24:448', 'platform_06', 'platform', 4089, 675, 541, 68],
-  ['26:205', 'platform_05', 'platform', 2687, 692, 1442, 51],
-  ['54:8', 'pipe_3', 'pipe', 3845, 633, 56, 77],
-  ['26:207', 'floating_platform_08', 'platform', 4590, 563, 195, 70],
-];
-
-const GOAL_X = 5080 + MARKERS_FRAME_X;
-const GOAL_PLATFORM = ['26:209', 'goal_platform', 'platform', GOAL_X, 561, 163, 20];
 
 /** Clouds frame removed from M02 — decorative clouds now baked into - 1 background. */
 const CLOUDS_RAW = [];
@@ -69,43 +36,25 @@ const COLLECTIBLES = {
   enemy: [[535, 487, 40, 32]],
 };
 
-const FINAL_BOSS = {
-  x: GOAL_X + Math.round(163 / 2),
+const FINAL_BOSS_BASE = {
   y: 561,
-  min: GOAL_X + 40,
-  max: GOAL_X + 203,
 };
 
 const PLAYER_SPAWN_FALLBACK = { x: 174, y: 630 };
 
-function toPlatform([_nodeId, name, zoneType, x, y, w, h], frameY = PLATFORM_FRAME_Y) {
-  let artY = Math.round(y + frameY);
-  let height = Math.round(h);
-  const width = Math.round(w);
-
-  if (name === 'ground_floor') {
-    artY = WORLD_H - height;
-    return {
-      name,
-      x: Math.max(0, Math.round(x)),
-      y: artY,
-      width,
-      height,
-      type: zoneType,
-    };
+function loadPlatformZones() {
+  if (!fs.existsSync(ZONES_JSON)) {
+    throw new Error(`Missing ${ZONES_JSON} — sync from Figma overlay first`);
   }
-
-  if (artY + height > WORLD_H) {
-    height = Math.max(1, WORLD_H - artY);
-  }
-  return {
-    name,
-    x: Math.max(0, Math.round(x)),
-    y: artY,
-    width,
-    height,
-    type: zoneType,
-  };
+  const data = JSON.parse(fs.readFileSync(ZONES_JSON, 'utf8'));
+  return data.zones.map((z) => ({
+    name: z.name,
+    x: Math.round(z.x),
+    y: Math.round(z.y),
+    width: Math.round(z.width),
+    height: Math.round(z.height),
+    type: z.type === 'pipe' ? 'pipe' : 'platform',
+  }));
 }
 
 function center([x, y, w, h]) {
@@ -122,12 +71,17 @@ function toCloud([_nodeId, name, x, y, w, h]) {
   };
 }
 
-const platforms = [
-  ...PLATFORMS_RAW.map((row) => toPlatform(row)),
-  toPlatform(GOAL_PLATFORM, 0),
-];
+const platforms = loadPlatformZones();
+const goal = platforms.find((p) => p.name === 'goal_platform');
+const GOAL_X = goal?.x ?? 5080 + MARKERS_FRAME_X;
+const FINAL_BOSS = {
+  x: GOAL_X + Math.round((goal?.width ?? 163) / 2),
+  y: FINAL_BOSS_BASE.y,
+  min: GOAL_X + 40,
+  max: GOAL_X + (goal?.width ?? 163) + 40,
+};
 
-/** Visual platform sprites — fill Figma frame rectangles (stretch in WorldBuilder). */
+/** Visual platform sprites — fit inside zone bounds (contain, bottom-aligned). */
 const platformArt = platforms
   .filter((p) => p.type === 'platform' && p.name !== 'ground_floor')
   .map((p) => ({
@@ -148,7 +102,6 @@ const PLAYER_SPAWN = platformStart
     }
   : PLAYER_SPAWN_FALLBACK;
 
-const goal = platforms.find((p) => p.name === 'goal_platform');
 const pipeCount = platforms.filter((p) => p.type === 'pipe').length;
 const clouds = CLOUDS_RAW.map((row) => toCloud(row));
 
@@ -177,10 +130,12 @@ const layout = {
   clouds,
   markers: {
     player_spawn: PLAYER_SPAWN,
-    portal_goal: {
-      x: goal.x + Math.round(goal.width / 2),
-      y: goal.y + goal.height - Math.min(goal.height, 18) - 10,
-    },
+    portal_goal: goal
+      ? {
+          x: goal.x + Math.round(goal.width / 2),
+          y: goal.y + goal.height - Math.min(goal.height, 18) - 10,
+        }
+      : { x: GOAL_X + 82, y: 553 },
     kiss_collectibles: COLLECTIBLES.kiss.map(center),
     timer_collectibles: COLLECTIBLES.timer.map(center),
     boss_spark_collectibles: COLLECTIBLES.spark.map(center),
