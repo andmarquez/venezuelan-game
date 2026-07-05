@@ -16,7 +16,7 @@ const OUT_DESKTOP = path.join(ROOT, 'public/assets/world/level-1/layout-desktop.
 const DESKTOP_W = 4895;
 const MOBILE_W = 5335;
 
-const PLATFORM_FRAME_Y = -100;
+const PLATFORM_FRAME_Y = -66;
 const MARKERS_FRAME_X = 35;
 const WORLD_H = 720;
 
@@ -38,7 +38,6 @@ const PLATFORMS_RAW = [
   ['26:191', 'floating_platform_03', 'platform', 1967, 579, 124, 34],
   ['26:193', 'floating_platform_04', 'platform', 1714, 619, 98, 56],
   ['26:195', 'platform_03', 'platform', 1643, 670, 314, 70],
-  ['54:7', 'pipe_2', 'pipe', 2131, 605, 56, 73],
   ['26:197', 'floating_platform_05', 'platform', 2968, 571, 120, 32],
   ['54:9', 'floating_platform_05b', 'platform', 2440, 589, 120, 32],
   ['26:199', 'floating_platform_06', 'platform', 4135, 624, 102, 70],
@@ -60,13 +59,13 @@ const COLLECTIBLES = {
     [250, 500, 46, 49],
     [367, 448, 46, 49],
     [655, 405, 46, 49],
-    [156, 631, 24, 24],
-    [386, 631, 24, 24],
-    [710, 631, 24, 24],
+    [182, 568, 24, 24],
+    [363, 549, 24, 24],
+    [702, 561, 24, 24],
   ],
-  timer: [[797, 473, 28, 28]],
+  timer: [[797, 475, 28, 28]],
   spark: [[4845, 448, 28, 28]],
-  enemy: [[500, 510, 40, 32]],
+  enemy: [[535, 487, 40, 32]],
 };
 
 const FINAL_BOSS = {
@@ -76,7 +75,7 @@ const FINAL_BOSS = {
   max: 5365,
 };
 
-const PLAYER_SPAWN = { x: 231, y: 469 };
+const PLAYER_SPAWN = { x: 233, y: 519 };
 
 function toPlatform([_nodeId, name, zoneType, x, y, w, h], frameY = PLATFORM_FRAME_Y) {
   const artY = Math.round(y + frameY);
@@ -146,7 +145,7 @@ const layout = {
         x: 0,
         y: 171,
         width: 5335,
-        height: 449,
+        height: 547,
       },
     ],
   },
