@@ -8,7 +8,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { computePlatformDisplayRect, readPngSize, roundPlatformRect } from './platform-display.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
@@ -123,35 +122,12 @@ function toCloud([_nodeId, name, x, y, w, h]) {
   };
 }
 
-const PLATFORMS_DIR = path.join(ROOT, 'public/assets/world/platforms');
-
 const platforms = [
   ...PLATFORMS_RAW.map((row) => toPlatform(row)),
   toPlatform(GOAL_PLATFORM, 0),
 ];
 
-/** Shrink platform zones to the fitted PNG display size (bottom-aligned in Figma frame). */
-function shrinkPlatformToDisplaySize(platform) {
-  if (platform.type !== 'platform' || platform.name === 'ground_floor') {
-    return platform;
-  }
-
-  const pngPath = path.join(PLATFORMS_DIR, `${platform.name}.png`);
-  if (!fs.existsSync(pngPath)) {
-    console.warn(`[layout] missing PNG for ${platform.name}, keeping Figma frame`);
-    return platform;
-  }
-
-  const { width: nativeW, height: nativeH } = readPngSize(pngPath);
-  const display = roundPlatformRect(computePlatformDisplayRect(platform, nativeW, nativeH));
-  return { ...platform, ...display };
-}
-
-for (let i = 0; i < platforms.length; i += 1) {
-  platforms[i] = shrinkPlatformToDisplaySize(platforms[i]);
-}
-
-/** Visual platform sprites — same bounds as shrunk collision zones. */
+/** Visual platform sprites — fill Figma frame rectangles (stretch in WorldBuilder). */
 const platformArt = platforms
   .filter((p) => p.type === 'platform' && p.name !== 'ground_floor')
   .map((p) => ({
