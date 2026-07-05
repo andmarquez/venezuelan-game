@@ -3,6 +3,9 @@
  * Tweak values here to balance difficulty, timing, and level size.
  */
 export const GAME_CONFIG = {
+  /** Bump after Figma asset sync so phones bypass CDN/browser cache */
+  worldAssetVersion: '20260705b',
+
   /** Internal design resolution — Phaser scales this to fit the screen */
   width: 1280,
   height: 720,

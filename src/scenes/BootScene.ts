@@ -14,9 +14,10 @@ export class BootScene extends Phaser.Scene {
   }
 
   preload(): void {
-    this.load.json('world-manifest', assetUrl('assets/world/manifest.json'));
-    this.load.json('level-1-layout-mobile', assetUrl('assets/world/level-1/layout-mobile.json'));
-    this.load.json('level-1-layout-desktop', assetUrl('assets/world/level-1/layout-desktop.json'));
+    const v = GAME_CONFIG.worldAssetVersion;
+    this.load.json('world-manifest', assetUrl('assets/world/manifest.json', v));
+    this.load.json('level-1-layout-mobile', assetUrl('assets/world/level-1/layout-mobile.json', v));
+    this.load.json('level-1-layout-desktop', assetUrl('assets/world/level-1/layout-desktop.json', v));
 
     const states = ['idle', 'run', 'jump', 'fall', 'hurt', 'victory'] as const;
     states.forEach((state) => {
@@ -69,14 +70,15 @@ export class BootScene extends Phaser.Scene {
       console.warn('[BootScene] Failed to load asset:', file.key);
     });
 
+    const v = GAME_CONFIG.worldAssetVersion;
     bgEntries.forEach((entry) => {
       const path = entry.path.startsWith('/') ? entry.path.slice(1) : entry.path;
-      this.load.image(entry.key, assetUrl(path));
+      this.load.image(entry.key, assetUrl(path, v));
     });
 
     artByKey.forEach((assetPath, key) => {
       const path = assetPath.startsWith('/') ? assetPath.slice(1) : assetPath;
-      this.load.image(key, assetUrl(path));
+      this.load.image(key, assetUrl(path, v));
     });
 
     this.load.once('complete', finish);
