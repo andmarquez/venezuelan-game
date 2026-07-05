@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Pick and trim character art from Figma exports into 96×128 cells (2× Figma 48×64)."""
+"""Pick and trim character art from Figma exports into 144×192 cells (3× Figma 48×64)."""
 import json
 import sys
 import urllib.request
@@ -8,8 +8,11 @@ from io import BytesIO
 from PIL import Image
 
 USER_AGENT = 'performingtypography-asset-sync/1.0'
-FRAME_W = 96
-FRAME_H = 128
+FIGMA_W = 48
+FIGMA_H = 64
+SCALE = 3
+FRAME_W = FIGMA_W * SCALE
+FRAME_H = FIGMA_H * SCALE
 
 
 def load_url(url: str) -> Image.Image:
@@ -92,9 +95,29 @@ def score_image(img: Image.Image) -> tuple[int, Image.Image | None]:
     return tw * th + size_penalty * 4, cell
 
 
+def apply_overlays(cell: Image.Image, overlays: list[dict]) -> Image.Image:
+    for overlay in overlays:
+        try:
+            star = load_url(overlay['url'])
+            star = strip_background(star)
+            bbox = star.getbbox()
+            if not bbox:
+                continue
+            star = star.crop(bbox)
+            size = max(1, int(round(overlay.get('size', 8) * SCALE)))
+            star = star.resize((size, size), Image.Resampling.LANCZOS)
+            x = int(round(overlay.get('x', 0) * SCALE))
+            y = int(round(overlay.get('y', 0) * SCALE))
+            cell.alpha_composite(star, (x, y))
+        except Exception:
+            continue
+    return cell
+
+
 def main() -> None:
     payload = json.load(sys.stdin)
     urls = list(reversed(payload.get('urls', [])))
+    overlays = payload.get('overlays', [])
 
     best: Image.Image | None = None
     best_score = -1
@@ -113,6 +136,9 @@ def main() -> None:
 
     if best is None:
         sys.exit(1)
+
+    if overlays:
+        best = apply_overlays(best, overlays)
 
     best.save(sys.stdout.buffer, format='PNG')
 

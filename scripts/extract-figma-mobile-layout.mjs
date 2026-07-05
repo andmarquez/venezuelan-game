@@ -19,6 +19,19 @@ const MOBILE_W = 5335;
 
 const MARKERS_FRAME_X = 35;
 
+/** Figma marker positions (M02 → Markers frame, node 26:180). */
+const PORTAL_GOAL_MARKER = {
+  x: MARKERS_FRAME_X + 5127 + 20,
+  y: 484 + 20,
+};
+
+const FINAL_BOSS_MARKER = {
+  x: PORTAL_GOAL_MARKER.x,
+  y: PORTAL_GOAL_MARKER.y - 36,
+  min: PORTAL_GOAL_MARKER.x - 80,
+  max: PORTAL_GOAL_MARKER.x + 80,
+};
+
 /** Clouds frame removed from M02 — decorative clouds now baked into - 1 background. */
 const CLOUDS_RAW = [];
 
@@ -34,10 +47,6 @@ const COLLECTIBLES = {
   timer: [[797, 475, 28, 28]],
   spark: [[4845, 448, 28, 28]],
   enemy: [[535, 487, 40, 32]],
-};
-
-const FINAL_BOSS_BASE = {
-  y: 561,
 };
 
 const PLAYER_SPAWN_FALLBACK = { x: 174, y: 630 };
@@ -72,14 +81,6 @@ function toCloud([_nodeId, name, x, y, w, h]) {
 }
 
 const platforms = loadPlatformZones();
-const goal = platforms.find((p) => p.name === 'goal_platform');
-const GOAL_X = goal?.x ?? 5080 + MARKERS_FRAME_X;
-const FINAL_BOSS = {
-  x: GOAL_X + Math.round((goal?.width ?? 163) / 2),
-  y: FINAL_BOSS_BASE.y,
-  min: GOAL_X + 40,
-  max: GOAL_X + (goal?.width ?? 163) + 40,
-};
 
 /** Visual platform sprites — fit inside zone bounds (contain, bottom-aligned). */
 const platformArt = platforms
@@ -130,12 +131,7 @@ const layout = {
   clouds,
   markers: {
     player_spawn: PLAYER_SPAWN,
-    portal_goal: goal
-      ? {
-          x: goal.x + Math.round(goal.width / 2),
-          y: goal.y + goal.height - Math.min(goal.height, 18) - 10,
-        }
-      : { x: GOAL_X + 82, y: 553 },
+    portal_goal: PORTAL_GOAL_MARKER,
     kiss_collectibles: COLLECTIBLES.kiss.map(center),
     timer_collectibles: COLLECTIBLES.timer.map(center),
     boss_spark_collectibles: COLLECTIBLES.spark.map(center),
@@ -144,7 +140,7 @@ const layout = {
       min: 120,
       max: 900,
     })),
-    final_boss: FINAL_BOSS,
+    final_boss: FINAL_BOSS_MARKER,
   },
 };
 

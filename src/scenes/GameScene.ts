@@ -74,6 +74,7 @@ export class GameScene extends Phaser.Scene {
     const cloudZones = shouldShowCloudZones();
 
     this.physics.world.setBounds(0, 0, worldW, GAME_CONFIG.worldHeight);
+    this.physics.world.setBoundsCollision(true, true, true, false);
     this.cameras.main.setBounds(0, 0, worldW, GAME_CONFIG.worldHeight);
     this.cameras.main.setBackgroundColor('#b8e0f5');
 

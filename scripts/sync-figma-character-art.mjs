@@ -42,7 +42,7 @@ function pickAndSave(state, entry) {
   }
 
   const picker = spawnSync('python3', [PICKER], {
-    input: JSON.stringify({ urls }),
+    input: JSON.stringify({ urls, overlays: entry.overlays ?? [] }),
     maxBuffer: 20 * 1024 * 1024,
   });
 
@@ -82,7 +82,7 @@ function saveRunSpritesheet(entry) {
   fs.writeFileSync(dest, proc.stdout);
 
   const metaLine = proc.stderr?.toString().trim().split('\n').pop();
-  let meta = { frameCount: entry.frameCount ?? 3, frameWidth: 48, frameHeight: 64 };
+  let meta = { frameCount: entry.frameCount ?? 3, frameWidth: 144, frameHeight: 192 };
   try {
     if (metaLine) meta = { ...meta, ...JSON.parse(metaLine) };
   } catch {

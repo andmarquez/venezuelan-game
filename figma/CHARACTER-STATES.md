@@ -7,11 +7,13 @@ Frame **🧍 Character States (replaceable)** — below M02 artboard on the game
 | Component | Game texture key | When used |
 |-----------|------------------|-----------|
 | `Character/Andsiosa/idle` | `andsiosa-idle` | Standing still |
-| `Character/Andsiosa/run` | `andsiosa-run` | Moving left/right |
+| `Character/Andsiosa/run` | `andsiosa-run` | Moving left/right (GIF → spritesheet) |
 | `Character/Andsiosa/jump` | `andsiosa-jump` | Jumping up |
 | `Character/Andsiosa/fall` | `andsiosa-fall` | Falling |
 | `Character/Andsiosa/hurt` | `andsiosa-hurt` | Hit / game over |
-| `Character/Andsiosa/victory` | `andsiosa-victory` | Win screen |
+| `Character/Andsiosa/victory` | `andsiosa-victory` | Win screen (includes star overlay) |
+
+Exports are synced at **3×** (144×192 px cells) for crisp display on phones.
 
 Figma node IDs (48×64 components on **📱 Screens — Mobile Landscape**):
 

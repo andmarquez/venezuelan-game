@@ -16,7 +16,8 @@
     "assets:layout": "node scripts/build-level-layout.mjs",
     "assets:layout:mobile": "node scripts/extract-figma-mobile-layout.mjs",
     "assets:platforms": "node scripts/sync-figma-platform-art.mjs",
-    "assets:character": "node scripts/sync-figma-character-art.mjs"
+    "assets:character": "node scripts/sync-figma-character-art.mjs",
+    "assets:enemy": "node scripts/sync-figma-enemy-art.mjs"
   },
   "dependencies": {
     "phaser": "^3.90.0"

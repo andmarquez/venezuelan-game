@@ -32,7 +32,7 @@ export class FinalBoss extends Phaser.Physics.Arcade.Sprite {
     this.hp = this.maxHp;
 
     this.setOrigin(0.5, 1);
-    this.setScale(1.35);
+    this.fitDisplaySize(80 * 1.35);
     this.setImmovable(true);
     (this.body as Phaser.Physics.Arcade.Body).setAllowGravity(false);
     this.body!.setSize(52, 56);
@@ -142,5 +142,12 @@ export class FinalBoss extends Phaser.Physics.Arcade.Sprite {
   destroy(fromScene?: boolean): void {
     this.hpBar?.destroy();
     super.destroy(fromScene);
+  }
+
+  /** Scale 3× Figma exports down to logical gameplay size. */
+  private fitDisplaySize(width: number, height = width): void {
+    const frame = this.texture.get();
+    if (!frame.width || !frame.height) return;
+    this.setScale(width / frame.width, height / frame.height);
   }
 }

@@ -1,0 +1,8 @@
+<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 40 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Enemy/DeadlineBug/idle">
+<rect width="40" height="32" fill="white"/>
+<ellipse id="Ellipse" cx="20" cy="16" rx="16" ry="12" fill="var(--fill-0, #8C45AD)"/>
+<circle id="Ellipse_2" cx="13" cy="13" r="3" fill="var(--fill-0, #FFD166)"/>
+<circle id="Ellipse_3" cx="27" cy="13" r="3" fill="var(--fill-0, #FFD166)"/>
+</g>
+</svg>

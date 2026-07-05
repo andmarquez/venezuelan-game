@@ -31,6 +31,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     scene.physics.add.existing(this);
 
     this.setCollideWorldBounds(true);
+    const body = this.body as Phaser.Physics.Arcade.Body;
+    body.checkCollision.down = false;
     this.setBounce(GAME_CONFIG.playerBounce);
     this.setDragX(800);
     this.applyFootOrigin();

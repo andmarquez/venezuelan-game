@@ -1,0 +1,9 @@
+<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Enemy/FinalBoss/idle">
+<rect width="80" height="80" fill="white"/>
+<ellipse id="Ellipse" cx="40" cy="40" rx="36" ry="32" fill="var(--fill-0, #D973F2)" fill-opacity="0.35"/>
+<ellipse id="Ellipse_2" cx="40" cy="42" rx="30" ry="28" fill="var(--fill-0, #731C99)"/>
+<circle id="Ellipse_3" cx="27" cy="33" r="5" fill="var(--fill-0, #FFD166)"/>
+<circle id="Ellipse_4" cx="53" cy="33" r="5" fill="var(--fill-0, #FFD166)"/>
+</g>
+</svg>

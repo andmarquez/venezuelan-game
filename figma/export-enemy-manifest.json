@@ -1,0 +1,18 @@
+{
+  "deadline-bug": {
+    "nodeId": "103:8",
+    "figmaName": "Enemy/DeadlineBug/idle",
+    "export": "https://www.figma.com/api/mcp/asset/620636af-34cc-4d15-be91-a467277f111f",
+    "raw": ["https://www.figma.com/api/mcp/asset/620636af-34cc-4d15-be91-a467277f111f"],
+    "figmaW": 40,
+    "figmaH": 32
+  },
+  "final-boss": {
+    "nodeId": "103:16",
+    "figmaName": "Enemy/FinalBoss/idle",
+    "export": "https://www.figma.com/api/mcp/asset/794a02bf-9be9-4417-a794-da0f6cbb036c",
+    "raw": ["https://www.figma.com/api/mcp/asset/794a02bf-9be9-4417-a794-da0f6cbb036c"],
+    "figmaW": 80,
+    "figmaH": 80
+  }
+}

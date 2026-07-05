@@ -25,13 +25,18 @@ export class BootScene extends Phaser.Scene {
       this.load.image(`andsiosa-${state}`, assetUrl(`assets/character/andsiosa-${state}.png`, cv));
     });
     this.load.spritesheet('andsiosa-run', assetUrl('assets/character/andsiosa-run.png', cv), {
-      frameWidth: 96,
-      frameHeight: 128,
+      frameWidth: 144,
+      frameHeight: 192,
     });
+
+    const ev = GAME_CONFIG.enemyAssetVersion;
+    this.load.image('deadline-bug', assetUrl('assets/enemy/deadline-bug.png', ev));
+    this.load.image('final-boss', assetUrl('assets/enemy/final-boss.png', ev));
   }
 
   create(): void {
     this.applyCharacterTextureFilters();
+    this.applyEnemyTextureFilters();
     this.worldManifest = this.cache.json.get('world-manifest') as WorldManifest | null;
     this.loadWorldAssets(() => {
       this.generatePlaceholderTextures();
@@ -40,7 +45,16 @@ export class BootScene extends Phaser.Scene {
     });
   }
 
-  /** Smooth scaling for 2× character exports on high-DPI phones. */
+  /** Smooth scaling for 3× enemy exports on high-DPI phones. */
+  private applyEnemyTextureFilters(): void {
+    for (const key of ['deadline-bug', 'final-boss']) {
+      if (this.textures.exists(key)) {
+        this.textures.get(key).setFilter(Phaser.Textures.FilterMode.LINEAR);
+      }
+    }
+  }
+
+  /** Smooth scaling for 3× character exports on high-DPI phones. */
   private applyCharacterTextureFilters(): void {
     const keys = ['andsiosa-idle', 'andsiosa-run', 'andsiosa-jump', 'andsiosa-fall', 'andsiosa-hurt', 'andsiosa-victory'];
     for (const key of keys) {

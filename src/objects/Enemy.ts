@@ -29,8 +29,10 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.patrolMax = patrolMax;
     this.setImmovable(true);
     (this.body as Phaser.Physics.Arcade.Body).setAllowGravity(false);
+    this.setOrigin(0.5, 1);
+    this.fitDisplaySize(40, 32);
     this.body!.setSize(32, 28);
-    this.body!.setOffset(4, 8);
+    this.body!.setOffset(4, 4);
     this.setDepth(5);
     this.setFlipX(this.direction === -1);
 
@@ -98,5 +100,12 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
       this.direction = -1;
       this.setFlipX(true);
     }
+  }
+
+  /** Scale 3× Figma exports down to logical gameplay size. */
+  private fitDisplaySize(width: number, height: number): void {
+    const frame = this.texture.get();
+    if (!frame.width || !frame.height) return;
+    this.setScale(width / frame.width, height / frame.height);
   }
 }

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Convert Figma animated GIF export into a horizontal PNG spritesheet (96×128 per frame)."""
+"""Convert Figma animated GIF export into a horizontal PNG spritesheet (144×192 per frame)."""
 import json
 import sys
 import urllib.request
@@ -8,8 +8,11 @@ from io import BytesIO
 from PIL import Image
 
 USER_AGENT = 'performingtypography-asset-sync/1.0'
-FRAME_W = 96
-FRAME_H = 128
+FIGMA_W = 48
+FIGMA_H = 64
+SCALE = 3
+FRAME_W = FIGMA_W * SCALE
+FRAME_H = FIGMA_H * SCALE
 
 
 def load_url(url: str) -> Image.Image:
