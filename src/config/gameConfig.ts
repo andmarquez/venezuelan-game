@@ -5,7 +5,7 @@
 export const GAME_CONFIG = {
   /** Bump after Figma asset sync so phones bypass CDN/browser cache */
   worldAssetVersion: '20260705g',
-  characterAssetVersion: '20260705d',
+  characterAssetVersion: '20260705e',
 
   /** In-game Andsiosa display scale (Figma art is 48×64; 1.75 ≈ 84×112 px) */
   playerDisplayScale: 1.75,

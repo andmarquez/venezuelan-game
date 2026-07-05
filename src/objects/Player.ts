@@ -140,14 +140,13 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       this.setAnimState('jump');
 
       if (!onFloor) {
-        // Brief pop on double jump — replace with sprite FX later
-        const baseScale = Math.abs(this.scaleX);
+        const uniform = this.getUniformScale();
         this.scene.tweens.add({
           targets: this,
-          scaleX: this.flipX ? -baseScale * 1.06 : baseScale * 1.06,
-          scaleY: baseScale * 1.06,
+          scaleY: uniform * 1.06,
           duration: 80,
           yoyo: true,
+          onComplete: () => this.fitDisplayScale(),
         });
       }
     }
@@ -234,18 +233,28 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   /** Scale trimmed Figma art to consistent on-screen height with transparent padding. */
+  private getUniformScale(): number {
+    const frame = this.texture.get();
+    if (!frame.height) return GAME_CONFIG.playerDisplayScale;
+    return (64 * GAME_CONFIG.playerDisplayScale) / frame.height;
+  }
+
   private fitDisplayScale(): void {
     const frame = this.texture.get();
-    if (!frame.height) return;
+    if (!frame.width || !frame.height) return;
 
-    const flip = this.flipX;
-    const targetH = 64 * GAME_CONFIG.playerDisplayScale;
-    const scale = (targetH / frame.height) * (flip ? -1 : 1);
-    this.setScale(scale);
+    const uniform = this.getUniformScale();
+    this.setScale(uniform);
 
-    const s = Math.abs(this.scaleX);
-    this.body?.setSize(28 * s, 52 * s);
-    this.body?.setOffset(10 * s, 0);
-    this.body?.updateFromGameObject();
+    const body = this.body as Phaser.Physics.Arcade.Body | undefined;
+    if (!body) return;
+
+    const bodyW = 28 * GAME_CONFIG.playerDisplayScale;
+    const bodyH = 52 * GAME_CONFIG.playerDisplayScale;
+    const offsetX = frame.width / 2 - bodyW / uniform / 2;
+    const offsetY = frame.height - bodyH / uniform;
+
+    body.setSize(bodyW, bodyH);
+    body.setOffset(offsetX, offsetY);
   }
 }
