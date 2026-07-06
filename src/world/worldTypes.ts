@@ -111,7 +111,11 @@ export const platformTopLeftToCenter = (p: PlatformZone) => ({
 
 /** Gameplay collision — walk surface at top of user-sized Figma zone box. */
 export function getPlatformCollisionRect(zone: PlatformZone, _standInset = 0): PlatformZone {
-  if (zone.type === 'pipe' || zone.name === 'ground_floor') {
+  if (
+    zone.type === 'pipe' ||
+    zone.name === 'ground_floor' ||
+    zone.name === 'platform_start'
+  ) {
     return zone;
   }
   const surfaceH = Math.min(zone.height, 18);

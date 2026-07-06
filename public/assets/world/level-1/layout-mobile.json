@@ -20,6 +20,14 @@
   },
   "platforms": [
     {
+      "name": "ground_floor",
+      "x": 0,
+      "y": 684,
+      "width": 5336,
+      "height": 36,
+      "type": "platform"
+    },
+    {
       "name": "platform_start",
       "x": 11,
       "y": 630,
