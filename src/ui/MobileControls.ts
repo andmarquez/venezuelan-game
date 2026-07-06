@@ -121,12 +121,13 @@ export class MobileControls {
       scale,
     );
     const kissX = vp.x + vp.width * layout.kissXRatio;
-    const kissY = bottomAnchoredControlY(
-      vp,
-      this.scene.scale,
-      GAME_CONFIG.mobileWildRift.abilityRadius,
-      scale,
-    );
+    const kissY =
+      bottomAnchoredControlY(
+        vp,
+        this.scene.scale,
+        GAME_CONFIG.mobileWildRift.abilityRadius,
+        scale,
+      ) + GAME_CONFIG.mobileKissExtraDrop;
 
     const jump = this.abilities.find((a) => a.id === 'jump')!;
     jump.btn.setPosition(jumpX, jumpY);

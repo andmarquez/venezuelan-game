@@ -87,6 +87,9 @@ export const GAME_CONFIG = {
   /** Padding from bottom of screen for touch controls (plus safe-area inset) */
   mobileControlsLift: 12,
 
+  /** Extra downward offset for the kiss (heart) button only */
+  mobileKissExtraDrop: 28,
+
   /** Bias camera down on mobile landscape so ENVELOP crop keeps ground visible */
   mobileLandscapeCameraFollowOffsetY: 48,
 
