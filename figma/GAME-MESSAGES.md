@@ -40,4 +40,4 @@
 - **Screen body:** 26px semibold `#AD1457`
 - **CTA:** Nunito Bold 26px, white on `#E91E63`, padding 24×14, radius 12
 
-After branding in Figma, share updated exports or tokens and we can sync them into `GameScene.ts`, `GameOverScene.ts`, and `WinScene.ts`.
+After branding in Figma, run `npm run assets:screens` and bump `screenAssetVersion` in `gameConfig.ts`. Layout lives in `src/ui/endScreenLayout.ts` (M03/M04) and `MenuScene.ts` (M01).

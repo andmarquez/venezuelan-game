@@ -1,0 +1,43 @@
+{
+  "figmaFileKey": "1zlB4dA4ktyuuBXzseo1ix",
+  "figmaFileUrl": "https://www.figma.com/design/1zlB4dA4ktyuuBXzseo1ix",
+  "syncedAt": "2026-07-06T04:22:20.141Z",
+  "screens": {
+    "menu-start": {
+      "figmaNodeId": "2:2",
+      "figmaName": "M01 — Start Menu",
+      "export": "https://www.figma.com/api/mcp/asset/ecac5f01-147a-47b3-acb0-e51904ea9222",
+      "dest": "public/assets/ui/screens/menu-start.png"
+    },
+    "game-over-title": {
+      "figmaNodeId": "2:43",
+      "figmaName": "Game Over title",
+      "export": "https://www.figma.com/api/mcp/asset/b8d6efcb-30c3-4129-8e8f-987fb66bd4a4",
+      "dest": "public/assets/ui/screens/game-over-title.png"
+    },
+    "game-over-character": {
+      "figmaNodeId": "2:46",
+      "figmaName": "Andsiosa — Hurt",
+      "export": "https://www.figma.com/api/mcp/asset/bbd2dbf9-93fc-448d-a336-e2564a4a81e7",
+      "dest": "public/assets/ui/screens/game-over-character.png"
+    },
+    "win-title": {
+      "figmaNodeId": "2:15",
+      "figmaName": "You Did It! title",
+      "export": "https://www.figma.com/api/mcp/asset/a3f1c61e-33aa-45cb-8516-ad5ee8976a18",
+      "dest": "public/assets/ui/screens/win-title.png"
+    },
+    "win-character": {
+      "figmaNodeId": "2:18",
+      "figmaName": "Andsiosa — Victory",
+      "export": "https://www.figma.com/api/mcp/asset/91d3aec0-9d7b-4a99-8606-e21559151ddc",
+      "dest": "public/assets/ui/screens/win-character.png"
+    }
+  },
+  "splash": {
+    "home-4": {
+      "source": "menu-start",
+      "dest": "public/splash/home-4.png"
+    }
+  }
+}

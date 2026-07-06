@@ -32,11 +32,24 @@ export class BootScene extends Phaser.Scene {
     const ev = GAME_CONFIG.enemyAssetVersion;
     this.load.image('deadline-bug', assetUrl('assets/enemy/deadline-bug.png', ev));
     this.load.image('final-boss', assetUrl('assets/enemy/final-boss.png', ev));
+
+    const sv = GAME_CONFIG.screenAssetVersion;
+    const screenAssets = [
+      'menu-start',
+      'game-over-title',
+      'game-over-character',
+      'win-title',
+      'win-character',
+    ] as const;
+    screenAssets.forEach((key) => {
+      this.load.image(`screen-${key}`, assetUrl(`assets/ui/screens/${key}.png`, sv));
+    });
   }
 
   create(): void {
     this.applyCharacterTextureFilters();
     this.applyEnemyTextureFilters();
+    this.applyScreenTextureFilters();
     this.worldManifest = this.cache.json.get('world-manifest') as WorldManifest | null;
     this.loadWorldAssets(() => {
       this.generatePlaceholderTextures();
@@ -45,7 +58,17 @@ export class BootScene extends Phaser.Scene {
     });
   }
 
-  /** Smooth scaling for 3× enemy exports on high-DPI phones. */
+  /** Smooth scaling for 3× character exports on high-DPI phones. */
+  private applyCharacterTextureFilters(): void {
+    const keys = ['andsiosa-idle', 'andsiosa-run', 'andsiosa-jump', 'andsiosa-fall', 'andsiosa-hurt', 'andsiosa-victory'];
+    for (const key of keys) {
+      if (this.textures.exists(key)) {
+        this.textures.get(key).setFilter(Phaser.Textures.FilterMode.LINEAR);
+      }
+    }
+  }
+
+  /** Smooth scaling for enemy exports on high-DPI phones. */
   private applyEnemyTextureFilters(): void {
     for (const key of ['deadline-bug', 'final-boss']) {
       if (this.textures.exists(key)) {
@@ -54,10 +77,15 @@ export class BootScene extends Phaser.Scene {
     }
   }
 
-  /** Smooth scaling for 3× character exports on high-DPI phones. */
-  private applyCharacterTextureFilters(): void {
-    const keys = ['andsiosa-idle', 'andsiosa-run', 'andsiosa-jump', 'andsiosa-fall', 'andsiosa-hurt', 'andsiosa-victory'];
-    for (const key of keys) {
+  /** Smooth scaling for Figma screen art on high-DPI phones. */
+  private applyScreenTextureFilters(): void {
+    for (const key of [
+      'screen-menu-start',
+      'screen-game-over-title',
+      'screen-game-over-character',
+      'screen-win-title',
+      'screen-win-character',
+    ]) {
       if (this.textures.exists(key)) {
         this.textures.get(key).setFilter(Phaser.Textures.FilterMode.LINEAR);
       }

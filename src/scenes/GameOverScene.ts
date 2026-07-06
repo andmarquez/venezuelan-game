@@ -1,97 +1,86 @@
 import Phaser from 'phaser';
-import { GAME_CONFIG } from '../config/gameConfig';
-import { getCharacterDisplayScale } from '../utils/characterDisplay';
+import {
+  END_SCREEN,
+  addCtaButton,
+  addEndScreenBackground,
+  addStatsPill,
+  bindRestartInput,
+  fitImageToSize,
+  layoutCenterX,
+} from '../ui/endScreenLayout';
+import { getUiViewport } from '../ui/viewportLayout';
 
 export type GameOverReason = 'time' | 'lives' | 'fall';
 
+const REASON_COPY: Record<GameOverReason, string> = {
+  time: 'The deadline ran out!',
+  lives: 'Too many deadline bugs got you!',
+  fall: 'Andsiosa fell off the creative world!',
+};
+
 /**
- * GameOverScene — shown when the player loses.
+ * GameOverScene — Figma M03 layout with dynamic stats + reason.
  */
 export class GameOverScene extends Phaser.Scene {
+  private reason: GameOverReason = 'lives';
+  private score = 0;
+  private kisses = 0;
+
   constructor() {
     super({ key: 'GameOverScene' });
   }
 
   init(data: { reason?: GameOverReason; score?: number; kisses?: number }): void {
-    this.registry.set('lastReason', data.reason ?? 'lives');
-    this.registry.set('lastScore', data.score ?? 0);
-    this.registry.set('lastKisses', data.kisses ?? 0);
+    this.reason = data.reason ?? 'lives';
+    this.score = data.score ?? 0;
+    this.kisses = data.kisses ?? 0;
   }
 
   create(): void {
-    const w = GAME_CONFIG.width;
-    const reason = this.registry.get('lastReason') as GameOverReason;
-    const score = this.registry.get('lastScore') as number;
-    const kisses = this.registry.get('lastKisses') as number;
-
-    this.cameras.main.setBackgroundColor('#fce4ec');
-
-    this.add
-      .text(w / 2, 160, 'Game Over', {
-        fontSize: '64px',
-        fontFamily: 'Nunito, sans-serif',
-        color: '#c62828',
-        fontStyle: 'bold',
-      })
-      .setOrigin(0.5);
-
-    const messages: Record<GameOverReason, string> = {
-      time: 'The deadline ran out!',
-      lives: 'Too many deadline bugs got you!',
-      fall: 'Andsiosa fell off the creative world!',
-    };
-
-    this.add
-      .text(w / 2, 260, messages[reason], {
-        fontSize: '26px',
-        fontFamily: 'Nunito, sans-serif',
-        color: '#880e4f',
-        align: 'center',
-        wordWrap: { width: w - 80 },
-      })
-      .setOrigin(0.5);
-
-    this.add
-      .text(w / 2, 340, `Kisses: ${kisses}  |  Score: ${score}`, {
-        fontSize: '24px',
-        fontFamily: 'Nunito, sans-serif',
-        color: '#ad1457',
-      })
-      .setOrigin(0.5);
-
-    this.add
-      .image(w / 2, 440, 'andsiosa-hurt')
-      .setScale(getCharacterDisplayScale(this.textures, 'andsiosa-hurt', 2));
-
-    const retry = this.add
-      .text(w / 2, 560, 'Press Enter / Tap to Try Again', {
-        fontSize: '26px',
-        fontFamily: 'Nunito, sans-serif',
-        color: '#ffffff',
-        backgroundColor: '#e91e63',
-        padding: { x: 24, y: 14 },
-      })
-      .setOrigin(0.5)
-      .setInteractive({ useHandCursor: true });
-
-    retry.on('pointerover', () => retry.setStyle({ backgroundColor: '#c2185b' }));
-    retry.on('pointerout', () => retry.setStyle({ backgroundColor: '#e91e63' }));
-
-    this.tweens.add({
-      targets: retry,
-      scale: 1.05,
-      duration: 600,
-      yoyo: true,
-      repeat: -1,
-    });
-
-    const restart = () => this.scene.start('GameScene');
-    this.input.keyboard?.once('keydown-ENTER', restart);
-    this.input.keyboard?.once('keydown-SPACE', restart);
-    retry.on('pointerdown', restart);
-    this.input.once('pointerdown', (pointer: Phaser.Input.Pointer) => {
-      if (pointer.y < 520) return;
-      restart();
+    this.buildUi();
+    this.scale.on(Phaser.Scale.Events.RESIZE, this.buildUi, this);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      this.scale.off(Phaser.Scale.Events.RESIZE, this.buildUi, this);
     });
   }
+
+  private buildUi = (): void => {
+    this.children.removeAll(true);
+    const cfg = END_SCREEN.gameOver;
+    const vp = getUiViewport(this.scale);
+    const cx = layoutCenterX(vp);
+
+    addEndScreenBackground(this, cfg.bg);
+
+    this.add
+      .text(cx, cfg.reasonY, REASON_COPY[this.reason], {
+        fontSize: `${cfg.reasonSize}px`,
+        fontFamily: 'Inter, Nunito, system-ui, sans-serif',
+        color: cfg.reasonColor,
+      })
+      .setOrigin(0.5)
+      .setScrollFactor(0)
+      .setDepth(10);
+
+    const title = this.add.image(cx, cfg.titleY, 'screen-game-over-title').setScrollFactor(0).setDepth(11);
+    fitImageToSize(title, cfg.titleMaxW, 338);
+
+    addStatsPill(
+      this,
+      cx,
+      cfg.statsY,
+      `Kisses: ${this.kisses}  |  Score: ${this.score}`,
+      cfg,
+    );
+
+    const character = this.add
+      .image(cx, cfg.characterY, 'screen-game-over-character')
+      .setScrollFactor(0)
+      .setDepth(12);
+    fitImageToSize(character, cfg.characterW, cfg.characterH);
+
+    const restart = () => this.scene.start('GameScene');
+    addCtaButton(this, cx, cfg.ctaY, cfg.ctaLabel, cfg, restart);
+    bindRestartInput(this, restart, cfg.ctaY);
+  };
 }
