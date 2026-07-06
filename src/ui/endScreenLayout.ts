@@ -55,8 +55,48 @@ export const END_SCREEN = {
 
 const FONT_BODY = 'Inter, Nunito, system-ui, sans-serif';
 
-export function layoutCenterX(vp: UiViewport): number {
-  return vp.x + vp.width / 2;
+export type ScreenLayout = {
+  vp: UiViewport;
+  cx: number;
+  cy: number;
+  /** Uniform scale from Figma 720px-tall artboard to visible height. */
+  scale: number;
+  mapY: (designY: number) => number;
+  mapX: (designX: number) => number;
+};
+
+/** Layout for static screens — full canvas bg + UI mapped into visible ENVELOP region. */
+export function getScreenLayout(scene: Phaser.Scene): ScreenLayout {
+  const vp = getUiViewport(scene.scale);
+  const scale = vp.height / GAME_CONFIG.height;
+
+  return {
+    vp,
+    cx: vp.x + vp.width / 2,
+    cy: vp.y + vp.height / 2,
+    scale,
+    mapY: (designY: number) => vp.y + (designY / GAME_CONFIG.height) * vp.height,
+    mapX: (designX: number) => vp.x + (designX / GAME_CONFIG.width) * vp.width,
+  };
+}
+
+/** Full 1280×720 design canvas — use for cover-fit backgrounds (no stretch). */
+export function getFullScreenRect() {
+  const w = GAME_CONFIG.width;
+  const h = GAME_CONFIG.height;
+  return { width: w, height: h, cx: w / 2, cy: h / 2 };
+}
+
+/** Scale image uniformly to cover a target area without squishing. */
+export function coverFitImage(
+  image: Phaser.GameObjects.Image,
+  targetW: number,
+  targetH: number,
+): void {
+  const fw = image.frame.width;
+  const fh = image.frame.height;
+  if (!fw || !fh) return;
+  image.setScale(Math.max(targetW / fw, targetH / fh));
 }
 
 export function fitImageToSize(
@@ -66,23 +106,23 @@ export function fitImageToSize(
 ): void {
   const frame = image.frame;
   if (!frame.width || !frame.height) return;
-  const scale = Math.min(maxW / frame.width, maxH / frame.height);
-  image.setScale(scale);
+  const s = Math.min(maxW / frame.width, maxH / frame.height);
+  image.setScale(s);
 }
 
 export function addEndScreenBackground(
   scene: Phaser.Scene,
   color: number,
 ): Phaser.GameObjects.Rectangle {
-  const vp = getUiViewport(scene.scale);
+  const { width, height, cx, cy } = getFullScreenRect();
   return scene.add
-    .rectangle(vp.x + vp.width / 2, vp.y + vp.height / 2, vp.width, vp.height, color)
+    .rectangle(cx, cy, width, height, color)
     .setScrollFactor(0)
     .setDepth(0);
 }
 
 export function addWinGradientBackground(scene: Phaser.Scene): Phaser.GameObjects.Graphics {
-  const vp = getUiViewport(scene.scale);
+  const { width, height, cx, cy } = getFullScreenRect();
   const g = scene.add.graphics().setScrollFactor(0).setDepth(0);
   g.fillGradientStyle(
     END_SCREEN.win.gradientTop,
@@ -91,7 +131,7 @@ export function addWinGradientBackground(scene: Phaser.Scene): Phaser.GameObject
     END_SCREEN.win.gradientBottom,
     1,
   );
-  g.fillRect(vp.x, vp.y, vp.width, vp.height);
+  g.fillRect(cx - width / 2, cy - height / 2, width, height);
   return g;
 }
 
@@ -191,4 +231,9 @@ export function bindRestartInput(scene: Phaser.Scene, restart: () => void, ctaY:
     if (pointer.y < ctaY - 40) return;
     restart();
   });
+}
+
+/** Multiply Figma pixel values by the visible layout scale. */
+export function scalePx(layout: ScreenLayout, designPx: number): number {
+  return designPx * layout.scale;
 }

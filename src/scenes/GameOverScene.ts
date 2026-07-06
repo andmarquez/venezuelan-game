@@ -6,9 +6,9 @@ import {
   addStatsPill,
   bindRestartInput,
   fitImageToSize,
-  layoutCenterX,
+  getScreenLayout,
+  scalePx,
 } from '../ui/endScreenLayout';
-import { getUiViewport } from '../ui/viewportLayout';
 
 export type GameOverReason = 'time' | 'lives' | 'fall';
 
@@ -46,41 +46,58 @@ export class GameOverScene extends Phaser.Scene {
 
   private buildUi = (): void => {
     this.children.removeAll(true);
-    const cfg = END_SCREEN.gameOver;
-    const vp = getUiViewport(this.scale);
-    const cx = layoutCenterX(vp);
+    const base = END_SCREEN.gameOver;
+    const layout = getScreenLayout(this);
+    const { cx, mapY } = layout;
+    const px = (n: number) => scalePx(layout, n);
 
-    addEndScreenBackground(this, cfg.bg);
+    this.cameras.main.setBackgroundColor('#fce4ec');
+    addEndScreenBackground(this, base.bg);
 
     this.add
-      .text(cx, cfg.reasonY, REASON_COPY[this.reason], {
-        fontSize: `${cfg.reasonSize}px`,
+      .text(cx, mapY(base.reasonY), REASON_COPY[this.reason], {
+        fontSize: `${px(base.reasonSize)}px`,
         fontFamily: 'Inter, Nunito, system-ui, sans-serif',
-        color: cfg.reasonColor,
+        color: base.reasonColor,
       })
       .setOrigin(0.5)
       .setScrollFactor(0)
       .setDepth(10);
 
-    const title = this.add.image(cx, cfg.titleY, 'screen-game-over-title').setScrollFactor(0).setDepth(11);
-    fitImageToSize(title, cfg.titleMaxW, 338);
+    const title = this.add
+      .image(cx, mapY(base.titleY), 'screen-game-over-title')
+      .setScrollFactor(0)
+      .setDepth(11);
+    fitImageToSize(title, px(base.titleMaxW), px(338));
 
     addStatsPill(
       this,
       cx,
-      cfg.statsY,
+      mapY(base.statsY),
       `Kisses: ${this.kisses}  |  Score: ${this.score}`,
-      cfg,
+      {
+        statsW: px(base.statsW),
+        statsH: px(base.statsH),
+        statsColor: base.statsColor,
+        statsTextSize: px(base.statsTextSize),
+      },
     );
 
     const character = this.add
-      .image(cx, cfg.characterY, 'screen-game-over-character')
+      .image(cx, mapY(base.characterY), 'screen-game-over-character')
       .setScrollFactor(0)
       .setDepth(12);
-    fitImageToSize(character, cfg.characterW, cfg.characterH);
+    fitImageToSize(character, px(base.characterW), px(base.characterH));
 
+    const ctaY = mapY(base.ctaY);
     const restart = () => this.scene.start('GameScene');
-    addCtaButton(this, cx, cfg.ctaY, cfg.ctaLabel, cfg, restart);
-    bindRestartInput(this, restart, cfg.ctaY);
+    addCtaButton(this, cx, ctaY, base.ctaLabel, {
+      ctaW: px(base.ctaW),
+      ctaH: px(base.ctaH),
+      ctaColor: base.ctaColor,
+      ctaHover: base.ctaHover,
+      ctaTextSize: px(base.ctaTextSize),
+    }, restart);
+    bindRestartInput(this, restart, ctaY);
   };
 }

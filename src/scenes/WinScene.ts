@@ -6,9 +6,9 @@ import {
   addWinGradientBackground,
   bindRestartInput,
   fitImageToSize,
-  layoutCenterX,
+  getScreenLayout,
+  scalePx,
 } from '../ui/endScreenLayout';
-import { getUiViewport } from '../ui/viewportLayout';
 
 /**
  * WinScene — Figma M04 layout with confetti + dynamic stats.
@@ -36,15 +36,16 @@ export class WinScene extends Phaser.Scene {
 
   private buildUi = (): void => {
     this.children.removeAll(true);
-    const cfg = END_SCREEN.win;
-    const vp = getUiViewport(this.scale);
-    const cx = layoutCenterX(vp);
+    const base = END_SCREEN.win;
+    const layout = getScreenLayout(this);
+    const { cx, mapY, mapX } = layout;
+    const px = (n: number) => scalePx(layout, n);
 
+    this.cameras.main.setBackgroundColor('#fff5dc');
     addWinGradientBackground(this);
 
-    const w = vp.width;
-    const emitter = this.add.particles(cx, vp.y, 'particle', {
-      x: { min: -w / 2, max: w / 2 },
+    const emitter = this.add.particles(cx, layout.vp.y, 'particle', {
+      x: { min: -layout.vp.width / 2, max: layout.vp.width / 2 },
       speed: { min: 80, max: 200 },
       angle: { min: 60, max: 120 },
       scale: { start: 0.5, end: 0 },
@@ -55,25 +56,40 @@ export class WinScene extends Phaser.Scene {
     emitter.setScrollFactor(0).setDepth(5);
     this.time.delayedCall(8000, () => emitter.stop());
 
-    const title = this.add.image(cx, cfg.titleY, 'screen-win-title').setScrollFactor(0).setDepth(10);
-    fitImageToSize(title, cfg.titleMaxW, 338);
+    const title = this.add
+      .image(cx, mapY(base.titleY), 'screen-win-title')
+      .setScrollFactor(0)
+      .setDepth(10);
+    fitImageToSize(title, px(base.titleMaxW), px(338));
 
     const character = this.add
-      .image(cx + cfg.characterXOffset, cfg.characterY, 'screen-win-character')
+      .image(mapX(END_SCREEN.designW / 2 + base.characterXOffset), mapY(base.characterY), 'screen-win-character')
       .setScrollFactor(0)
       .setDepth(12);
-    fitImageToSize(character, cfg.characterW, cfg.characterH);
+    fitImageToSize(character, px(base.characterW), px(base.characterH));
 
+    const ctaY = mapY(base.ctaY);
     addStatsPill(
       this,
       cx,
-      cfg.statsY,
+      mapY(base.statsY),
       `Hearts: ${this.kisses}  |  Score: ${this.score}`,
-      cfg,
+      {
+        statsW: px(base.statsW),
+        statsH: px(base.statsH),
+        statsColor: base.statsColor,
+        statsTextSize: px(base.statsTextSize),
+      },
     );
 
     const restart = () => this.scene.start('GameScene');
-    addCtaButton(this, cx, cfg.ctaY, cfg.ctaLabel, cfg, restart);
-    bindRestartInput(this, restart, cfg.ctaY);
+    addCtaButton(this, cx, ctaY, base.ctaLabel, {
+      ctaW: px(base.ctaW),
+      ctaH: px(base.ctaH),
+      ctaColor: base.ctaColor,
+      ctaHover: base.ctaHover,
+      ctaTextSize: px(base.ctaTextSize),
+    }, restart);
+    bindRestartInput(this, restart, ctaY);
   };
 }
