@@ -85,7 +85,7 @@ export const GAME_CONFIG = {
   hudCornerRadius: 26,
 
   /** Padding from bottom of screen for touch controls (plus safe-area inset) */
-  mobileControlsLift: 48,
+  mobileControlsLift: 12,
 
   /** Bias camera down on mobile landscape so ENVELOP crop keeps ground visible */
   mobileLandscapeCameraFollowOffsetY: 48,
