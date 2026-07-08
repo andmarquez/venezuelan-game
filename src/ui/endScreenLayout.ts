@@ -58,8 +58,8 @@ export const END_SCREEN = {
     ctaRadius: 44,
     ctaTextSize: 22,
     ctaLabel: 'Play Again',
-    /** Nudge cover-fit art down (design px) so top title isn't cropped on phones. */
-    artShiftY: 72,
+    /** Scale-to-fit inside viewport (0–1) so top/bottom aren't cropped on phones. */
+    fitScale: 0.92,
   },
 } as const;
 
@@ -88,6 +88,30 @@ export function getCoverScreenLayout(scene: Phaser.Scene, shiftDesignY = 0): Scr
   const contentH = GAME_CONFIG.height * scale;
   const offsetX = vp.x + (vp.width - contentW) / 2;
   const offsetY = vp.y + (vp.height - contentH) / 2 + shiftDesignY * scale;
+
+  return {
+    vp,
+    cx: offsetX + contentW / 2,
+    cy: offsetY + contentH / 2,
+    scale,
+    landscape,
+    mapY: (designY: number) => offsetY + designY * scale,
+    mapX: (designX: number) => offsetX + designX * scale,
+  };
+}
+
+/** Fit-inside layout — scales art down to fit without cropping (small side bars ok). */
+export function getFitScreenLayout(scene: Phaser.Scene, fitScale = 0.94): ScreenLayout {
+  const vp = getUiViewport(scene.scale);
+  const landscape = isLandscapeViewport();
+  const scaleX = vp.width / GAME_CONFIG.width;
+  const scaleY = vp.height / GAME_CONFIG.height;
+  const scale = Math.min(scaleX, scaleY) * fitScale;
+
+  const contentW = GAME_CONFIG.width * scale;
+  const contentH = GAME_CONFIG.height * scale;
+  const offsetX = vp.x + (vp.width - contentW) / 2;
+  const offsetY = vp.y + (vp.height - contentH) / 2;
 
   return {
     vp,
@@ -142,6 +166,25 @@ export function layoutCoverScreenBackground(
     .setScrollFactor(0)
     .setDepth(depth);
   coverFitImage(bg, layout.vp.width, layout.vp.height);
+  return layout;
+}
+
+export function layoutFitScreenBackground(
+  scene: Phaser.Scene,
+  textureKey: string,
+  depth = 0,
+  fitScale = 0.94,
+): ScreenLayout {
+  const layout = getFitScreenLayout(scene, fitScale);
+  const bg = scene.add
+    .image(layout.cx, layout.cy, textureKey)
+    .setScrollFactor(0)
+    .setDepth(depth);
+  fitImageToSize(
+    bg,
+    GAME_CONFIG.width * layout.scale,
+    GAME_CONFIG.height * layout.scale,
+  );
   return layout;
 }
 

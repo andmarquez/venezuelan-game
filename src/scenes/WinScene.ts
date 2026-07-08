@@ -3,7 +3,7 @@ import {
   END_SCREEN,
   addCtaHitZone,
   addStatsPill,
-  layoutCoverScreenBackground,
+  layoutFitScreenBackground,
   scalePx,
 } from '../ui/endScreenLayout';
 
@@ -36,11 +36,11 @@ export class WinScene extends Phaser.Scene {
     this.children.removeAll(true);
 
     const base = END_SCREEN.win;
-    const layout = layoutCoverScreenBackground(
+    const layout = layoutFitScreenBackground(
       this,
       'screen-win-screen',
       0,
-      base.artShiftY,
+      base.fitScale,
     );
     const { cx, mapY, vp } = layout;
     const px = (n: number) => scalePx(layout, n);
