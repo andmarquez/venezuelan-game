@@ -37,18 +37,43 @@ export function isLandscapeViewport(): boolean {
   return width > height;
 }
 
-/** True for phone/tablet or forced mobile preview (`?mobile=1`). */
+/** Dev-only bypass — desktop preview with touch controls (`?mobile=1`). */
+export function isMobilePreviewForced(): boolean {
+  if (typeof window === 'undefined') return false;
+  return new URLSearchParams(window.location.search).get('mobile') === '1';
+}
+
+/** iPadOS 13+ often reports a desktop Macintosh user agent. */
+function isIPadLike(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  return navigator.maxTouchPoints > 1 && /Macintosh|Mac OS X/i.test(navigator.userAgent);
+}
+
+function isMobileUserAgent(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  return /Android|iPhone|iPod|Mobile|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
+/**
+ * Primary touch-phone signal — ignores Windows precision touchpads
+ * (`maxTouchPoints > 0` with fine pointer + hover).
+ */
+function isCoarseTouchDevice(): boolean {
+  if (typeof window.matchMedia !== 'function') return false;
+  const coarse = window.matchMedia('(pointer: coarse)').matches;
+  const noHover = window.matchMedia('(hover: none)').matches;
+  return coarse && noHover;
+}
+
+/**
+ * True for real phones/tablets, or forced preview (`?mobile=1`).
+ * Desktop laptops (incl. touchpad-only Windows) return false.
+ */
 export function isMobileViewport(): boolean {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('mobile') === '1') return true;
-
-  const { width, height } = getViewportSize();
-  const shortSide = Math.min(width, height);
-  const touch =
-    typeof window !== 'undefined' &&
-    ('ontouchstart' in window || navigator.maxTouchPoints > 0);
-
-  return touch && shortSide <= 900;
+  if (isMobilePreviewForced()) return true;
+  if (isIPadLike()) return true;
+  if (isMobileUserAgent()) return true;
+  return isCoarseTouchDevice();
 }
 
 /**

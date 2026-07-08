@@ -5,7 +5,7 @@ import { GameScene } from './scenes/GameScene';
 import { GameOverScene } from './scenes/GameOverScene';
 import { WinScene } from './scenes/WinScene';
 import { GAME_CONFIG } from './config/gameConfig';
-import { bootstrapDesktopPrompt, mountDesktopPrompt } from './ui/desktopPrompt';
+import { bootstrapDesktopPrompt } from './ui/desktopPrompt';
 import { bootstrapRotatePrompt, mountRotatePrompt } from './ui/rotatePrompt';
 import {
   getViewportSize,
@@ -16,7 +16,6 @@ import {
   resolveScaleMode,
 } from './ui/viewportMetrics';
 
-bootstrapRotatePrompt();
 bootstrapDesktopPrompt();
 
 const applyViewportClasses = () => {
@@ -36,71 +35,82 @@ const applyViewportClasses = () => {
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme);
 };
 
-const applyScaleMode = () => {
-  applyViewportClasses();
-  if (!game.isBooted) return;
-  const next = resolveScaleMode();
-  if (game.scale.scaleMode !== next) {
-    game.scale.scaleMode = next;
-  }
-  game.scale.refresh();
-};
+applyViewportClasses();
 
-const game = new Phaser.Game({
-  type: Phaser.AUTO,
-  parent: 'game-container',
-  width: GAME_CONFIG.width,
-  height: GAME_CONFIG.height,
-  backgroundColor: '#b8e0f5',
-  scale: {
-    mode: resolveScaleMode(),
-    autoCenter: Phaser.Scale.CENTER_BOTH,
-    expandParent: true,
+/** Mobile-only for now — Phaser does not boot on desktop (see desktop-prompt overlay). */
+if (!isMobileViewport()) {
+  onViewportChange(applyViewportClasses);
+
+  if (typeof window !== 'undefined') {
+    (window as Window & { __PHASER_GAME__?: Phaser.Game | null }).__PHASER_GAME__ = null;
+  }
+} else {
+  bootstrapRotatePrompt();
+
+  let game: Phaser.Game;
+
+  const applyScaleMode = () => {
+    applyViewportClasses();
+    if (!game.isBooted) return;
+    const next = resolveScaleMode();
+    if (game.scale.scaleMode !== next) {
+      game.scale.scaleMode = next;
+    }
+    game.scale.refresh();
+  };
+
+  game = new Phaser.Game({
+    type: Phaser.AUTO,
+    parent: 'game-container',
     width: GAME_CONFIG.width,
     height: GAME_CONFIG.height,
-  },
-  physics: {
-    default: 'arcade',
-    arcade: {
-      gravity: { x: 0, y: GAME_CONFIG.gravity },
-      debug: false,
+    backgroundColor: '#b8e0f5',
+    scale: {
+      mode: resolveScaleMode(),
+      autoCenter: Phaser.Scale.CENTER_BOTH,
+      expandParent: true,
+      width: GAME_CONFIG.width,
+      height: GAME_CONFIG.height,
     },
-  },
-  scene: [BootScene, MenuScene, GameScene, GameOverScene, WinScene],
-  input: {
-    activePointers: 4,
-  },
-  render: {
-    pixelArt: false,
-    antialias: true,
-    roundPixels: true,
-  },
-});
+    physics: {
+      default: 'arcade',
+      arcade: {
+        gravity: { x: 0, y: GAME_CONFIG.gravity },
+        debug: false,
+      },
+    },
+    scene: [BootScene, MenuScene, GameScene, GameOverScene, WinScene],
+    input: {
+      activePointers: 4,
+    },
+    render: {
+      pixelArt: false,
+      antialias: true,
+      roundPixels: true,
+    },
+  });
 
-applyViewportClasses();
-onViewportChange(applyScaleMode);
+  onViewportChange(applyScaleMode);
 
-game.events.once('ready', () => {
-  applyScaleMode();
-  mountRotatePrompt(game);
-  mountDesktopPrompt(game);
-  if (game.input.touch) {
-    game.input.touch.capture = false;
-  }
-});
-
-document.addEventListener(
-  'touchmove',
-  (e) => {
-    if (game.scene.isActive('GameScene') || game.scene.isActive('MenuScene')) {
-      e.preventDefault();
+  game.events.once('ready', () => {
+    applyScaleMode();
+    mountRotatePrompt(game);
+    if (game.input.touch) {
+      game.input.touch.capture = false;
     }
-  },
-  { passive: false },
-);
+  });
 
-if (typeof window !== 'undefined') {
-  (window as Window & { __PHASER_GAME__?: Phaser.Game }).__PHASER_GAME__ = game;
+  document.addEventListener(
+    'touchmove',
+    (e) => {
+      if (game.scene.isActive('GameScene') || game.scene.isActive('MenuScene')) {
+        e.preventDefault();
+      }
+    },
+    { passive: false },
+  );
+
+  if (typeof window !== 'undefined') {
+    (window as Window & { __PHASER_GAME__?: Phaser.Game | null }).__PHASER_GAME__ = game;
+  }
 }
-
-export default game;

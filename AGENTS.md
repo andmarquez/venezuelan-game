@@ -43,7 +43,11 @@ cat .phone-url
 
 ### Desktop preview of mobile controls
 
-Add `?mobile=1` to the URL (e.g. `http://127.0.0.1:5173/?mobile=1`).
+Add `?mobile=1` to the URL (e.g. `http://127.0.0.1:5173/?mobile=1`). This is the **only** way to run the game on desktop — laptops without that param see a gate and Phaser does not boot.
+
+## Mobile-only gate (live site)
+
+Desktop/laptop visitors see a full-screen message; the game does not load. Detection uses coarse touch pointer + mobile UA (not Windows touchpad `maxTouchPoints`). Real phones and tablets pass through.
 
 ## Branch note
 
