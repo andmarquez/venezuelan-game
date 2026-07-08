@@ -1,7 +1,7 @@
 {
   "name": "venezuelan-game",
   "version": "1.0.0",
-  "description": "Andsiosa's Creative Quest — a cute retro side-scrolling platformer built with Phaser, Vite, and TypeScript",
+  "description": "Venezuelan Game — a mobile side-scrolling platformer built with Phaser, Vite, and TypeScript",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "tsc --noEmit && vite build",

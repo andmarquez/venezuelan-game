@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Guidance for AI agents working on **Andsiosa's Creative Quest** (Venezuelan Game).
+Guidance for AI agents working on **Venezuelan Game**.
 
 ## Live site (permanent — share this link)
 
@@ -68,7 +68,7 @@ No backend, database, or Docker.
 
 1. `npm run dev`
 2. Open http://127.0.0.1:5173/
-3. Title: **Andsiosa's Creative Quest** → Enter / tap to start
+3. Browser tab title: **Venezuelan Game** → Enter / tap to start
 4. HUD: kisses, timer, projects, lives
 5. Mobile: Wild Rift layout — joystick left, jump + abilities right (`?mobile=1` on desktop)
 
