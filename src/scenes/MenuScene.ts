@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
-import { GAME_CONFIG } from '../config/gameConfig';
-import { coverFitImage, getScreenLayout } from '../ui/endScreenLayout';
+import { coverFitImage } from '../ui/endScreenLayout';
+import { getUiViewport } from '../ui/viewportLayout';
 
 /**
  * MenuScene — Figma M01 start screen (TEPUY / LEVEL 1).
@@ -14,7 +14,7 @@ export class MenuScene extends Phaser.Scene {
   }
 
   create(): void {
-    this.cameras.main.setBackgroundColor('#ffffff');
+    this.cameras.main.setBackgroundColor('#b8e0f5');
     this.layoutScreen();
     this.canStart = true;
     this.setupKeyboard();
@@ -28,13 +28,13 @@ export class MenuScene extends Phaser.Scene {
   private layoutScreen = (): void => {
     this.children.removeAll(true);
 
-    const layout = getScreenLayout(this);
-    const w = GAME_CONFIG.width * layout.scale;
-    const h = GAME_CONFIG.height * layout.scale;
+    const vp = getUiViewport(this.scale);
+    const cx = vp.x + vp.width / 2;
+    const cy = vp.y + vp.height / 2;
     const bg = this.add
-      .image(layout.cx, layout.cy, 'screen-menu-start')
+      .image(cx, cy, 'screen-menu-start')
       .setScrollFactor(0);
-    coverFitImage(bg, w, h);
+    coverFitImage(bg, vp.width, vp.height);
   };
 
   private setupKeyboard(): void {
