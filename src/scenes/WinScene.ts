@@ -39,7 +39,7 @@ export class WinScene extends Phaser.Scene {
     const layout = layoutWinScreenBackground(
       this,
       'screen-win-screen',
-      base.bottomInset,
+      base.fitPadding,
     );
     const { cx, mapY, vp } = layout;
     const px = (n: number) => scalePx(layout, n);
