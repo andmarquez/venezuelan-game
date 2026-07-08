@@ -30,7 +30,7 @@ jobs:
           NAME=$(node -p "require('./package.json').name")
           echo "name=$NAME" >> "$GITHUB_OUTPUT"
           case "$NAME" in
-            concert-kinetic-typography|andsiosas-creative-quest)
+            concert-kinetic-typography|andsiosas-creative-quest|venezuelan-game)
               echo "skip=false" >> "$GITHUB_OUTPUT"
               ;;
             *)
@@ -54,7 +54,7 @@ jobs:
         if: steps.app.outputs.skip != 'true'
         run: npm run build:pages
         env:
-          BASE_PATH: /performingtypography/
+          BASE_PATH: /venezuelan-game/
 
       - name: Upload Pages artifact
         if: steps.app.outputs.skip != 'true'

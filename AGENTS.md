@@ -1,14 +1,22 @@
 # AGENTS.md
 
-Guidance for AI agents working on **Andsiosa's Creative Quest** (this branch).
+Guidance for AI agents working on **Andsiosa's Creative Quest** (Venezuelan Game).
+
+## Live site (permanent — share this link)
+
+**GitHub Pages** is the canonical permanent URL:
+
+- **https://andmarquez.github.io/venezuelan-game/**
+
+Deploys automatically via `.github/workflows/deploy-pages.yml` on push to **`main`** in the **`venezuelan-game`** repo. Requires **Settings → Pages → Source: GitHub Actions** (one-time).
+
+This URL stays the same when you push updates — only the game content changes.
 
 ## Important — separate from Performing Typography
 
-This game is **not** the Concert Kinetic Typography app. Do **not** deploy it to or document it under:
+The Concert Kinetic Typography app lives in **`performingtypography`** — do not confuse with this game:
 
-- ~~https://andmarquez.github.io/performingtypography/~~ (different project on `main`)
-
-Merging this branch to `main` must **not** overwrite that live site. The GitHub Pages workflow skips deploy unless `package.json` name is `concert-kinetic-typography`.
+- https://andmarquez.github.io/performingtypography/ (different project)
 
 ## How to test this game
 
@@ -39,8 +47,8 @@ Add `?mobile=1` to the URL (e.g. `http://127.0.0.1:5173/?mobile=1`).
 
 ## Branch note
 
-- **`main`** — Concert Kinetic Typography (React). Leave it alone for this game.
-- **`cursor/andsiosa-creative-quest-705a`** (or game feature branches) — Phaser platformer (`src/scenes/`, `src/objects/`).
+- **`main`** — game source; pushes deploy to https://andmarquez.github.io/venezuelan-game/
+- Feature branches: `cursor/<name>-705a`
 
 ## Services
 
