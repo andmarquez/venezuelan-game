@@ -59,7 +59,7 @@ export const END_SCREEN = {
     ctaTextSize: 22,
     ctaLabel: 'Play Again',
     /** Nudge cover-fit art down (design px) so top title isn't cropped on phones. */
-    artShiftY: 56,
+    artShiftY: 72,
   },
 } as const;
 
