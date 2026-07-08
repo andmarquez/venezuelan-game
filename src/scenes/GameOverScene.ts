@@ -2,10 +2,8 @@ import Phaser from 'phaser';
 import {
   END_SCREEN,
   addCtaButton,
-  addViewportBackground,
   addStatsPill,
-  fitImageToSize,
-  getCoverScreenLayout,
+  layoutCoverScreenBackground,
   scalePx,
 } from '../ui/endScreenLayout';
 
@@ -18,7 +16,7 @@ const REASON_COPY: Record<GameOverReason, string> = {
 };
 
 /**
- * GameOverScene — Figma M03 layout with dynamic stats + reason.
+ * GameOverScene — full-frame Figma M03 art + dynamic reason, stats, and CTA.
  */
 export class GameOverScene extends Phaser.Scene {
   private reason: GameOverReason = 'lives';
@@ -48,12 +46,11 @@ export class GameOverScene extends Phaser.Scene {
     this.children.removeAll(true);
 
     const base = END_SCREEN.gameOver;
-    const layout = getCoverScreenLayout(this);
-    const { cx, mapY, mapX, vp } = layout;
+    const layout = layoutCoverScreenBackground(this, 'screen-game-over-screen');
+    const { cx, mapY } = layout;
     const px = (n: number) => scalePx(layout, n);
 
     this.cameras.main.setBackgroundColor('#fce4ec');
-    addViewportBackground(this, base.bg, vp);
 
     this.add
       .text(cx, mapY(base.reasonY), REASON_COPY[this.reason], {
@@ -63,13 +60,7 @@ export class GameOverScene extends Phaser.Scene {
       })
       .setOrigin(0.5)
       .setScrollFactor(0)
-      .setDepth(10);
-
-    const title = this.add
-      .image(cx, mapY(base.titleY), 'screen-game-over-title')
-      .setScrollFactor(0)
-      .setDepth(11);
-    fitImageToSize(title, px(base.titleMaxW), px(338));
+      .setDepth(20);
 
     addStatsPill(
       this,
@@ -84,18 +75,6 @@ export class GameOverScene extends Phaser.Scene {
         statsTextSize: px(base.statsTextSize),
       },
     );
-
-    const character = this.add
-      .image(cx, mapY(base.characterY), 'screen-game-over-character')
-      .setScrollFactor(0)
-      .setDepth(12);
-    fitImageToSize(character, px(base.characterW), px(base.characterH));
-
-    const platform = this.add
-      .image(mapX(627), mapY(base.platformY), 'screen-game-over-platform')
-      .setScrollFactor(0)
-      .setDepth(11);
-    fitImageToSize(platform, px(base.platformW), px(base.platformH));
 
     const ctaY = mapY(base.ctaY);
     const restart = () => this.scene.start('GameScene');

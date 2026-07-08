@@ -9,30 +9,55 @@ const ROTATE_PROMPT_SCENES = new Set([
   'WinScene',
 ]);
 
-/** Centered HTML overlay — does not touch Phaser scale or screen layouts. */
-export function mountRotatePrompt(game: Phaser.Game): void {
+let promptGame: Phaser.Game | null = null;
+
+function shouldShowRotatePrompt(): boolean {
+  const el = document.getElementById('rotate-prompt');
+  if (!el) return false;
+
+  const portrait = isMobileViewport() && !isLandscapeViewport();
+  if (!portrait) return false;
+
+  // Before Phaser finishes booting, default to showing on portrait mobile (splash/boot).
+  if (!promptGame?.isBooted) return true;
+
+  for (const key of ROTATE_PROMPT_SCENES) {
+    if (promptGame.scene.isActive(key)) return true;
+  }
+  return false;
+}
+
+function updateRotatePrompt(): void {
   const el = document.getElementById('rotate-prompt');
   if (!el) return;
+  el.hidden = !shouldShowRotatePrompt();
+}
 
-  const update = (): void => {
-    const portrait = isMobileViewport() && !isLandscapeViewport();
-    const onRotatePromptScene = game.scene
-      .getScenes(true)
-      .some((scene) => ROTATE_PROMPT_SCENES.has(scene.scene.key));
-    el.hidden = !(portrait && onRotatePromptScene);
-  };
+/** Run before Phaser boots so portrait splash shows immediately and reliably. */
+export function bootstrapRotatePrompt(): void {
+  onViewportChange(updateRotatePrompt);
+  for (const ms of [0, 50, 150, 300, 600, 1000, 2000]) {
+    window.setTimeout(updateRotatePrompt, ms);
+  }
+  updateRotatePrompt();
+}
 
-  onViewportChange(update);
+/** Wire Phaser scene transitions after the game is ready. */
+export function mountRotatePrompt(game: Phaser.Game): void {
+  promptGame = game;
+
   const bindScene = (scene: Phaser.Scene): void => {
-    scene.events.on(Phaser.Scenes.Events.START, update);
-    scene.events.on(Phaser.Scenes.Events.WAKE, update);
+    scene.events.on(Phaser.Scenes.Events.START, updateRotatePrompt);
+    scene.events.on(Phaser.Scenes.Events.WAKE, updateRotatePrompt);
   };
+
   game.scene.getScenes(false).forEach(bindScene);
   game.events.on(Phaser.Scenes.Events.CREATE, (scene: Phaser.Scene) => {
     bindScene(scene);
-    update();
+    updateRotatePrompt();
   });
-  game.events.on(Phaser.Scenes.Events.START, update);
-  game.events.once('ready', update);
-  update();
+  game.events.on(Phaser.Scenes.Events.START, updateRotatePrompt);
+  game.scale.on(Phaser.Scale.Events.RESIZE, updateRotatePrompt);
+  game.events.once('ready', updateRotatePrompt);
+  updateRotatePrompt();
 }

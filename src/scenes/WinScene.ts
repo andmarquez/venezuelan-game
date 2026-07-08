@@ -3,14 +3,12 @@ import {
   END_SCREEN,
   addCtaButton,
   addStatsPill,
-  addViewportWinGradient,
-  fitImageToSize,
-  getCoverScreenLayout,
+  layoutCoverScreenBackground,
   scalePx,
 } from '../ui/endScreenLayout';
 
 /**
- * WinScene — Figma M04 layout with confetti + dynamic stats.
+ * WinScene — full-frame Figma M04 art + dynamic stats and CTA.
  */
 export class WinScene extends Phaser.Scene {
   private score = 0;
@@ -38,15 +36,14 @@ export class WinScene extends Phaser.Scene {
     this.children.removeAll(true);
 
     const base = END_SCREEN.win;
-    const layout = getCoverScreenLayout(this);
-    const { cx, mapY, mapX, vp } = layout;
+    const layout = layoutCoverScreenBackground(this, 'screen-win-screen');
+    const { cx, mapY, vp } = layout;
     const px = (n: number) => scalePx(layout, n);
 
     this.cameras.main.setBackgroundColor('#fff5dc');
-    addViewportWinGradient(this, vp);
 
-    const emitter = this.add.particles(cx, layout.vp.y, 'particle', {
-      x: { min: -layout.vp.width / 2, max: layout.vp.width / 2 },
+    const emitter = this.add.particles(cx, vp.y, 'particle', {
+      x: { min: -vp.width / 2, max: vp.width / 2 },
       speed: { min: 80, max: 200 },
       angle: { min: 60, max: 120 },
       scale: { start: 0.5, end: 0 },
@@ -56,18 +53,6 @@ export class WinScene extends Phaser.Scene {
     });
     emitter.setScrollFactor(0).setDepth(5);
     this.time.delayedCall(8000, () => emitter.stop());
-
-    const title = this.add
-      .image(cx, mapY(base.titleY), 'screen-win-title')
-      .setScrollFactor(0)
-      .setDepth(10);
-    fitImageToSize(title, px(base.titleMaxW), px(338));
-
-    const character = this.add
-      .image(mapX(base.characterX), mapY(base.characterY), 'screen-win-character')
-      .setScrollFactor(0)
-      .setDepth(12);
-    fitImageToSize(character, px(base.characterW), px(base.characterH));
 
     addStatsPill(
       this,

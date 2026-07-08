@@ -5,7 +5,7 @@ import { GameScene } from './scenes/GameScene';
 import { GameOverScene } from './scenes/GameOverScene';
 import { WinScene } from './scenes/WinScene';
 import { GAME_CONFIG } from './config/gameConfig';
-import { mountRotatePrompt } from './ui/rotatePrompt';
+import { bootstrapRotatePrompt, mountRotatePrompt } from './ui/rotatePrompt';
 import {
   getViewportSize,
   isIphone16Class,
@@ -14,6 +14,8 @@ import {
   onViewportChange,
   resolveScaleMode,
 } from './ui/viewportMetrics';
+
+bootstrapRotatePrompt();
 
 const applyViewportClasses = () => {
   const mobile = isMobileViewport();

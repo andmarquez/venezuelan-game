@@ -128,6 +128,19 @@ export function getFullScreenRect() {
   return { width: w, height: h, cx: w / 2, cy: h / 2 };
 }
 
+export function layoutCoverScreenBackground(
+  scene: Phaser.Scene,
+  textureKey: string,
+  depth = 0,
+): ScreenLayout {
+  const vp = getUiViewport(scene.scale);
+  const cx = vp.x + vp.width / 2;
+  const cy = vp.y + vp.height / 2;
+  const bg = scene.add.image(cx, cy, textureKey).setScrollFactor(0).setDepth(depth);
+  coverFitImage(bg, vp.width, vp.height);
+  return getCoverScreenLayout(scene);
+}
+
 export function coverFitImage(
   image: Phaser.GameObjects.Image,
   targetW: number,

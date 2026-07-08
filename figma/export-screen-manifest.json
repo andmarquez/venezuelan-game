@@ -1,7 +1,7 @@
 {
   "figmaFileKey": "1zlB4dA4ktyuuBXzseo1ix",
   "figmaFileUrl": "https://www.figma.com/design/1zlB4dA4ktyuuBXzseo1ix",
-  "syncedAt": "2026-07-08T02:37:00.000Z",
+  "syncedAt": "2026-07-08T15:20:00.000Z",
   "screens": {
     "menu-start": {
       "figmaNodeId": "150:117",
@@ -9,35 +9,17 @@
       "export": "https://www.figma.com/api/mcp/asset/a00e4a61-63b5-4bed-b0ae-a199e400b407",
       "dest": "public/assets/ui/screens/menu-start.png"
     },
-    "game-over-title": {
-      "figmaNodeId": "150:95",
-      "figmaName": "Game Over title",
-      "export": "https://www.figma.com/api/mcp/asset/0f354e60-d878-47a0-9529-d1d5ec9fbec9",
-      "dest": "public/assets/ui/screens/game-over-title.png"
+    "game-over-screen": {
+      "figmaNodeId": "150:94",
+      "figmaName": "M03 — Game Over",
+      "export": "https://www.figma.com/api/mcp/asset/6aa6997c-2f37-4313-9a22-56ef710c0a3e",
+      "dest": "public/assets/ui/screens/game-over-screen.png"
     },
-    "game-over-character": {
-      "figmaNodeId": "150:102",
-      "figmaName": "Andsiosa — Hurt",
-      "export": "https://www.figma.com/api/mcp/asset/aa06470e-8c8f-40d0-af9f-cba29ebb72b9",
-      "dest": "public/assets/ui/screens/game-over-character.png"
-    },
-    "game-over-platform": {
-      "figmaNodeId": "150:101",
-      "figmaName": "World platform",
-      "export": "https://www.figma.com/api/mcp/asset/87c701aa-231c-46eb-8efe-7c34b825cefd",
-      "dest": "public/assets/ui/screens/game-over-platform.png"
-    },
-    "win-title": {
-      "figmaNodeId": "150:23",
-      "figmaName": "You Did It! title",
-      "export": "https://www.figma.com/api/mcp/asset/b22c203b-e228-4676-8eeb-c4199925465b",
-      "dest": "public/assets/ui/screens/win-title.png"
-    },
-    "win-character": {
-      "figmaNodeId": "150:26",
-      "figmaName": "Andsiosa — Victory",
-      "export": "https://www.figma.com/api/mcp/asset/80f75258-7d72-4385-a2de-bdfec26b36ca",
-      "dest": "public/assets/ui/screens/win-character.png"
+    "win-screen": {
+      "figmaNodeId": "150:2",
+      "figmaName": "M04 — Win",
+      "export": "https://www.figma.com/api/mcp/asset/932a4ee2-48d5-42f2-b280-01f21afe5c77",
+      "dest": "public/assets/ui/screens/win-screen.png"
     }
   },
   "splash": {

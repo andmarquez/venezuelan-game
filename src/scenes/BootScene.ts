@@ -36,11 +36,8 @@ export class BootScene extends Phaser.Scene {
     const sv = GAME_CONFIG.screenAssetVersion;
     const screenAssets = [
       'menu-start',
-      'game-over-title',
-      'game-over-character',
-      'game-over-platform',
-      'win-title',
-      'win-character',
+      'game-over-screen',
+      'win-screen',
     ] as const;
     screenAssets.forEach((key) => {
       this.load.image(`screen-${key}`, assetUrl(`assets/ui/screens/${key}.png`, sv));
@@ -82,11 +79,8 @@ export class BootScene extends Phaser.Scene {
   private applyScreenTextureFilters(): void {
     for (const key of [
       'screen-menu-start',
-      'screen-game-over-title',
-      'screen-game-over-character',
-      'screen-game-over-platform',
-      'screen-win-title',
-      'screen-win-character',
+      'screen-game-over-screen',
+      'screen-win-screen',
     ]) {
       if (this.textures.exists(key)) {
         this.textures.get(key).setFilter(Phaser.Textures.FilterMode.LINEAR);
