@@ -1,4 +1,6 @@
 import Phaser from 'phaser';
+import { GAME_CONFIG } from '../config/gameConfig';
+import { assetUrl } from '../utils/assetUrl';
 import { isLandscapeViewport, isMobileViewport, onViewportChange } from './viewportMetrics';
 
 const ROTATE_PROMPT_SCENES = new Set([
@@ -10,6 +12,12 @@ const ROTATE_PROMPT_SCENES = new Set([
 ]);
 
 let promptGame: Phaser.Game | null = null;
+
+function applyRotateIconSrc(): void {
+  const img = document.querySelector<HTMLImageElement>('#rotate-prompt .rotate-prompt__icon');
+  if (!img) return;
+  img.src = assetUrl('assets/ui/rotate-icon.png', GAME_CONFIG.screenAssetVersion);
+}
 
 function shouldShowRotatePrompt(): boolean {
   const el = document.getElementById('rotate-prompt');
@@ -35,6 +43,7 @@ function updateRotatePrompt(): void {
 
 /** Run before Phaser boots so portrait splash shows immediately and reliably. */
 export function bootstrapRotatePrompt(): void {
+  applyRotateIconSrc();
   onViewportChange(updateRotatePrompt);
   for (const ms of [0, 50, 150, 300, 600, 1000, 2000]) {
     window.setTimeout(updateRotatePrompt, ms);

@@ -20,6 +20,12 @@
       "figmaName": "M04 — Win",
       "export": "https://www.figma.com/api/mcp/asset/bb6cb926-f219-48b6-a7fb-ec605fc23cb5",
       "dest": "public/assets/ui/screens/win-screen.png"
+    },
+    "rotate-icon": {
+      "figmaNodeId": "160:4",
+      "figmaName": "M05 — Rotate Icon",
+      "export": "https://www.figma.com/api/mcp/asset/91cb1abc-f5ac-4561-acee-ced305ae7db9",
+      "dest": "public/assets/ui/rotate-icon.png"
     }
   },
   "splash": {

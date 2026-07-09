@@ -97,8 +97,9 @@
       }
 
       .rotate-prompt__icon {
-        font-size: clamp(3rem, 14vw, 4.5rem);
-        line-height: 1;
+        width: clamp(5rem, 28vw, 7rem);
+        height: clamp(5rem, 28vw, 7rem);
+        object-fit: contain;
       }
 
       #desktop-prompt {
@@ -173,7 +174,7 @@
     <div id="game-container"></div>
     <div id="rotate-prompt" hidden>
       <div class="rotate-prompt__inner">
-        <span class="rotate-prompt__icon" aria-hidden="true">↻</span>
+        <img class="rotate-prompt__icon" alt="" aria-hidden="true" width="112" height="112" />
         <p>Rotate your phone<br />to play</p>
       </div>
     </div>
