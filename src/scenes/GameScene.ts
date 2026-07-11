@@ -695,7 +695,7 @@ export class GameScene extends Phaser.Scene {
     });
 
     this.enemies.forEach((e) => e.update());
-    this.finalBoss?.update();
+    this.finalBoss?.update(_time, delta);
     this.checkKissBossHits();
 
     this.player.setDepth(depthFromFootY(this.player.y, WORLD_LAYERS.player));

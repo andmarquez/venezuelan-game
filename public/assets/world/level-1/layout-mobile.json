@@ -150,7 +150,7 @@
     {
       "name": "platform_06",
       "x": 4089,
-      "y": 609,
+      "y": 675,
       "width": 541,
       "height": 68,
       "type": "platform"
@@ -158,7 +158,7 @@
     {
       "name": "platform_05",
       "x": 2687,
-      "y": 626,
+      "y": 692,
       "width": 1442,
       "height": 51,
       "type": "platform"
@@ -166,9 +166,17 @@
     {
       "name": "floating_platform_08",
       "x": 4594,
-      "y": 497,
+      "y": 563,
       "width": 187,
       "height": 70,
+      "type": "platform"
+    },
+    {
+      "name": "goal_platform",
+      "x": 4630,
+      "y": 675,
+      "width": 705,
+      "height": 68,
       "type": "platform"
     }
   ],
@@ -322,7 +330,7 @@
       "key": "platform-art:platform_06",
       "path": "/assets/world/platforms/platform_06.png",
       "x": 4089,
-      "y": 609,
+      "y": 675,
       "width": 541,
       "height": 68
     },
@@ -331,7 +339,7 @@
       "key": "platform-art:platform_05",
       "path": "/assets/world/platforms/platform_05.png",
       "x": 2687,
-      "y": 626,
+      "y": 692,
       "width": 1442,
       "height": 51
     },
@@ -340,9 +348,18 @@
       "key": "platform-art:floating_platform_08",
       "path": "/assets/world/platforms/floating_platform_08.png",
       "x": 4594,
-      "y": 497,
+      "y": 563,
       "width": 187,
       "height": 70
+    },
+    {
+      "name": "goal_platform",
+      "key": "platform-art:goal_platform",
+      "path": "/assets/world/platforms/goal_platform.png",
+      "x": 4630,
+      "y": 675,
+      "width": 705,
+      "height": 68
     }
   ],
   "clouds": [],
@@ -352,7 +369,7 @@
       "y": 630
     },
     "portal_goal": {
-      "x": 5145,
+      "x": 5180,
       "y": 398,
       "size": 118
     },
@@ -517,10 +534,10 @@
       }
     ],
     "final_boss": {
-      "x": 5182,
-      "y": 468,
-      "min": 5102,
-      "max": 5262
+      "x": 5180,
+      "y": 675,
+      "min": 4680,
+      "max": 5280
     }
   }
 }

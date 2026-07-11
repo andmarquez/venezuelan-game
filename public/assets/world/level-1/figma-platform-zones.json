@@ -3,7 +3,7 @@
   "figmaFileKey": "1zlB4dA4ktyuuBXzseo1ix",
   "figmaNodeId": "95:2",
   "platformFrameY": -66,
-  "syncedAt": "2026-07-11T14:17:00.000Z",
+  "syncedAt": "2026-07-11T20:45:00.000Z",
   "zones": [
     { "name": "platform_start", "type": "platform", "x": 11, "y": 630, "width": 207, "height": 36 },
     { "name": "platform_start_1", "type": "platform", "x": 300, "y": 612, "width": 174, "height": 54 },
@@ -21,8 +21,9 @@
     { "name": "floating_platform_06", "type": "platform", "x": 4135, "y": 558, "width": 102, "height": 70 },
     { "name": "platform_04", "type": "platform", "x": 2159, "y": 639, "width": 219, "height": 38 },
     { "name": "floating_platform_07", "type": "platform", "x": 4358, "y": 538, "width": 122, "height": 31 },
-    { "name": "platform_06", "type": "platform", "x": 4089, "y": 609, "width": 541, "height": 68 },
-    { "name": "platform_05", "type": "platform", "x": 2687, "y": 626, "width": 1442, "height": 51 },
-    { "name": "floating_platform_08", "type": "platform", "x": 4594, "y": 497, "width": 187, "height": 70 }
+    { "name": "platform_06", "type": "platform", "x": 4089, "y": 675, "width": 541, "height": 68 },
+    { "name": "platform_05", "type": "platform", "x": 2687, "y": 692, "width": 1442, "height": 51 },
+    { "name": "floating_platform_08", "type": "platform", "x": 4594, "y": 563, "width": 187, "height": 70 },
+    { "name": "goal_platform", "type": "platform", "x": 4630, "y": 675, "width": 705, "height": 68 }
   ]
 }

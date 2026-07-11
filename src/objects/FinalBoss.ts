@@ -35,8 +35,8 @@ export class FinalBoss extends Phaser.Physics.Arcade.Sprite {
     this.fitDisplaySize(80 * 1.35);
     this.setImmovable(true);
     (this.body as Phaser.Physics.Arcade.Body).setAllowGravity(false);
-    this.body!.setSize(52, 56);
-    this.body!.setOffset(14, 8);
+    this.body!.setSize(56, 60);
+    this.body!.setOffset(12, 6);
 
     this.hpBar = scene.add.graphics().setDepth(40);
     this.drawHpBar();
@@ -57,11 +57,11 @@ export class FinalBoss extends Phaser.Physics.Arcade.Sprite {
 
   /** World-space center used for kiss / stomp hit tests (matches the visible sprite). */
   getHitCenter(): { x: number; y: number } {
-    return { x: this.x, y: this.y - this.displayHeight * 0.42 };
+    return { x: this.x, y: this.y - this.displayHeight * 0.45 };
   }
 
   getHitRadius(): number {
-    return Math.max(this.displayWidth, this.displayHeight) * 0.48;
+    return Math.max(this.displayWidth, this.displayHeight) * 0.55;
   }
 
   isKissHit(x: number, y: number): boolean {
@@ -72,7 +72,7 @@ export class FinalBoss extends Phaser.Physics.Arcade.Sprite {
   isStompHit(playerX: number, playerY: number, falling: boolean): boolean {
     if (!falling) return false;
     const { x: cx, y: cy } = this.getHitCenter();
-    return playerY < cy + 8 && Math.abs(playerX - cx) <= this.displayWidth * 0.55;
+    return playerY < cy + 12 && Math.abs(playerX - cx) <= this.displayWidth * 0.6;
   }
 
   takeDamage(onDefeated?: () => void): boolean {
@@ -145,22 +145,28 @@ export class FinalBoss extends Phaser.Physics.Arcade.Sprite {
     this.hpBar.fillRoundedRect(x, y, barW * pct, barH, 3);
   }
 
-  update(): void {
+  update(_time: number, delta: number): void {
     if (this.defeated) return;
-    (this.body as Phaser.Physics.Arcade.Body)?.updateFromGameObject();
-    this.setVelocityX(this.direction * GAME_CONFIG.finalBossSpeed);
-    this.drawHpBar();
+
+    const step = (GAME_CONFIG.finalBossSpeed * delta) / 1000;
+    this.x += this.direction * step;
 
     if (this.x <= this.patrolMin) {
+      this.x = this.patrolMin;
       this.direction = 1;
       this.setFlipX(false);
     } else if (this.x >= this.patrolMax) {
+      this.x = this.patrolMax;
       this.direction = -1;
       this.setFlipX(true);
     }
+
+    (this.body as Phaser.Physics.Arcade.Body).updateFromGameObject();
+    this.drawHpBar();
   }
 
   destroy(fromScene?: boolean): void {
+    this.bobTween?.stop();
     this.hpBar?.destroy();
     super.destroy(fromScene);
   }
