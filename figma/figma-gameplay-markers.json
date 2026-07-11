@@ -1,7 +1,7 @@
 {
   "source": "Figma M02 — Gameplay (Level 1) node 13:2",
   "figmaFileKey": "1zlB4dA4ktyuuBXzseo1ix",
-  "syncedAt": "2026-07-11T20:45:00.000Z",
+  "syncedAt": "2026-07-11T17:04:00.000Z",
   "kisses": [
     { "x": 194, "y": 580 },
     { "x": 375, "y": 561 },
@@ -44,11 +44,11 @@
     { "x": 2873, "y": 571, "min": 2707, "max": 4089 },
     { "x": 4217, "y": 532, "min": 4109, "max": 4590 }
   ],
-  "portal_goal": { "x": 5180, "y": 398, "size": 118 },
+  "portal_goal": { "x": 5145, "y": 398, "size": 118 },
   "final_boss": {
-    "x": 5180,
-    "y": 675,
-    "min": 4680,
-    "max": 5280
+    "x": 5182,
+    "y": 468,
+    "min": 5102,
+    "max": 5262
   }
 }
