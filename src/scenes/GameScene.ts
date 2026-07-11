@@ -194,7 +194,7 @@ export class GameScene extends Phaser.Scene {
 
     this.collectibles.forEach((item) => {
       this.physics.add.overlap(this.player, item, () => {
-        if (!item.active) return;
+        if (item.isCollected() || !item.active) return;
         this.handleCollectible(item);
       });
     });
@@ -348,7 +348,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private handleCollectible(item: Collectible): void {
-    if (!item.active || this.gameEnded) return;
+    if (item.isCollected() || !item.active || this.gameEnded) return;
 
     if (item.collectibleType === 'kiss') {
       this.stats.kisses += 1;
@@ -373,6 +373,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     item.collectEffect();
+    this.collectibles = this.collectibles.filter((c) => c !== item);
     this.updateHUD();
   }
 

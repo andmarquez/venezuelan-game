@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_CONFIG } from '../config/gameConfig';
 import { assetUrl } from '../utils/assetUrl';
+import { WORLD_LAYERS } from '../world/layerConfig';
 
 export type CollectibleType = 'kiss' | 'timer' | 'spark';
 
@@ -10,6 +11,7 @@ const COLLECTIBLE_FILES: Record<CollectibleType, string> = {
   spark: 'magic-power.gif',
 };
 
+/** Display size in world pixels — marker (x,y) is the icon center on the map. */
 const COLLECTIBLE_SIZE: Record<CollectibleType, number> = {
   kiss: 48,
   timer: 48,
@@ -17,10 +19,13 @@ const COLLECTIBLE_SIZE: Record<CollectibleType, number> = {
 };
 
 /**
- * World collectible — animated GIF from Figma (DOM layer) + arcade hitbox.
+ * Map collectible — invisible physics sprite at Figma marker center + animated GIF DOM overlay.
  */
-export class Collectible extends Phaser.GameObjects.Container {
+export class Collectible extends Phaser.Physics.Arcade.Sprite {
   readonly collectibleType: CollectibleType;
+  private collected = false;
+  private domVisual?: Phaser.GameObjects.DOMElement;
+  private readonly displaySize: number;
 
   constructor(
     scene: Phaser.Scene,
@@ -28,27 +33,32 @@ export class Collectible extends Phaser.GameObjects.Container {
     y: number,
     type: CollectibleType,
   ) {
-    super(scene, x, y);
+    super(scene, x, y, 'particle');
     this.collectibleType = type;
+    this.displaySize = COLLECTIBLE_SIZE[type];
 
     scene.add.existing(this);
     scene.physics.add.existing(this);
 
-    const size = COLLECTIBLE_SIZE[type];
+    this.setOrigin(0.5, 0.5);
+    this.setAlpha(0);
+    this.setDisplaySize(4, 4);
+
     const body = this.body as Phaser.Physics.Arcade.Body;
     body.setAllowGravity(false);
-    body.setSize(size * 0.65, size * 0.65);
-    body.setOffset(-size * 0.325, -size * 0.65);
+    const hit = this.displaySize * 0.72;
+    body.setSize(hit, hit);
 
     const file = COLLECTIBLE_FILES[type];
     const src = `${assetUrl(`assets/collectibles/${file}`)}?v=${encodeURIComponent(GAME_CONFIG.collectibleAssetVersion)}`;
-    const dom = scene.add
-      .dom(0, -size * 0.5)
+    this.domVisual = scene.add
+      .dom(x, y)
       .createFromHTML(
-        `<img src="${src}" width="${size}" height="${size}" style="pointer-events:none;object-fit:contain;display:block;" alt="" />`,
+        `<img src="${src}" width="${this.displaySize}" height="${this.displaySize}" style="pointer-events:none;object-fit:contain;display:block;" alt="" />`,
       );
-    dom.setOrigin(0.5, 0.5);
-    this.add(dom);
+    this.domVisual.setOrigin(0.5, 0.5);
+    this.domVisual.setScrollFactor(1);
+    this.domVisual.setDepth(WORLD_LAYERS.collectibles);
 
     scene.tweens.add({
       targets: this,
@@ -60,8 +70,34 @@ export class Collectible extends Phaser.GameObjects.Container {
     });
   }
 
+  override preUpdate(time: number, delta: number): void {
+    super.preUpdate(time, delta);
+    if (this.domVisual?.active) {
+      this.domVisual.setPosition(this.x, this.y);
+    }
+  }
+
+  isCollected(): boolean {
+    return this.collected;
+  }
+
+  override destroy(fromScene?: boolean): void {
+    this.scene.tweens.killTweensOf(this);
+    this.domVisual?.destroy();
+    this.domVisual = undefined;
+    super.destroy(fromScene);
+  }
+
   collectEffect(): void {
-    const scene = this.scene;
+    if (this.collected) return;
+    this.collected = true;
+
+    this.scene.tweens.killTweensOf(this);
+    this.disableBody(true, true);
+    this.domVisual?.destroy();
+    this.domVisual = undefined;
+    this.setActive(false);
+    this.setVisible(false);
 
     if (this.collectibleType === 'kiss') {
       this.spawnKissParticles();
@@ -71,11 +107,11 @@ export class Collectible extends Phaser.GameObjects.Container {
       this.spawnSparkBurst();
     }
 
-    scene.tweens.add({
+    this.scene.tweens.add({
       targets: this,
       scale: 1.4,
       alpha: 0,
-      duration: 220,
+      duration: 180,
       onComplete: () => this.destroy(),
     });
   }

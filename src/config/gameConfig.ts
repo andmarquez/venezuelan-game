@@ -138,7 +138,7 @@ export const GAME_CONFIG = {
   },
 
   /** Bump after Figma collectible GIF sync */
-  collectibleAssetVersion: '20260711a',
+  collectibleAssetVersion: '20260711b',
 
   /** Colors — Andsiosa red & white identity */
   colors: {
