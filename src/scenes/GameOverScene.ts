@@ -10,17 +10,10 @@ import {
 
 export type GameOverReason = 'time' | 'lives' | 'fall';
 
-const REASON_COPY: Record<GameOverReason, string> = {
-  time: 'The deadline ran out!',
-  lives: 'Too many deadline bugs got you!',
-  fall: 'Andsiosa fell off the creative world!',
-};
-
 /**
- * GameOverScene — full-frame Figma M03 art + dynamic reason and stats; CTA baked in.
+ * GameOverScene — full-frame Figma M03 art + dynamic stats; CTA baked in.
  */
 export class GameOverScene extends Phaser.Scene {
-  private reason: GameOverReason = 'lives';
   private score = 0;
   private kisses = 0;
 
@@ -29,7 +22,6 @@ export class GameOverScene extends Phaser.Scene {
   }
 
   init(data: { reason?: GameOverReason; score?: number; kisses?: number }): void {
-    this.reason = data.reason ?? 'lives';
     this.score = data.score ?? 0;
     this.kisses = data.kisses ?? 0;
   }
@@ -53,16 +45,6 @@ export class GameOverScene extends Phaser.Scene {
     const px = (n: number) => scalePx(layout, n);
 
     this.cameras.main.setBackgroundColor('#fce4ec');
-
-    this.add
-      .text(cx, mapY(base.reasonY), REASON_COPY[this.reason], {
-        fontSize: `${px(base.reasonSize)}px`,
-        fontFamily: 'Inter, Nunito, system-ui, sans-serif',
-        color: base.reasonColor,
-      })
-      .setOrigin(0.5)
-      .setScrollFactor(0)
-      .setDepth(20);
 
     addStatsPill(
       this,

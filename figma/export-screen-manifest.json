@@ -1,7 +1,7 @@
 {
   "figmaFileKey": "1zlB4dA4ktyuuBXzseo1ix",
   "figmaFileUrl": "https://www.figma.com/design/1zlB4dA4ktyuuBXzseo1ix",
-  "syncedAt": "2026-07-11T14:32:37.067Z",
+  "syncedAt": "2026-07-11T17:53:28.550Z",
   "screens": {
     "menu-start": {
       "figmaNodeId": "150:117",
@@ -12,7 +12,7 @@
     "game-over-screen": {
       "figmaNodeId": "150:94",
       "figmaName": "M03 — Game Over",
-      "export": "https://www.figma.com/api/mcp/asset/0743eddc-3a16-41c7-87c1-1d558a7a8c31",
+      "export": "https://www.figma.com/api/mcp/asset/ad7f10b1-4177-42a4-8a09-e7ae83a0b87d",
       "dest": "public/assets/ui/screens/game-over-screen.png"
     },
     "win-screen": {
