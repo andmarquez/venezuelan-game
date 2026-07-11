@@ -385,22 +385,24 @@ export class BootScene extends Phaser.Scene {
   }
 
   private createPortalTexture(): void {
+    const size = GAME_CONFIG.portalDisplaySize;
     const g = this.make.graphics({ x: 0, y: 0 });
     const portal = GAME_CONFIG.colors.portal;
     const glow = GAME_CONFIG.colors.portalGlow;
+    const cx = size / 2;
+    const cy = size / 2;
+    const radius = size / 2 - 2;
 
-    g.fillStyle(glow, 0.4);
-    g.fillEllipse(40, 56, 72, 80);
-    g.fillStyle(portal, 0.8);
-    g.fillEllipse(40, 56, 56, 64);
-    g.fillStyle(0xffffff, 0.6);
-    g.fillEllipse(40, 50, 30, 36);
-    g.fillStyle(0xffffff, 1);
-    this.drawStar(g, 20, 20, 4, 3, 1.5);
-    this.drawStar(g, 60, 30, 4, 3, 1.5);
-    this.drawStar(g, 40, 10, 4, 2, 1);
+    g.fillStyle(glow, 0.35);
+    g.fillCircle(cx, cy, radius + 6);
+    g.fillStyle(portal, 0.55);
+    g.fillCircle(cx, cy, radius);
+    g.lineStyle(2, portal, 1);
+    g.strokeCircle(cx, cy, radius);
+    g.fillStyle(0xffffff, 0.35);
+    g.fillCircle(cx - radius * 0.22, cy - radius * 0.22, radius * 0.18);
 
-    g.generateTexture('portal', 80, 80);
+    g.generateTexture('portal', size, size);
     g.destroy();
   }
 

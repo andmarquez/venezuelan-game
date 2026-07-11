@@ -4,13 +4,16 @@
  */
 export const GAME_CONFIG = {
   /** Bump after Figma asset sync so phones bypass CDN/browser cache */
-  worldAssetVersion: '20260711d',
+  worldAssetVersion: '20260711h',
   characterAssetVersion: '20260705l',
   enemyAssetVersion: '20260705l',
   /** Bump after Figma M01/M03/M04 screen art sync */
   screenAssetVersion: '20260711e',
   /** Bump after audio asset sync */
   audioAssetVersion: '20260711g',
+
+  /** Portal goal display diameter (Figma portal_goal marker) */
+  portalDisplaySize: 118,
 
   /** In-game Andsiosa display scale (Figma art is 48×64; 1.75 ≈ 84×112 px) */
   playerDisplayScale: 1.75,
@@ -161,8 +164,8 @@ export const GAME_CONFIG = {
     kissGlow: 0xf48fb1,
     timer: 0xffd54f,
     timerGlow: 0xfff176,
-    portal: 0xce93d8,
-    portalGlow: 0xf8bbd0,
+    portal: 0xcc66e6,
+    portalGlow: 0xf2c6ff,
     enemy: 0x5d4037,
     enemyAccent: 0x8d6e63,
     bossBody: 0x4a148c,

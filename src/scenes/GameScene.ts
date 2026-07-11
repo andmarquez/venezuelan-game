@@ -6,6 +6,7 @@ import { Enemy } from '../objects/Enemy';
 import { FinalBoss } from '../objects/FinalBoss';
 import { Collectible } from '../objects/Collectible';
 import { KissProjectile } from '../objects/KissProjectile';
+import { PortalMagicEffects } from '../objects/PortalMagicEffects';
 import { MobileControls } from '../ui/MobileControls';
 import { shouldShowMobileControls } from '../ui/mobileControlUtils';
 import { isLandscapeViewport } from '../ui/scaleMode';
@@ -31,7 +32,7 @@ export class GameScene extends Phaser.Scene {
   private enemies: Enemy[] = [];
   private finalBoss?: FinalBoss;
   private collectibles: Collectible[] = [];
-  private portal!: Phaser.Physics.Arcade.Sprite;
+  private portalFx?: PortalMagicEffects;
   private mobileControls?: MobileControls;
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private keyA!: Phaser.Input.Keyboard.Key;
@@ -166,32 +167,13 @@ export class GameScene extends Phaser.Scene {
   }
 
   private createPortal(): void {
-    const { x, y } = this.levelLayout.markers.portal_goal;
-    this.portal = this.physics.add.sprite(x, y, 'portal');
-    this.portal.setImmovable(true);
-    (this.portal.body as Phaser.Physics.Arcade.Body).setAllowGravity(false);
-    this.portal.setDepth(WORLD_LAYERS.collectibles);
-    this.portal.setScale(1.2);
-    this.portal.setAlpha(0.45);
-
-    this.tweens.add({
-      targets: this.portal,
-      scale: 1.35,
-      alpha: 0.85,
-      duration: 900,
-      yoyo: true,
-      repeat: -1,
+    const marker = this.levelLayout.markers.portal_goal;
+    const size = marker.size ?? GAME_CONFIG.portalDisplaySize;
+    this.portalFx = new PortalMagicEffects(this, {
+      x: marker.x,
+      y: marker.y,
+      size,
     });
-
-    const glow = this.add.particles(x, y, 'particle', {
-      speed: { min: 10, max: 30 },
-      scale: { start: 0.4, end: 0 },
-      lifespan: 800,
-      frequency: 120,
-      tint: [GAME_CONFIG.colors.portal, GAME_CONFIG.colors.portalGlow],
-      blendMode: 'ADD',
-    });
-    glow.setDepth(5);
   }
 
   private setupCollisions(): void {
@@ -210,7 +192,7 @@ export class GameScene extends Phaser.Scene {
       });
     });
 
-    this.physics.add.overlap(this.player, this.portal, () => {
+    this.physics.add.overlap(this.player, this.portalFx!.sprite, () => {
       this.tryEnterPortal();
     });
 
@@ -271,14 +253,7 @@ export class GameScene extends Phaser.Scene {
     this.updateHUD();
     this.showFloatingMessage('Final boss defeated!');
 
-    this.tweens.add({
-      targets: this.portal,
-      alpha: 1,
-      scale: 1.35,
-      duration: 500,
-      yoyo: true,
-      repeat: 2,
-    });
+    this.portalFx?.celebrate();
   }
 
   private handleEnemyContact(enemy: Enemy): void {

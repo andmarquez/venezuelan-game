@@ -352,8 +352,9 @@
       "y": 630
     },
     "portal_goal": {
-      "x": 5182,
-      "y": 504
+      "x": 5145,
+      "y": 398,
+      "size": 118
     },
     "kiss_collectibles": [
       {
