@@ -26,8 +26,9 @@ const FILES: Record<NativeAudioKey, string> = {
   'music-game': 'assets/audio/music-game.mp3',
 };
 
-const SFX_POOL_SIZE = 4;
+const SFX_POOL_SIZE = 3;
 const sfxPools = new Map<Exclude<NativeAudioKey, 'music-game'>, HTMLAudioElement[]>();
+const sfxPoolCursor = new Map<Exclude<NativeAudioKey, 'music-game'>, number>();
 let musicEl: HTMLAudioElement | null = null;
 let unlocked = false;
 
@@ -41,6 +42,7 @@ function createAudio(key: NativeAudioKey): HTMLAudioElement {
   if (key === 'music-game') {
     el.loop = true;
   }
+  el.load();
   return el;
 }
 
@@ -58,22 +60,8 @@ export function initNativeAudio(): void {
       pool.push(createAudio(key));
     }
     sfxPools.set(key, pool);
+    sfxPoolCursor.set(key, 0);
   });
-}
-
-async function pingElement(el: HTMLAudioElement): Promise<boolean> {
-  const prev = el.volume;
-  el.volume = 0.001;
-  try {
-    await el.play();
-    el.pause();
-    el.currentTime = 0;
-    el.volume = prev;
-    return true;
-  } catch {
-    el.volume = prev;
-    return false;
-  }
 }
 
 /** Call inside a user tap handler — unlocks iOS / Safari audio output. */
@@ -81,17 +69,31 @@ export function unlockNativeAudio(): void {
   initNativeAudio();
   if (unlocked) return;
 
-  const elements: HTMLAudioElement[] = [];
-  sfxPools.forEach((pool) => elements.push(...pool));
-  if (musicEl) elements.push(musicEl);
+  const ping = sfxPools.get('sfx-select')?.[0];
+  if (!ping) {
+    unlocked = true;
+    return;
+  }
 
-  void (async () => {
-    let anyPlayed = false;
-    for (const el of elements) {
-      if (await pingElement(el)) anyPlayed = true;
-    }
-    if (anyPlayed) unlocked = true;
-  })();
+  const prev = ping.volume;
+  ping.volume = 0.01;
+  const playAttempt = ping.play();
+  if (!playAttempt) {
+    ping.volume = prev;
+    unlocked = true;
+    return;
+  }
+
+  void playAttempt
+    .then(() => {
+      ping.pause();
+      ping.currentTime = 0;
+      ping.volume = prev;
+      unlocked = true;
+    })
+    .catch(() => {
+      ping.volume = prev;
+    });
 }
 
 export function playNativeSfx(key: Exclude<NativeAudioKey, 'music-game'>, volume = 0.75): void {
@@ -99,8 +101,12 @@ export function playNativeSfx(key: Exclude<NativeAudioKey, 'music-game'>, volume
   const pool = sfxPools.get(key);
   if (!pool?.length) return;
 
-  const el = pool.find((node) => node.paused || node.ended) ?? pool[0];
+  const cursor = sfxPoolCursor.get(key) ?? 0;
+  const el = pool[cursor % pool.length];
+  sfxPoolCursor.set(key, cursor + 1);
+
   el.volume = volume;
+  if (!el.paused) el.pause();
   el.currentTime = 0;
   void el.play().catch(() => {});
 }
@@ -110,7 +116,6 @@ export function playNativeMusic(volume = 0.45): void {
   if (!musicEl) return;
   if (!musicEl.paused && !musicEl.ended) return;
   musicEl.volume = volume;
-  musicEl.currentTime = 0;
   void musicEl.play().catch(() => {});
 }
 

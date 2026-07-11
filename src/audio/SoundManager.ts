@@ -16,7 +16,8 @@ export type SfxKey = Exclude<NativeAudioKey, 'music-game'>;
 export type MusicKey = 'music-game';
 
 /**
- * Audio via native HTMLAudioElement (reliable on iOS Safari) with Phaser fallback.
+ * Low-latency audio via native HTMLAudioElement (iOS Safari).
+ * Phaser audio is not played in parallel — that caused echo / perceived lag.
  */
 export class SoundManager {
   private muted = false;
@@ -61,14 +62,9 @@ export class SoundManager {
     return this.muted;
   }
 
-  play(key: SfxKey, scene?: Phaser.Scene, config?: { volume?: number }): void {
+  play(key: SfxKey, _scene?: Phaser.Scene, config?: { volume?: number }): void {
     if (this.muted) return;
-    this.unlock(scene);
     playNativeSfx(key, config?.volume ?? 0.75);
-
-    if (scene?.cache.audio.exists(key)) {
-      scene.sound.play(key, { volume: config?.volume ?? 0.75 });
-    }
   }
 
   playMusic(_key: MusicKey, scene?: Phaser.Scene, volume = 0.45): void {
@@ -76,19 +72,13 @@ export class SoundManager {
     if (this.activeMusic && isNativeMusicPlaying()) return;
 
     this.unlock(scene);
-    this.stopMusic();
     playNativeMusic(volume);
     this.activeMusic = true;
-
-    if (scene?.cache.audio.exists('music-game')) {
-      scene.sound.play('music-game', { loop: true, volume });
-    }
   }
 
-  stopMusic(scene?: Phaser.Scene): void {
+  stopMusic(_scene?: Phaser.Scene): void {
     stopNativeMusic();
     this.activeMusic = false;
-    scene?.sound.stopByKey('music-game');
   }
 }
 
@@ -96,9 +86,10 @@ export function getSoundManager(game: Phaser.Game): SoundManager | undefined {
   return game.registry.get('soundManager') as SoundManager | undefined;
 }
 
-/** Unlock audio on first tap in each scene. */
+/** Unlock audio on the first tap in each scene. */
 export function bindSceneAudioUnlock(scene: Phaser.Scene): void {
   scene.sound.pauseOnBlur = false;
-  const unlock = () => getSoundManager(scene.game)?.unlock(scene);
-  scene.input.on('pointerdown', unlock);
+  scene.input.once('pointerdown', () => {
+    getSoundManager(scene.game)?.unlock(scene);
+  });
 }

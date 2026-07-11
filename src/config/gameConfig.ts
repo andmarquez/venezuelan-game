@@ -10,7 +10,7 @@ export const GAME_CONFIG = {
   /** Bump after Figma M01/M03/M04 screen art sync */
   screenAssetVersion: '20260711e',
   /** Bump after audio asset sync */
-  audioAssetVersion: '20260711f',
+  audioAssetVersion: '20260711g',
 
   /** In-game Andsiosa display scale (Figma art is 48×64; 1.75 ≈ 84×112 px) */
   playerDisplayScale: 1.75,
