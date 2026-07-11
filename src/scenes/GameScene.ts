@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { getSoundManager } from '../audio/SoundManager';
+import { getSoundManager, bindSceneAudioUnlock } from '../audio/SoundManager';
 import { Player } from '../objects/Player';
 import { Enemy } from '../objects/Enemy';
 import { FinalBoss } from '../objects/FinalBoss';
@@ -102,9 +102,7 @@ export class GameScene extends Phaser.Scene {
       this.cameras.main.setFollowOffset(0, GAME_CONFIG.mobileLandscapeCameraFollowOffsetY);
     }
 
-    this.input.once('pointerdown', () => {
-      getSoundManager(this.game)?.unlock(this);
-    });
+    bindSceneAudioUnlock(this);
 
     const sound = getSoundManager(this.game);
     sound?.unlock(this);

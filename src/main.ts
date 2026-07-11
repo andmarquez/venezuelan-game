@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { bindGlobalAudioUnlock, getSharedAudioContext } from './audio/sharedAudioContext';
 import { BootScene } from './scenes/BootScene';
 import { MenuScene } from './scenes/MenuScene';
 import { GameScene } from './scenes/GameScene';
@@ -46,6 +47,7 @@ if (!isMobileViewport()) {
   }
 } else {
   bootstrapRotatePrompt();
+  bindGlobalAudioUnlock();
 
   let game: Phaser.Game;
 
@@ -65,6 +67,9 @@ if (!isMobileViewport()) {
     width: GAME_CONFIG.width,
     height: GAME_CONFIG.height,
     backgroundColor: '#b8e0f5',
+    audio: {
+      context: getSharedAudioContext(),
+    },
     scale: {
       mode: resolveScaleMode(),
       autoCenter: Phaser.Scale.CENTER_BOTH,

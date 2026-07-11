@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { getSoundManager } from '../audio/SoundManager';
+import { getSoundManager, bindSceneAudioUnlock } from '../audio/SoundManager';
 import { coverFitImage } from '../ui/endScreenLayout';
 import { getUiViewport } from '../ui/viewportLayout';
 
@@ -25,9 +25,7 @@ export class MenuScene extends Phaser.Scene {
     this.game.canvas.setAttribute('tabindex', '0');
     this.game.canvas.focus({ preventScroll: true });
 
-    this.input.once('pointerdown', () => {
-      getSoundManager(this.game)?.unlock(this);
-    });
+    bindSceneAudioUnlock(this);
   }
 
   private layoutScreen = (): void => {
