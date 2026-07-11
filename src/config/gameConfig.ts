@@ -54,8 +54,8 @@ export const GAME_CONFIG = {
   startingTime: 90,
   timerBonus: 15,
 
-  /** Projects needed to win */
-  requiredProjects: 3,
+  /** Projects needed to win — fallback; actual count follows timer markers in layout JSON */
+  requiredProjects: 2,
 
   /** Score per kiss */
   kissScore: 100,

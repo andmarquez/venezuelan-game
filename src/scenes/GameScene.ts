@@ -16,7 +16,7 @@ import {
 } from '../config/gameConfig';
 import { WorldBuilder } from '../world/WorldBuilder';
 import type { LevelLayout } from '../world/worldTypes';
-import { getLevelLayoutCacheKey, shouldShowCloudZones, shouldShowPlatformZones } from '../world/layoutUtils';
+import { getLevelLayoutCacheKey, getRequiredProjects, shouldShowCloudZones, shouldShowPlatformZones } from '../world/layoutUtils';
 import { depthFromFootY, WORLD_LAYERS } from '../world/layerConfig';
 import { markerToFoot, platformStandY } from '../world/worldTypes';
 
@@ -361,7 +361,7 @@ export class GameScene extends Phaser.Scene {
       }
     } else {
       this.stats.timeRemaining += GAME_CONFIG.timerBonus;
-      if (this.stats.projectsCompleted < GAME_CONFIG.requiredProjects) {
+      if (this.stats.projectsCompleted < getRequiredProjects(this.levelLayout)) {
         this.stats.projectsCompleted += 1;
       }
       const unlockedTriple = this.player.grantTripleJump();
@@ -415,7 +415,7 @@ export class GameScene extends Phaser.Scene {
   private tryEnterPortal(): void {
     if (this.gameEnded) return;
 
-    if (this.stats.projectsCompleted < GAME_CONFIG.requiredProjects) {
+    if (this.stats.projectsCompleted < getRequiredProjects(this.levelLayout)) {
       if (!this.portalMessage) {
         this.portalMessage = this.add
           .text(this.player.x, this.player.y - 80, GAME_CONFIG.portalBlockedMessage, {
@@ -604,7 +604,7 @@ export class GameScene extends Phaser.Scene {
     }
     this.hudTexts.time.setText(`⏱ ${Math.ceil(this.stats.timeRemaining)}s`);
     this.hudTexts.projects.setText(
-      `Projects: ${this.stats.projectsCompleted}/${GAME_CONFIG.requiredProjects}`,
+      `Projects: ${this.stats.projectsCompleted}/${getRequiredProjects(this.levelLayout)}`,
     );
     this.hudTexts.lives.setText(`❤ x${this.stats.lives}`);
 

@@ -1,4 +1,6 @@
 import type Phaser from 'phaser';
+import { GAME_CONFIG } from '../config/gameConfig';
+import type { LevelLayout } from './worldTypes';
 import { shouldShowMobileControls } from '../ui/mobileControlUtils';
 
 export function isDebugMode(): boolean {
@@ -34,4 +36,10 @@ export function shouldShowCloudZones(): boolean {
 
 export function getLevelLayoutCacheKey(game: Phaser.Game): string {
   return shouldShowMobileControls(game) ? 'level-1-layout-mobile' : 'level-1-layout-desktop';
+}
+
+/** Timer prizes on the map = creative projects required to open the portal. */
+export function getRequiredProjects(layout: LevelLayout | null | undefined): number {
+  const timers = layout?.markers?.timer_collectibles?.length ?? 0;
+  return timers > 0 ? timers : GAME_CONFIG.requiredProjects;
 }
