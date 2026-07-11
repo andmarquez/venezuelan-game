@@ -137,8 +137,8 @@ export const GAME_CONFIG = {
     tripleJump: 'Triple jump unlocked!',
   },
 
-  /** Bump after Figma collectible static art fix */
-  collectibleAssetVersion: '20260711e',
+  /** Bump after transparent collectible export (no black side bars) */
+  collectibleAssetVersion: '20260711f',
 
   /** Colors — Andsiosa red & white identity */
   colors: {

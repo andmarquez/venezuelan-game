@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Sync collectible GIFs from Figma → public/assets/collectibles/
- * Builds grid PNG spritesheets (max 4096px) for Phaser world-space rendering.
+ * Builds transparent static PNGs + grid spritesheets for Phaser.
  * Manifest: figma/export-collectible-manifest.json
  */
 import { execSync } from 'node:child_process';
@@ -13,6 +13,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
 const MANIFEST_PATH = path.join(ROOT, 'figma/export-collectible-manifest.json');
 const GRID_COLS = 10;
+/** Remove Figma GIF black matte — no square padding (avoids side bars on portrait art). */
+const TRANSPARENT_FILTER = 'format=rgba,colorkey=black:0.12:0.06';
 
 async function fetchBuffer(url) {
   const res = await fetch(url, {
@@ -34,31 +36,38 @@ function countGifFrames(gifPath) {
   return frames;
 }
 
+function probeImageSize(imagePath) {
+  const out = execSync(
+    `ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=p=0 "${imagePath}"`,
+    { encoding: 'utf8' },
+  ).trim();
+  const [w, h] = out.split(',').map((n) => Number.parseInt(n, 10));
+  return { width: w, height: h };
+}
+
+function buildStaticFrame(gifPath, staticPath, displaySize) {
+  const vf = ['fps=12', `scale=-1:${displaySize}`, TRANSPARENT_FILTER].join(',');
+  execSync(`ffmpeg -y -i "${gifPath}" -vf "${vf}" -frames:v 1 -update 1 "${staticPath}"`, {
+    stdio: 'pipe',
+  });
+  return probeImageSize(staticPath);
+}
+
 function buildSpritesheet(gifPath, sheetPath, displaySize) {
   const frameCount = countGifFrames(gifPath);
   const cols = GRID_COLS;
   const rows = Math.ceil(frameCount / cols);
   const vf = [
     'fps=12',
-    `scale=${displaySize}:${displaySize}:force_original_aspect_ratio=decrease`,
-    `pad=${displaySize}:${displaySize}:(ow-iw)/2:(oh-ih)/2`,
+    `scale=-1:${displaySize}`,
+    TRANSPARENT_FILTER,
+    `pad=${displaySize}:${displaySize}:(ow-iw)/2:(oh-ih)/2:color=0x00000000`,
     `tile=${cols}x${rows}`,
   ].join(',');
   execSync(`ffmpeg -y -i "${gifPath}" -vf "${vf}" -frames:v 1 "${sheetPath}"`, {
     stdio: 'pipe',
   });
   return { frameCount, cols, rows };
-}
-
-function buildStaticFrame(gifPath, staticPath, displaySize) {
-  const vf = [
-    'fps=12',
-    `scale=${displaySize}:${displaySize}:force_original_aspect_ratio=decrease`,
-    `pad=${displaySize}:${displaySize}:(ow-iw)/2:(oh-ih)/2`,
-  ].join(',');
-  execSync(`ffmpeg -y -i "${gifPath}" -vf "${vf}" -frames:v 1 -update 1 "${staticPath}"`, {
-    stdio: 'pipe',
-  });
 }
 
 async function main() {
@@ -79,26 +88,27 @@ async function main() {
     const staticPath = path.join(ROOT, staticRel);
     fs.mkdirSync(path.dirname(sheetPath), { recursive: true });
 
+    const { width, height } = buildStaticFrame(dest, staticPath, displaySize);
     const { frameCount, cols, rows } = buildSpritesheet(dest, sheetPath, displaySize);
-    buildStaticFrame(dest, staticPath, displaySize);
 
     entry.sheet = sheetRel;
     entry.static = staticRel;
     entry.frameCount = frameCount;
-    entry.frameWidth = displaySize;
-    entry.frameHeight = displaySize;
+    entry.frameWidth = width;
+    entry.frameHeight = height;
+    entry.sheetFrameSize = displaySize;
     entry.sheetCols = cols;
     entry.sheetRows = rows;
     entry.frameRate = 12;
     console.log(
-      `spritesheet ${key} → ${sheetRel} (${frameCount} frames, ${cols}x${rows} grid @ ${displaySize}px)`,
+      `static ${key} → ${staticRel} (${width}x${height}), sheet ${frameCount} frames (${cols}x${rows})`,
     );
     ok += 1;
   }
 
   manifest.syncedAt = new Date().toISOString();
   fs.writeFileSync(MANIFEST_PATH, `${JSON.stringify(manifest, null, 2)}\n`);
-  console.log(`Done — ${ok} collectible GIF(s) + spritesheet(s). Bump collectibleAssetVersion in gameConfig.ts.`);
+  console.log(`Done — ${ok} collectible GIF(s). Bump collectibleAssetVersion in gameConfig.ts.`);
 }
 
 main().catch((err) => {
