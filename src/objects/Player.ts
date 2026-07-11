@@ -22,8 +22,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   private isHurt = false;
   private hurtTimer?: Phaser.Time.TimerEvent;
   private facingRight = true;
-  private jumpsRemaining: number = GAME_CONFIG.maxJumps;
   private maxJumpsAllowed: number = GAME_CONFIG.maxJumps;
+  private jumpsRemaining: number = GAME_CONFIG.maxJumps;
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, 'andsiosa-idle');

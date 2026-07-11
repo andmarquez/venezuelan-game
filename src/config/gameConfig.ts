@@ -32,7 +32,7 @@ export const GAME_CONFIG = {
   playerTripleJumpVelocity: -420,
   /** Total jumps before landing (2 = single + one double) */
   maxJumps: 2,
-  /** Jumps allowed after collecting a timer prize */
+  /** Jumps allowed after collecting a timer prize or magic power */
   maxJumpsWithPrize: 3,
   playerBounce: 0.1,
 
@@ -118,13 +118,27 @@ export const GAME_CONFIG = {
     abilityArc: [{ angleDeg: 225, distance: 138 }],
   },
 
-  /** Timer pickup floating messages */
+  /** Timer pickup floating messages (Figma Message / Toast) */
   timerMessages: [
-    'More time to create!',
-    'Project saved!',
-    'Deadline extended!',
+    'YUMM!',
+    'Love it',
+    'Wohoo!',
     'One more idea unlocked!',
   ],
+
+  combatMessages: {
+    stomp: 'Stomped with love!',
+    kissBlow: 'Toma!',
+  },
+
+  portalBlockedMessage: 'You are missing something',
+
+  unlockMessages: {
+    tripleJump: 'Triple jump unlocked!',
+  },
+
+  /** Bump after Figma collectible GIF sync */
+  collectibleAssetVersion: '20260711a',
 
   /** Colors — Andsiosa red & white identity */
   colors: {

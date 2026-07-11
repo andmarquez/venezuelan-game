@@ -80,6 +80,9 @@ if (!isMobileViewport()) {
       },
     },
     scene: [BootScene, MenuScene, GameScene, GameOverScene, WinScene],
+    dom: {
+      createContainer: true,
+    },
     input: {
       activePointers: 4,
     },

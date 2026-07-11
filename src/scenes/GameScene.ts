@@ -301,7 +301,11 @@ export class GameScene extends Phaser.Scene {
     this.stats.score += GAME_CONFIG.kissScore;
     this.updateHUD();
 
-    this.showFloatingMessage(fromStomp ? 'Stomped with love!' : 'Bug turned to heart!');
+    this.showFloatingMessage(
+      fromStomp
+        ? GAME_CONFIG.combatMessages.stomp
+        : GAME_CONFIG.combatMessages.kissBlow,
+    );
   }
 
   private blowKiss(): void {
@@ -363,7 +367,7 @@ export class GameScene extends Phaser.Scene {
       const unlockedTriple = this.player.grantTripleJump();
       this.showFloatingMessage(
         unlockedTriple
-          ? 'Triple jump unlocked!'
+          ? GAME_CONFIG.unlockMessages.tripleJump
           : Phaser.Utils.Array.GetRandom([...GAME_CONFIG.timerMessages]),
       );
     }
@@ -413,7 +417,7 @@ export class GameScene extends Phaser.Scene {
     if (this.stats.projectsCompleted < GAME_CONFIG.requiredProjects) {
       if (!this.portalMessage) {
         this.portalMessage = this.add
-          .text(this.player.x, this.player.y - 80, 'Collect more timers to finish your projects!', {
+          .text(this.player.x, this.player.y - 80, GAME_CONFIG.portalBlockedMessage, {
             fontSize: '18px',
             fontFamily: 'Nunito, sans-serif',
             color: '#ffffff',
