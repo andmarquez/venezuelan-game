@@ -1,7 +1,10 @@
 import Phaser from 'phaser';
 import { getSoundManager } from '../audio/SoundManager';
 import {
-  END_SCREEN,
+  getCachedGameOverLayout,
+  getGameOverTextureKey,
+} from '../ui/gameOverScreenConfig';
+import {
   addCtaHitZone,
   addStatsPill,
   layoutCoverScreenBackground,
@@ -12,6 +15,7 @@ export type GameOverReason = 'time' | 'lives' | 'fall';
 
 /**
  * GameOverScene — full-frame Figma M03 art + dynamic stats; CTA baked in.
+ * Test layout: ?gameOverTest=1  |  Preview screen: ?gameOver=1
  */
 export class GameOverScene extends Phaser.Scene {
   private score = 0;
@@ -39,12 +43,12 @@ export class GameOverScene extends Phaser.Scene {
   private buildUi = (): void => {
     this.children.removeAll(true);
 
-    const base = END_SCREEN.gameOver;
-    const layout = layoutCoverScreenBackground(this, 'screen-game-over-screen');
+    const base = getCachedGameOverLayout(this.game);
+    const layout = layoutCoverScreenBackground(this, getGameOverTextureKey());
     const { cx, mapY } = layout;
     const px = (n: number) => scalePx(layout, n);
 
-    this.cameras.main.setBackgroundColor('#fce4ec');
+    this.cameras.main.setBackgroundColor(base.bg);
 
     addStatsPill(
       this,

@@ -2,6 +2,14 @@ import Phaser from 'phaser';
 import { initNativeAudio } from '../audio/nativeAudio';
 import { SoundManager } from '../audio/SoundManager';
 import { GAME_CONFIG } from '../config/gameConfig';
+import {
+  cacheGameOverLayout,
+  getGameOverLayoutCacheKey,
+  isGameOverTestMode,
+  resolveGameOverLayout,
+  shouldPreviewGameOver,
+  type GameOverLayoutJson,
+} from '../ui/gameOverScreenConfig';
 import type { LevelLayout, WorldManifest } from '../world/worldTypes';
 import { assetUrl } from '../utils/assetUrl';
 
@@ -44,6 +52,18 @@ export class BootScene extends Phaser.Scene {
     screenAssets.forEach((key) => {
       this.load.image(`screen-${key}`, assetUrl(`assets/ui/screens/${key}.png`, sv));
     });
+    this.load.image(
+      'screen-game-over-screen-test',
+      assetUrl('assets/ui/screens/game-over-screen.test.png', sv),
+    );
+    this.load.json(
+      'game-over-layout-production',
+      assetUrl('assets/ui/screens/game-over-screen-layout.production.json', sv),
+    );
+    this.load.json(
+      'game-over-layout-test',
+      assetUrl('assets/ui/screens/game-over-screen-layout.test.json', sv),
+    );
 
     const colv = GAME_CONFIG.collectibleAssetVersion;
     const collectibleImages = [
@@ -86,6 +106,11 @@ export class BootScene extends Phaser.Scene {
         initNativeAudio();
         this.registry.set('soundManager', new SoundManager(this.game));
       }
+      this.applyGameOverLayoutConfig();
+      if (shouldPreviewGameOver()) {
+        this.scene.start('GameOverScene', { reason: 'time', score: 1200, kisses: 8 });
+        return;
+      }
       this.scene.start('MenuScene');
     });
   }
@@ -110,10 +135,18 @@ export class BootScene extends Phaser.Scene {
   }
 
   /** Smooth scaling for Figma screen art on high-DPI phones. */
+  private applyGameOverLayoutConfig(): void {
+    const variant = isGameOverTestMode() ? 'test' : 'production';
+    const raw = this.cache.json.get(getGameOverLayoutCacheKey()) as GameOverLayoutJson | null;
+    cacheGameOverLayout(this.game, resolveGameOverLayout(raw, variant));
+  }
+
+  /** Smooth scaling for Figma screen art on high-DPI phones. */
   private applyScreenTextureFilters(): void {
     for (const key of [
       'screen-menu-start',
       'screen-game-over-screen',
+      'screen-game-over-screen-test',
       'screen-win-screen',
     ]) {
       if (this.textures.exists(key)) {

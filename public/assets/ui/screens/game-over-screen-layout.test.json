@@ -1,0 +1,18 @@
+{
+  "screen": "M03 — Game Over",
+  "variant": "test",
+  "designW": 1280,
+  "designH": 720,
+  "bg": "#fce4ec",
+  "statsY": 272,
+  "statsW": 364,
+  "statsH": 55,
+  "statsBg": "#fffaa3",
+  "statsTextColor": "#3744a4",
+  "statsTextSize": 22,
+  "ctaY": 369,
+  "ctaW": 177,
+  "ctaH": 47,
+  "ctaLabel": "Try Again",
+  "_note": "Replace this file with your test JSON layout coordinates, then open ?gameOverTest=1&gameOver=1"
+}
