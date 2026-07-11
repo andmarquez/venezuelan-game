@@ -34,16 +34,38 @@ export type ResolvedGameOverLayout = {
 };
 
 const REGISTRY_KEY = 'gameOverLayout';
+const TEST_MODE_STORAGE_KEY = 'gameOverTest';
 
 function searchParams(): URLSearchParams | null {
   if (typeof window === 'undefined') return null;
   return new URLSearchParams(window.location.search);
 }
 
-/** Use test PNG + test layout JSON (`?gameOverTest=1`). */
+/** Use playful Lottie test screen (`?gameOverTest=1`, persisted on phone). */
 export function isGameOverTestMode(): boolean {
   const params = searchParams();
-  return params?.get('gameOverTest') === '1' || params?.get('gameOverTest') === 'true';
+  const param = params?.get('gameOverTest');
+  if (param === '1' || param === 'true') {
+    try {
+      localStorage.setItem(TEST_MODE_STORAGE_KEY, '1');
+    } catch {
+      /* private browsing */
+    }
+    return true;
+  }
+  if (param === '0' || param === 'false') {
+    try {
+      localStorage.removeItem(TEST_MODE_STORAGE_KEY);
+    } catch {
+      /* private browsing */
+    }
+    return false;
+  }
+  try {
+    return localStorage.getItem(TEST_MODE_STORAGE_KEY) === '1';
+  } catch {
+    return false;
+  }
 }
 
 /** Jump straight to Game Over after boot (`?gameOver=1`). */

@@ -71,8 +71,10 @@ export class GameOverScene extends Phaser.Scene {
           `Empanadas: ${this.kisses}  |  Score: ${this.score}`,
           restart,
         );
+        return;
       }
-      return;
+
+      unmountGameOverLottieOverlay();
     }
 
     unmountGameOverLottieOverlay();
