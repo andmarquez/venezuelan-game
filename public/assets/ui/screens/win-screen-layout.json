@@ -1,0 +1,12 @@
+{
+  "screen": "M04 — Win",
+  "format": "lottie",
+  "lottie": "win-screen-playful.json",
+  "designW": 1280,
+  "designH": 720,
+  "bg": "#fff5dc",
+  "ctaY": 610,
+  "ctaW": 175,
+  "ctaH": 49,
+  "ctaLabel": "Play Again"
+}
