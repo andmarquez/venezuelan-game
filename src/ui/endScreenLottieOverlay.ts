@@ -1,9 +1,19 @@
 import type { AnimationItem } from 'lottie-web';
 import lottie from 'lottie-web';
 import { GAME_CONFIG } from '../config/gameConfig';
-import type { ResolvedGameOverLayout } from './gameOverScreenConfig';
 
-const HOST_ID = 'game-over-lottie-host';
+export type EndScreenLottieLayout = {
+  bg: number;
+  ctaY: number;
+  ctaW: number;
+  ctaH: number;
+  ctaLabel: string;
+};
+
+const HOST_IDS = {
+  gameOver: 'game-over-lottie-host',
+  win: 'win-lottie-host',
+} as const;
 
 type CoverRect = {
   left: number;
@@ -13,13 +23,13 @@ type CoverRect = {
   scale: number;
 };
 
-type GameOverTestOverlay = {
+type EndScreenOverlay = {
+  hostId: string;
   root: HTMLDivElement;
   animation: AnimationItem;
-  onRestart: () => void;
 };
 
-let activeOverlay: GameOverTestOverlay | null = null;
+let activeOverlay: EndScreenOverlay | null = null;
 
 function getGameContainer(): HTMLElement | null {
   return document.getElementById('game-container');
@@ -47,12 +57,7 @@ function colorHex(value: number): string {
   return `#${value.toString(16).padStart(6, '0')}`;
 }
 
-function removeOverlay(): void {
-  if (!activeOverlay) return;
-  activeOverlay.animation.destroy();
-  activeOverlay.root.remove();
-  activeOverlay = null;
-
+function restoreCanvas(): void {
   const parent = getGameContainer();
   const canvas = parent?.querySelector('canvas');
   if (canvas instanceof HTMLCanvasElement) {
@@ -61,14 +66,25 @@ function removeOverlay(): void {
   }
 }
 
+function removeOverlay(hostId?: string): void {
+  if (!activeOverlay) return;
+  if (hostId && activeOverlay.hostId !== hostId) return;
+
+  activeOverlay.animation.destroy();
+  activeOverlay.root.remove();
+  activeOverlay = null;
+  restoreCanvas();
+}
+
 function mapDesignY(rect: CoverRect, designY: number): number {
   return rect.top + designY * rect.scale;
 }
 
-/** Official game-over Lottie overlay + invisible CTA tap target. */
-export function mountGameOverLottieOverlay(
+/** Lottie overlay + invisible CTA tap target for end screens (game over / win). */
+export function mountEndScreenLottieOverlay(
+  hostId: string,
   animationData: object,
-  layout: ResolvedGameOverLayout,
+  layout: EndScreenLottieLayout,
   onRestart: () => void,
 ): void {
   removeOverlay();
@@ -86,7 +102,7 @@ export function mountGameOverLottieOverlay(
   }
 
   const root = document.createElement('div');
-  root.id = HOST_ID;
+  root.id = hostId;
   root.style.position = 'absolute';
   root.style.inset = '0';
   root.style.pointerEvents = 'none';
@@ -143,9 +159,33 @@ export function mountGameOverLottieOverlay(
     },
   });
 
-  activeOverlay = { root, animation, onRestart };
+  activeOverlay = { hostId, root, animation };
+}
+
+export function unmountEndScreenLottieOverlay(hostId?: string): void {
+  removeOverlay(hostId);
+}
+
+export function mountGameOverLottieOverlay(
+  animationData: object,
+  layout: EndScreenLottieLayout,
+  onRestart: () => void,
+): void {
+  mountEndScreenLottieOverlay(HOST_IDS.gameOver, animationData, layout, onRestart);
 }
 
 export function unmountGameOverLottieOverlay(): void {
-  removeOverlay();
+  unmountEndScreenLottieOverlay(HOST_IDS.gameOver);
+}
+
+export function mountWinLottieOverlay(
+  animationData: object,
+  layout: EndScreenLottieLayout,
+  onRestart: () => void,
+): void {
+  mountEndScreenLottieOverlay(HOST_IDS.win, animationData, layout, onRestart);
+}
+
+export function unmountWinLottieOverlay(): void {
+  unmountEndScreenLottieOverlay(HOST_IDS.win);
 }

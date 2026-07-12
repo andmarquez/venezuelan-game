@@ -10,6 +10,14 @@ import {
   shouldPreviewGameOver,
   type GameOverLayoutJson,
 } from '../ui/gameOverScreenConfig';
+import {
+  cacheWinLayout,
+  resolveWinLayout,
+  shouldPreviewWin,
+  WIN_LAYOUT_CACHE_KEY,
+  WIN_LOTTIE_CACHE_KEY,
+  type WinLayoutJson,
+} from '../ui/winScreenConfig';
 import type { LevelLayout, WorldManifest } from '../world/worldTypes';
 import { assetUrl } from '../utils/assetUrl';
 
@@ -60,6 +68,14 @@ export class BootScene extends Phaser.Scene {
       GAME_OVER_LOTTIE_CACHE_KEY,
       assetUrl('assets/ui/screens/game-over-screen-playful.json', sv),
     );
+    this.load.json(
+      WIN_LAYOUT_CACHE_KEY,
+      assetUrl('assets/ui/screens/win-screen-layout.json', sv),
+    );
+    this.load.json(
+      WIN_LOTTIE_CACHE_KEY,
+      assetUrl('assets/ui/screens/win-screen-playful.json', sv),
+    );
 
     const colv = GAME_CONFIG.collectibleAssetVersion;
     const collectibleImages = [
@@ -103,8 +119,13 @@ export class BootScene extends Phaser.Scene {
         this.registry.set('soundManager', new SoundManager(this.game));
       }
       this.applyGameOverLayoutConfig();
+      this.applyWinLayoutConfig();
       if (shouldPreviewGameOver()) {
         this.scene.start('GameOverScene', { reason: 'time', score: 1200, kisses: 8 });
+        return;
+      }
+      if (shouldPreviewWin()) {
+        this.scene.start('WinScene', { score: 2400, kisses: 12 });
         return;
       }
       this.scene.start('MenuScene');
@@ -134,6 +155,11 @@ export class BootScene extends Phaser.Scene {
   private applyGameOverLayoutConfig(): void {
     const raw = this.cache.json.get(GAME_OVER_LAYOUT_CACHE_KEY) as GameOverLayoutJson | null;
     cacheGameOverLayout(this.game, resolveGameOverLayout(raw));
+  }
+
+  private applyWinLayoutConfig(): void {
+    const raw = this.cache.json.get(WIN_LAYOUT_CACHE_KEY) as WinLayoutJson | null;
+    cacheWinLayout(this.game, resolveWinLayout(raw));
   }
 
   /** Smooth scaling for Figma screen art on high-DPI phones. */
