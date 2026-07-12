@@ -83,8 +83,8 @@ export class Collectible extends Phaser.Physics.Arcade.Sprite {
     });
   }
 
-  override preUpdate(): void {
-    super.preUpdate();
+  override preUpdate(time: number, delta: number): void {
+    super.preUpdate(time, delta);
     if (this.glowFx) {
       this.glowFx.setPosition(this.x, this.y);
       this.glowFx.setDepth(this.depth - 1);
