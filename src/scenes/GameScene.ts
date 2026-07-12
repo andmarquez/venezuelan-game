@@ -144,10 +144,10 @@ export class GameScene extends Phaser.Scene {
       timer.setDepth(WORLD_LAYERS.collectibles);
       this.collectibles.push(timer);
     });
-    (this.levelLayout.markers.boss_spark_collectibles ?? []).forEach(({ x, y }) => {
-      const spark = new Collectible(this, x, y, 'spark');
-      spark.setDepth(WORLD_LAYERS.collectibles);
-      this.collectibles.push(spark);
+    (this.levelLayout.markers.virgen_collectibles ?? []).forEach(({ x, y }) => {
+      const virgen = new Collectible(this, x, y, 'virgen');
+      virgen.setDepth(WORLD_LAYERS.collectibles);
+      this.collectibles.push(virgen);
     });
   }
 
@@ -218,13 +218,13 @@ export class GameScene extends Phaser.Scene {
     const falling = playerBody.velocity.y > 0;
     const stomping = this.finalBoss.isStompHit(this.player.x, this.player.y, falling);
 
-    if (stomping && this.stats.hasBossSpark) {
+    if (stomping && this.stats.hasVirgenBlessing) {
       this.damageBoss(true);
       return;
     }
 
-    if (stomping && !this.stats.hasBossSpark) {
-      this.showFloatingMessage('Grab the Creative Spark first!');
+    if (stomping && !this.stats.hasVirgenBlessing) {
+      this.showFloatingMessage(GAME_CONFIG.blessingMessages.goGetBlessing);
       return;
     }
 
@@ -245,7 +245,7 @@ export class GameScene extends Phaser.Scene {
     });
 
     if (!defeated) {
-      this.showFloatingMessage(fromStomp ? 'Boss hit!' : 'Spark kiss lands!');
+      this.showFloatingMessage(fromStomp ? 'Boss hit!' : 'Blessed kiss lands!');
     }
   }
 
@@ -337,8 +337,8 @@ export class GameScene extends Phaser.Scene {
 
   private handleKissBossHit(proj: KissProjectile): void {
     proj.markBossHit();
-    if (!this.stats.hasBossSpark) {
-      this.showFloatingMessage('Find the Creative Spark!');
+    if (!this.stats.hasVirgenBlessing) {
+      this.showFloatingMessage(GAME_CONFIG.blessingMessages.goGetBlessing);
       proj.destroy();
       this.kissProjectiles = this.kissProjectiles.filter((p) => p !== proj);
       return;
@@ -356,12 +356,12 @@ export class GameScene extends Phaser.Scene {
       this.stats.kisses += 1;
       this.stats.score += GAME_CONFIG.kissScore;
       getSoundManager(this.game)?.play('sfx-collect', this);
-    } else if (item.collectibleType === 'spark') {
-      if (!this.stats.hasBossSpark) {
-        this.stats.hasBossSpark = true;
-        this.stats.score += GAME_CONFIG.bossSparkScore;
+    } else if (item.collectibleType === 'virgen') {
+      if (!this.stats.hasVirgenBlessing) {
+        this.stats.hasVirgenBlessing = true;
+        this.stats.score += GAME_CONFIG.virgenBlessingScore;
         getSoundManager(this.game)?.play('sfx-spark', this);
-        this.showFloatingMessage('Creative Spark acquired!');
+        this.showFloatingMessage(GAME_CONFIG.blessingMessages.blessed);
       }
     } else {
       this.stats.timeRemaining += GAME_CONFIG.timerBonus;
@@ -452,9 +452,9 @@ export class GameScene extends Phaser.Scene {
           .text(
             this.player.x,
             this.player.y - 80,
-            this.stats.hasBossSpark
-              ? 'Defeat the final boss to open the portal!'
-              : 'Collect the Creative Spark and defeat the boss!',
+            this.stats.hasVirgenBlessing
+              ? GAME_CONFIG.blessingMessages.defeatBoss
+              : GAME_CONFIG.blessingMessages.needBlessingForBoss,
             {
               fontSize: '18px',
               fontFamily: 'Nunito, sans-serif',
@@ -605,8 +605,8 @@ export class GameScene extends Phaser.Scene {
   private updateHUD(): void {
     const isMobile = shouldShowMobileControls(this.game);
     if (isMobile) {
-      const spark = this.stats.hasBossSpark ? ' ✦' : '';
-      this.hudTexts.kisses.setText(`♥ ${this.stats.kisses}${spark}`);
+      const blessing = this.stats.hasVirgenBlessing ? ' ✧' : '';
+      this.hudTexts.kisses.setText(`♥ ${this.stats.kisses}${blessing}`);
     } else {
       this.hudTexts.kisses.setText(`♥ ${this.stats.kisses}   Score: ${this.stats.score}`);
     }

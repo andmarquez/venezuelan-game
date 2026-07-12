@@ -65,7 +65,7 @@ export class BootScene extends Phaser.Scene {
     const collectibleImages = [
       { key: 'kiss', path: 'assets/collectibles/sheets/kiss-static.png' },
       { key: 'timer', path: 'assets/collectibles/sheets/timer-static.png' },
-      { key: 'boss-spark', path: 'assets/collectibles/sheets/magic-power-static.png' },
+      { key: 'virgen', path: 'assets/collectibles/sheets/virgen-static.png' },
     ] as const;
     collectibleImages.forEach(({ key, path }) => {
       this.load.image(key, assetUrl(path, colv));
@@ -151,7 +151,7 @@ export class BootScene extends Phaser.Scene {
 
   /** Smooth scaling for Figma collectible art on high-DPI phones. */
   private applyCollectibleTextureFilters(): void {
-    for (const key of ['kiss', 'timer', 'boss-spark']) {
+    for (const key of ['kiss', 'timer', 'virgen']) {
       if (this.textures.exists(key)) {
         this.textures.get(key).setFilter(Phaser.Textures.FilterMode.LINEAR);
       }
@@ -218,7 +218,7 @@ export class BootScene extends Phaser.Scene {
     this.createEnemyTexture();
     this.createFinalBossTexture();
     this.createKissTexture();
-    this.createBossSparkTexture();
+    this.createVirgenTexture();
     this.createTimerTexture();
     this.createPortalTexture();
     this.createParticleTexture();
@@ -364,17 +364,17 @@ export class BootScene extends Phaser.Scene {
     g.destroy();
   }
 
-  /** Creative Spark — boss reward collectible */
-  private createBossSparkTexture(): void {
-    if (this.textures.exists('boss-spark')) return;
+  /** Virgen blessing sphere — required to damage the final boss */
+  private createVirgenTexture(): void {
+    if (this.textures.exists('virgen')) return;
     const g = this.make.graphics({ x: 0, y: 0 });
-    g.fillStyle(GAME_CONFIG.colors.bossSparkGlow, 0.55);
+    g.fillStyle(GAME_CONFIG.colors.virgenGlow, 0.55);
     g.fillCircle(18, 18, 16);
-    g.fillStyle(GAME_CONFIG.colors.bossSpark, 1);
-    this.drawStar(g, 18, 18, 5, 12, 5);
-    g.fillStyle(0xffffff, 0.9);
-    this.drawStar(g, 18, 18, 5, 5, 2);
-    g.generateTexture('boss-spark', 36, 36);
+    g.fillStyle(GAME_CONFIG.colors.virgen, 1);
+    g.fillCircle(18, 18, 12);
+    g.fillStyle(0xffffff, 0.85);
+    g.fillCircle(14, 14, 3);
+    g.generateTexture('virgen', 36, 36);
     g.destroy();
   }
 

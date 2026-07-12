@@ -124,6 +124,30 @@
       "type": "platform"
     },
     {
+      "name": "floating_platform_05c",
+      "x": 3187,
+      "y": 388,
+      "width": 120,
+      "height": 32,
+      "type": "platform"
+    },
+    {
+      "name": "floating_platform_05d",
+      "x": 3483,
+      "y": 328,
+      "width": 120,
+      "height": 32,
+      "type": "platform"
+    },
+    {
+      "name": "floating_platform_05e",
+      "x": 3792,
+      "y": 388,
+      "width": 120,
+      "height": 32,
+      "type": "platform"
+    },
+    {
       "name": "floating_platform_06",
       "x": 4135,
       "y": 558,
@@ -287,6 +311,33 @@
       "path": "/assets/world/platforms/floating_platform_05b.png",
       "x": 2500,
       "y": 523,
+      "width": 120,
+      "height": 32
+    },
+    {
+      "name": "floating_platform_05c",
+      "key": "platform-art:floating_platform_05c",
+      "path": "/assets/world/platforms/floating_platform_05c.png",
+      "x": 3187,
+      "y": 388,
+      "width": 120,
+      "height": 32
+    },
+    {
+      "name": "floating_platform_05d",
+      "key": "platform-art:floating_platform_05d",
+      "path": "/assets/world/platforms/floating_platform_05d.png",
+      "x": 3483,
+      "y": 328,
+      "width": 120,
+      "height": 32
+    },
+    {
+      "name": "floating_platform_05e",
+      "key": "platform-art:floating_platform_05e",
+      "path": "/assets/world/platforms/floating_platform_05e.png",
+      "x": 3792,
+      "y": 388,
       "width": 120,
       "height": 32
     },
@@ -484,10 +535,10 @@
         "y": 525
       }
     ],
-    "boss_spark_collectibles": [
+    "virgen_collectibles": [
       {
-        "x": 4859,
-        "y": 462
+        "x": 3850,
+        "y": 360
       }
     ],
     "enemies": [

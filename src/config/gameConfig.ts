@@ -4,7 +4,7 @@
  */
 export const GAME_CONFIG = {
   /** Bump after Figma asset sync so phones bypass CDN/browser cache */
-  worldAssetVersion: '20260711j',
+  worldAssetVersion: '20260712d',
   characterAssetVersion: '20260705l',
   enemyAssetVersion: '20260705l',
   /** Bump after Figma M01/M03/M04 screen art sync */
@@ -83,6 +83,7 @@ export const GAME_CONFIG = {
   finalBossHp: 5,
   finalBossSpeed: 55,
   bossSparkScore: 250,
+  virgenBlessingScore: 250,
 
   /** Camera follow smoothing (lower = snappier) */
   cameraLerp: 0.1,
@@ -146,12 +147,19 @@ export const GAME_CONFIG = {
 
   portalBlockedMessage: 'You are missing something',
 
+  blessingMessages: {
+    goGetBlessing: 'Go get the blessing',
+    blessed: 'You are blessed',
+    defeatBoss: 'Defeat the final boss to open the portal!',
+    needBlessingForBoss: 'Go get the blessing and defeat the boss!',
+  },
+
   unlockMessages: {
     tripleJump: 'Triple jump unlocked!',
   },
 
   /** Bump after true-transparent GIF alpha export */
-  collectibleAssetVersion: '20260711g',
+  collectibleAssetVersion: '20260712d',
 
   /** Colors — Andsiosa red & white identity */
   colors: {
@@ -178,6 +186,8 @@ export const GAME_CONFIG = {
     bossGlow: 0xf8bbd0,
     bossSpark: 0xffd54f,
     bossSparkGlow: 0xfff176,
+    virgen: 0xf5f5f5,
+    virgenGlow: 0xffffff,
     playerRed: 0xe53935,
     playerWhite: 0xffffff,
     playerHair: 0xc62828,
@@ -193,7 +203,7 @@ export type GameStats = {
   timeRemaining: number;
   projectsCompleted: number;
   lives: number;
-  hasBossSpark: boolean;
+  hasVirgenBlessing: boolean;
   bossDefeated: boolean;
 };
 
@@ -203,6 +213,6 @@ export const createInitialStats = (): GameStats => ({
   timeRemaining: GAME_CONFIG.startingTime,
   projectsCompleted: 0,
   lives: GAME_CONFIG.startingLives,
-  hasBossSpark: false,
+  hasVirgenBlessing: false,
   bossDefeated: false,
 });

@@ -60,7 +60,7 @@ export type LevelMarkers = {
   portal_goal: { x: number; y: number; size?: number };
   kiss_collectibles: { x: number; y: number }[];
   timer_collectibles: { x: number; y: number }[];
-  boss_spark_collectibles?: { x: number; y: number }[];
+  virgen_collectibles?: { x: number; y: number }[];
   enemies: EnemyMarker[];
   final_boss?: BossMarker;
 };

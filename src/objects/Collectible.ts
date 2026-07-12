@@ -2,13 +2,13 @@ import Phaser from 'phaser';
 import { GAME_CONFIG } from '../config/gameConfig';
 import { WORLD_LAYERS } from '../world/layerConfig';
 
-export type CollectibleType = 'kiss' | 'timer' | 'spark';
+export type CollectibleType = 'kiss' | 'timer' | 'virgen';
 
 /** Same texture keys as the original working kisses — Figma art replaces BootScene placeholders. */
 const COLLECTIBLE_TEXTURE: Record<CollectibleType, string> = {
   kiss: 'kiss',
   timer: 'timer',
-  spark: 'boss-spark',
+  virgen: 'virgen',
 };
 
 /**
@@ -44,19 +44,19 @@ export class Collectible extends Phaser.Physics.Arcade.Sprite {
       ease: 'Sine.easeInOut',
     });
 
-    if (type === 'timer' || type === 'spark') {
+    if (type === 'timer' || type === 'virgen') {
       scene.tweens.add({
         targets: this,
         angle: 360,
-        duration: type === 'spark' ? 3000 : 4000,
+        duration: type === 'virgen' ? 3200 : 4000,
         repeat: -1,
       });
     }
-    if (type === 'spark') {
+    if (type === 'virgen') {
       scene.tweens.add({
         targets: this,
-        scale: 1.08,
-        duration: 700,
+        scale: 1.1,
+        duration: 800,
         yoyo: true,
         repeat: -1,
         ease: 'Sine.easeInOut',
@@ -88,11 +88,9 @@ export class Collectible extends Phaser.Physics.Arcade.Sprite {
       this.spawnKissParticles();
     } else if (this.collectibleType === 'timer') {
       this.spawnTimerGlow();
+    } else if (this.collectibleType === 'virgen') {
+      this.spawnVirgenBurst();
     } else {
-      this.spawnSparkBurst();
-    }
-
-    if (!this.scene) {
       this.destroy();
       return;
     }
@@ -155,30 +153,30 @@ export class Collectible extends Phaser.Physics.Arcade.Sprite {
     });
   }
 
-  private spawnSparkBurst(): void {
+  private spawnVirgenBurst(): void {
     const emitter = this.scene.add.particles(this.x, this.y, 'particle', {
       speed: { min: 50, max: 140 },
       scale: { start: 0.9, end: 0 },
       lifespan: 550,
       quantity: 12,
-      tint: [GAME_CONFIG.colors.bossSpark, GAME_CONFIG.colors.bossSparkGlow, 0xffffff],
+      tint: [GAME_CONFIG.colors.virgenGlow, GAME_CONFIG.colors.virgen, 0xffffff],
       emitting: false,
     });
     emitter.explode(14);
     this.scene.time.delayedCall(600, () => emitter.destroy());
 
-    const star = this.scene.add.text(this.x, this.y - 10, '✦', {
+    const halo = this.scene.add.text(this.x, this.y - 10, '✧', {
       fontSize: '28px',
-      color: '#ffd54f',
+      color: '#f5f5f5',
     });
-    star.setOrigin(0.5);
+    halo.setOrigin(0.5);
     this.scene.tweens.add({
-      targets: star,
-      y: star.y - 45,
+      targets: halo,
+      y: halo.y - 45,
       alpha: 0,
       scale: 1.8,
       duration: 650,
-      onComplete: () => star.destroy(),
+      onComplete: () => halo.destroy(),
     });
   }
 }

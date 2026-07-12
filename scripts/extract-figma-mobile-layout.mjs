@@ -95,7 +95,7 @@ const layout = {
     portal_goal: markersData.portal_goal,
     kiss_collectibles: markersData.kisses,
     timer_collectibles: markersData.timer,
-    boss_spark_collectibles: markersData.spark,
+    virgen_collectibles: markersData.virgen ?? [],
     enemies: markersData.enemies,
     final_boss: markersData.final_boss,
   },
