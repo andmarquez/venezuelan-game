@@ -98,7 +98,7 @@ export function unlockNativeAudio(): void {
 
 export function playNativeSfx(
   key: Exclude<NativeAudioKey, 'music-game'>,
-  volume = GAME_CONFIG.sfxVolume,
+  volume: number = GAME_CONFIG.sfxVolume,
 ): void {
   initNativeAudio();
   const pool = sfxPools.get(key);
@@ -114,7 +114,7 @@ export function playNativeSfx(
   void el.play().catch(() => {});
 }
 
-export function playNativeMusic(volume = GAME_CONFIG.musicVolume): void {
+export function playNativeMusic(volume: number = GAME_CONFIG.musicVolume): void {
   initNativeAudio();
   if (!musicEl) return;
   if (!musicEl.paused && !musicEl.ended) return;
