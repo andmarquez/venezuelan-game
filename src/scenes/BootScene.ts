@@ -62,6 +62,7 @@ export class BootScene extends Phaser.Scene {
       GAME_OVER_LOTTIE_CACHE_KEY,
       assetUrl('assets/ui/screens/game-over-screen-playful.json', sv),
     );
+    this.load.json('menu-start-layout', assetUrl('assets/ui/screens/menu-start-layout.json', sv));
 
     const colv = GAME_CONFIG.collectibleAssetVersion;
     const collectibleImages = [
