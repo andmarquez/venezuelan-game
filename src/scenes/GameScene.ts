@@ -66,6 +66,9 @@ export class GameScene extends Phaser.Scene {
   private levelLayout!: LevelLayout;
   private toggleDebug?: () => void;
   private keyDebug!: Phaser.Input.Keyboard.Key;
+  /** Level 2: smoothed vertical look-ahead for climb / fall */
+  private climbCameraOffsetY = 0;
+  private isVerticalClimb = false;
 
   constructor() {
     super({ key: 'GameScene' });
@@ -108,21 +111,22 @@ export class GameScene extends Phaser.Scene {
     this.setupInput();
 
     const isMobile = shouldShowMobileControls(this.game);
-    const isVerticalClimb = getSelectedLevelId(this.game) === 'level-2';
+    this.isVerticalClimb = getSelectedLevelId(this.game) === 'level-2';
     const climbCam = GAME_CONFIG.verticalClimbCamera;
-    const deadzone = isVerticalClimb
+    const deadzone = this.isVerticalClimb
       ? climbCam.deadzone
       : isMobile
         ? isLandscapeViewport()
           ? { width: 200, height: 100 }
           : GAME_CONFIG.mobileCameraDeadzone
         : GAME_CONFIG.desktopCameraDeadzone;
-    const lerp = isVerticalClimb ? climbCam.lerp : GAME_CONFIG.cameraLerp;
+    const lerp = this.isVerticalClimb ? climbCam.lerp : GAME_CONFIG.cameraLerp;
     this.cameras.main.startFollow(this.player, true, lerp, lerp);
     this.cameras.main.setDeadzone(deadzone.width, deadzone.height);
-    if (isVerticalClimb) {
-      // Player sits lower; more of the climb route stays visible above.
-      this.cameras.main.setFollowOffset(0, climbCam.followOffsetY);
+    if (this.isVerticalClimb) {
+      // Start slightly looking up; update() eases toward climb / fall targets.
+      this.climbCameraOffsetY = climbCam.groundedOffsetY;
+      this.cameras.main.setFollowOffset(0, this.climbCameraOffsetY);
     } else if (isMobile && isLandscapeViewport()) {
       this.cameras.main.setFollowOffset(0, GAME_CONFIG.mobileLandscapeCameraFollowOffsetY);
     }
@@ -724,6 +728,10 @@ export class GameScene extends Phaser.Scene {
       moveAxis: touch.moveAxis,
     });
 
+    if (this.isVerticalClimb) {
+      this.updateVerticalClimbCamera();
+    }
+
     this.enemies.forEach((e) => e.update());
     this.finalBoss?.update(_time, delta);
     this.checkKissBossHits();
@@ -741,6 +749,24 @@ export class GameScene extends Phaser.Scene {
       }
       this.endGame('fall');
     }
+  }
+
+  /**
+   * Level 2: bias the camera toward the direction of travel so climb routes
+   * stay visible going up, and landing platforms stay visible coming down.
+   */
+  private updateVerticalClimbCamera(): void {
+    const cam = GAME_CONFIG.verticalClimbCamera;
+    const body = this.player.body as Phaser.Physics.Arcade.Body;
+    const vy = body.velocity.y;
+    let target: number = cam.groundedOffsetY;
+    if (vy < -40) {
+      target = cam.lookUpOffsetY;
+    } else if (vy > 80) {
+      target = cam.lookDownOffsetY;
+    }
+    this.climbCameraOffsetY += (target - this.climbCameraOffsetY) * cam.offsetLerp;
+    this.cameras.main.setFollowOffset(0, this.climbCameraOffsetY);
   }
 
   /** Blessed players are lifted to the nearest platform instead of dying from a fall. */
