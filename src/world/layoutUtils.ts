@@ -34,8 +34,23 @@ export function shouldShowCloudZones(): boolean {
   return false;
 }
 
+/** Active level id — `?level=2` (or `level-2`) selects the vertical climb map. */
+export function getSelectedLevelId(game?: Phaser.Game): string {
+  const fromRegistry = game?.registry.get('currentLevel') as string | undefined;
+  if (fromRegistry === 'level-1' || fromRegistry === 'level-2') return fromRegistry;
+
+  if (typeof window !== 'undefined') {
+    const raw = new URLSearchParams(window.location.search).get('level');
+    if (raw === '2' || raw === 'level-2') return 'level-2';
+    if (raw === '1' || raw === 'level-1') return 'level-1';
+  }
+  return 'level-1';
+}
+
 export function getLevelLayoutCacheKey(game: Phaser.Game): string {
-  return shouldShowMobileControls(game) ? 'level-1-layout-mobile' : 'level-1-layout-desktop';
+  const level = getSelectedLevelId(game);
+  const variant = shouldShowMobileControls(game) ? 'mobile' : 'desktop';
+  return `${level}-layout-${variant}`;
 }
 
 /** Timer prizes on the map = creative projects required to open the portal. */

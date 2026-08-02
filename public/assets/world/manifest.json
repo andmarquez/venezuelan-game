@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-07-11T18:07:47.144Z",
+  "generatedAt": "2026-08-02T17:44:00.000Z",
   "figmaFileKey": "1zlB4dA4ktyuuBXzseo1ix",
   "figmaFileUrl": "https://www.figma.com/design/1zlB4dA4ktyuuBXzseo1ix",
-  "version": 7,
+  "version": 8,
   "backgrounds": {
     "level-1-mobile": {
       "key": "world:level-1-background",
@@ -16,6 +16,13 @@
       "path": "/assets/world/background/level-1-desktop.png",
       "figmaNodeId": "24:447",
       "figmaName": "- 1",
+      "present": true
+    },
+    "level-2-mobile": {
+      "key": "world:level-2-background",
+      "path": "/assets/world/background/level-2-mobile.png",
+      "figmaNodeId": "190:3",
+      "figmaName": "M06 — Gameplay (Level 2 Vertical)",
       "present": true
     }
   },

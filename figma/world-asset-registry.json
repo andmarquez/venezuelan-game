@@ -1,7 +1,7 @@
 {
   "figmaFileKey": "1zlB4dA4ktyuuBXzseo1ix",
   "figmaFileUrl": "https://www.figma.com/design/1zlB4dA4ktyuuBXzseo1ix",
-  "version": 7,
+  "version": 8,
   "backgrounds": [
     {
       "assetKey": "level-1-mobile",
@@ -21,6 +21,16 @@
       "textureKey": "world:level-1-desktop-background",
       "artboard": "D02 — Gameplay",
       "artboardNodeId": "24:433"
+    },
+    {
+      "assetKey": "level-2-mobile",
+      "figmaName": "M06 — Gameplay (Level 2 Vertical)",
+      "figmaNodeId": "190:3",
+      "file": "background/level-2-mobile.png",
+      "textureKey": "world:level-2-background",
+      "artboard": "M06 — Gameplay (Level 2 Vertical)",
+      "artboardNodeId": "190:3",
+      "notes": "Vertical climb prototype. Hide Gameplay Zones + Labels before export. Displayed at 1280×4800."
     }
   ],
   "gameplayZones": {
@@ -33,6 +43,12 @@
       "nodeId": "26:2",
       "platformsFrameNodeId": "26:3",
       "markersFrameNodeId": "26:4"
+    },
+    "level2": {
+      "pageId": "190:2",
+      "artboardNodeId": "190:3",
+      "platformsFrameNodeId": "190:114",
+      "markersFrameNodeId": "190:142"
     }
   }
 }

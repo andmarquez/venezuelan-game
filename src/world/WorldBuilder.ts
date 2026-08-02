@@ -32,7 +32,7 @@ export class WorldBuilder {
     const cloudLabels: Phaser.GameObjects.Text[] = [];
     let platformDebugVisible = options.debug ?? false;
 
-    WorldBuilder.createSky(scene, layout.width);
+    WorldBuilder.createSky(scene, layout.width, layout.height);
     WorldBuilder.drawBackground(scene, layout);
     WorldBuilder.drawPlatformArt(scene, layout);
     WorldBuilder.createPlatformBodies(platforms, layout.platforms);
@@ -82,8 +82,8 @@ export class WorldBuilder {
     return { platforms, layout, toggleDebug };
   }
 
-  private static createSky(scene: Phaser.Scene, worldW: number): void {
-    const h = GAME_CONFIG.height;
+  private static createSky(scene: Phaser.Scene, worldW: number, worldH?: number): void {
+    const h = worldH ?? GAME_CONFIG.height;
     const sky = scene.add.graphics();
     sky.fillGradientStyle(
       GAME_CONFIG.colors.skyTop,

@@ -19,7 +19,13 @@ import {
 } from '../config/gameConfig';
 import { WorldBuilder } from '../world/WorldBuilder';
 import type { LevelLayout } from '../world/worldTypes';
-import { getLevelLayoutCacheKey, getRequiredProjects, shouldShowCloudZones, shouldShowPlatformZones } from '../world/layoutUtils';
+import {
+  getLevelLayoutCacheKey,
+  getRequiredProjects,
+  getSelectedLevelId,
+  shouldShowCloudZones,
+  shouldShowPlatformZones,
+} from '../world/layoutUtils';
 import { depthFromFootY, WORLD_LAYERS } from '../world/layerConfig';
 import { markerToFoot, platformStandY } from '../world/worldTypes';
 
@@ -74,11 +80,18 @@ export class GameScene extends Phaser.Scene {
 
     this.levelLayout = this.cache.json.get(getLevelLayoutCacheKey(this.game)) as LevelLayout;
     const worldW = this.levelLayout?.width ?? GAME_CONFIG.worldWidth;
+    const worldH = this.levelLayout?.height ?? GAME_CONFIG.worldHeight;
     const debug = shouldShowPlatformZones();
     const cloudZones = shouldShowCloudZones();
+    this.game.registry.set('currentLevel', getSelectedLevelId(this.game));
 
-    this.physics.world.setBounds(0, 0, worldW, GAME_CONFIG.worldHeight, true, true, true, false);
-    this.cameras.main.setBounds(0, 0, worldW, GAME_CONFIG.worldHeight);
+    // Tall vertical maps need extra climb time; Level 1 keeps the default.
+    if (getSelectedLevelId(this.game) === 'level-2') {
+      this.stats.timeRemaining = Math.max(this.stats.timeRemaining, 180);
+    }
+
+    this.physics.world.setBounds(0, 0, worldW, worldH, true, true, true, false);
+    this.cameras.main.setBounds(0, 0, worldW, worldH);
     this.cameras.main.setBackgroundColor('#b8e0f5');
 
     const world = WorldBuilder.build(this, this.levelLayout, { debug, cloudZones });
@@ -709,7 +722,8 @@ export class GameScene extends Phaser.Scene {
 
     this.player.setDepth(depthFromFootY(this.player.y, WORLD_LAYERS.player));
 
-    if (this.player.y > GAME_CONFIG.fallDeathY) {
+    const fallDeathY = (this.levelLayout?.height ?? GAME_CONFIG.worldHeight) + 50;
+    if (this.player.y > fallDeathY) {
       if (this.stats.hasVirgenBlessing) {
         if (this.time.now - this.lastFallRescueAt > 800) {
           this.lastFallRescueAt = this.time.now;

@@ -29,6 +29,8 @@ export class BootScene extends Phaser.Scene {
     this.load.json('world-manifest', assetUrl('assets/world/manifest.json', v));
     this.load.json('level-1-layout-mobile', assetUrl('assets/world/level-1/layout-mobile.json', v));
     this.load.json('level-1-layout-desktop', assetUrl('assets/world/level-1/layout-desktop.json', v));
+    this.load.json('level-2-layout-mobile', assetUrl('assets/world/level-2/layout-mobile.json', v));
+    this.load.json('level-2-layout-desktop', assetUrl('assets/world/level-2/layout-desktop.json', v));
 
     const singleFrameStates = ['idle', 'jump', 'fall', 'hurt', 'victory'] as const;
     singleFrameStates.forEach((state) => {
@@ -163,10 +165,14 @@ export class BootScene extends Phaser.Scene {
     const backgrounds = this.worldManifest?.backgrounds ?? {};
     const bgEntries = Object.values(backgrounds).filter((b) => b.present);
 
-    const mobile = this.cache.json.get('level-1-layout-mobile') as LevelLayout | null;
-    const desktop = this.cache.json.get('level-1-layout-desktop') as LevelLayout | null;
+    const layouts = [
+      this.cache.json.get('level-1-layout-mobile'),
+      this.cache.json.get('level-1-layout-desktop'),
+      this.cache.json.get('level-2-layout-mobile'),
+      this.cache.json.get('level-2-layout-desktop'),
+    ] as Array<LevelLayout | null>;
     const artByKey = new Map<string, string>();
-    for (const layout of [mobile, desktop]) {
+    for (const layout of layouts) {
       for (const art of layout?.platformArt ?? []) {
         if (!artByKey.has(art.key)) artByKey.set(art.key, art.path);
       }
