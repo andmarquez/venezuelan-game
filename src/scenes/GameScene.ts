@@ -108,14 +108,22 @@ export class GameScene extends Phaser.Scene {
     this.setupInput();
 
     const isMobile = shouldShowMobileControls(this.game);
-    const deadzone = isMobile
-      ? isLandscapeViewport()
-        ? { width: 200, height: 100 }
-        : GAME_CONFIG.mobileCameraDeadzone
-      : GAME_CONFIG.desktopCameraDeadzone;
-    this.cameras.main.startFollow(this.player, true, GAME_CONFIG.cameraLerp, GAME_CONFIG.cameraLerp);
+    const isVerticalClimb = getSelectedLevelId(this.game) === 'level-2';
+    const climbCam = GAME_CONFIG.verticalClimbCamera;
+    const deadzone = isVerticalClimb
+      ? climbCam.deadzone
+      : isMobile
+        ? isLandscapeViewport()
+          ? { width: 200, height: 100 }
+          : GAME_CONFIG.mobileCameraDeadzone
+        : GAME_CONFIG.desktopCameraDeadzone;
+    const lerp = isVerticalClimb ? climbCam.lerp : GAME_CONFIG.cameraLerp;
+    this.cameras.main.startFollow(this.player, true, lerp, lerp);
     this.cameras.main.setDeadzone(deadzone.width, deadzone.height);
-    if (isMobile && isLandscapeViewport()) {
+    if (isVerticalClimb) {
+      // Player sits lower; more of the climb route stays visible above.
+      this.cameras.main.setFollowOffset(0, climbCam.followOffsetY);
+    } else if (isMobile && isLandscapeViewport()) {
       this.cameras.main.setFollowOffset(0, GAME_CONFIG.mobileLandscapeCameraFollowOffsetY);
     }
 

@@ -110,6 +110,16 @@ export const GAME_CONFIG = {
   mobileLandscapeCameraFollowOffsetY: 48,
 
   /**
+   * Level 2 vertical climb — keep Andsiosa lower on screen so more upcoming
+   * platforms stay visible above. Negative Y = camera looks ahead upward.
+   */
+  verticalClimbCamera: {
+    deadzone: { width: 160, height: 36 },
+    followOffsetY: -160,
+    lerp: 0.14,
+  },
+
+  /**
    * Wild Rift controls — X anchors from Figma M02; Y is bottom-anchored in MobileControls.
    * Joystick left, Jump + Kiss on the right along the bottom edge.
    */
