@@ -544,24 +544,30 @@ export class GameScene extends Phaser.Scene {
     const pad = GAME_CONFIG.safePadding;
     this.hudBg = this.add.graphics().setScrollFactor(0);
 
+    // Figma HUD 13:3 — Kiss Pink labels on dark pill
     const style: Phaser.Types.GameObjects.Text.TextStyle = {
-      fontSize: '17px',
-      fontFamily: 'Nunito, sans-serif',
-      color: '#880e4f',
+      fontSize: '14px',
+      fontFamily: 'Nunito, Inter, sans-serif',
+      color: '#e91e63',
       fontStyle: 'bold',
     };
 
     const kisses = this.add.text(pad + 8, pad + 8, '', style).setScrollFactor(0);
-    const time = this.add.text(GAME_CONFIG.width / 2 - 60, pad + 8, '', style).setScrollFactor(0);
+    const time = this.add
+      .text(GAME_CONFIG.width / 2, pad + 8, '', { ...style, fontSize: '30px', fontStyle: '600' })
+      .setScrollFactor(0)
+      .setOrigin(0.5, 0.5);
     const projects = this.add
       .text(GAME_CONFIG.width / 2 + 80, pad + 8, '', style)
-      .setScrollFactor(0);
+      .setScrollFactor(0)
+      .setVisible(false);
     const lives = this.add
       .text(GAME_CONFIG.width - pad - 120, pad + 8, '', style)
       .setScrollFactor(0);
     const score = this.add
-      .text(pad + 8, pad + 30, '', { ...style, fontSize: '14px' })
-      .setScrollFactor(0);
+      .text(pad + 8, pad + 30, '', style)
+      .setScrollFactor(0)
+      .setVisible(false);
 
     this.hudTexts = { kisses, time, projects, lives, score };
     this.hud.add([this.hudBg, kisses, time, projects, lives, score]);
@@ -574,10 +580,8 @@ export class GameScene extends Phaser.Scene {
   private drawHudBackground(cx: number, cy: number, w: number, h: number): void {
     const r = Math.min(GAME_CONFIG.hudCornerRadius, h / 2);
     this.hudBg.clear();
-    this.hudBg.fillStyle(0xffffff, 0.88);
+    this.hudBg.fillStyle(GAME_CONFIG.colors.hudBg, 1);
     this.hudBg.fillRoundedRect(cx - w / 2, cy - h / 2, w, h, r);
-    this.hudBg.lineStyle(2, GAME_CONFIG.colors.uiAccent, 1);
-    this.hudBg.strokeRoundedRect(cx - w / 2, cy - h / 2, w, h, r);
   }
 
   private layoutHUD(): void {
@@ -585,76 +589,56 @@ export class GameScene extends Phaser.Scene {
     const pad = GAME_CONFIG.safePadding;
     const safe = safeAreaInsetsInGame(this.scale);
     const vp = getUiViewport(this.scale);
+    // Figma HUD 13:3 — x=16, y=106, w=1248, h=52 on 1280×720
     const topY =
       vp.y +
       safe.top +
       (isMobile ? vp.height * GAME_CONFIG.mobileHudTopRatio : 8);
-    const barH = isMobile ? 52 : 44;
+    const barH = isMobile ? GAME_CONFIG.hudBarHeight : 44;
     const barW = vp.width - pad * 2 - safe.left - safe.right;
     const barCx = vp.x + vp.width / 2;
     const barCy = topY + barH / 2;
 
     this.drawHudBackground(barCx, barCy, barW, barH);
 
-    if (isMobile) {
-      const rowY = topY + 16;
-      const innerLeft = vp.x + pad + safe.left + 8;
-      const innerRight = vp.x + vp.width - pad - safe.right - 8;
-      this.hudTexts.kisses.setPosition(innerLeft, rowY);
-      this.hudTexts.time.setPosition(vp.x + vp.width / 2, rowY).setOrigin(0.5, 0);
-      this.hudTexts.lives.setPosition(innerRight, rowY).setOrigin(1, 0);
-      this.hudTexts.projects.setVisible(false);
-      this.hudTexts.score.setVisible(false);
-      this.hudTexts.kisses.setFontSize('18px');
-      this.hudTexts.time.setFontSize('18px');
-      this.hudTexts.lives.setFontSize('18px');
-    } else {
-      const rowY = topY + 12;
-      const left = vp.x + pad + 12;
-      const right = vp.x + vp.width - pad - 12;
-      const center = vp.x + vp.width / 2;
+    // Figma insets inside the bar: left text x≈67, right text ~x=1139 of 1248
+    const innerLeft = vp.x + pad + safe.left + (isMobile ? 51 : 12);
+    const innerRight = vp.x + vp.width - pad - safe.right - (isMobile ? 51 : 12);
+    const scale = vp.width / GAME_CONFIG.width;
+    const sideSize = Math.max(12, Math.round(14 * scale));
+    const timerSize = Math.max(18, Math.round((isMobile ? 30 : 22) * scale));
 
-      this.hudTexts.kisses.setOrigin(0, 0);
-      this.hudTexts.time.setOrigin(0.5, 0);
-      this.hudTexts.projects.setOrigin(0.5, 0);
-      this.hudTexts.lives.setOrigin(1, 0);
-      this.hudTexts.projects.setVisible(true);
-      this.hudTexts.score.setVisible(false);
-
-      this.hudTexts.kisses.setPosition(left, rowY);
-      this.hudTexts.time.setPosition(center - 70, rowY);
-      this.hudTexts.projects.setPosition(center + 10, rowY);
-      this.hudTexts.lives.setPosition(right, rowY);
-      this.hudTexts.kisses.setFontSize('16px');
-      this.hudTexts.time.setFontSize('16px');
-      this.hudTexts.projects.setFontSize('16px');
-      this.hudTexts.lives.setFontSize('16px');
-    }
+    this.hudTexts.kisses.setOrigin(0, 0.5).setPosition(innerLeft, barCy).setFontSize(`${sideSize}px`);
+    this.hudTexts.time
+      .setOrigin(0.5, 0.5)
+      .setPosition(barCx, barCy)
+      .setFontSize(`${timerSize}px`);
+    this.hudTexts.lives.setOrigin(1, 0.5).setPosition(innerRight, barCy).setFontSize(`${sideSize}px`);
+    this.hudTexts.projects.setVisible(false);
+    this.hudTexts.score.setVisible(false);
   }
 
   private updateHUD(): void {
-    const isMobile = shouldShowMobileControls(this.game);
-    if (isMobile) {
-      const blessing = this.stats.hasVirgenBlessing ? ' ✧' : '';
-      this.hudTexts.kisses.setText(`♥ ${this.stats.kisses}${blessing}`);
-    } else {
-      this.hudTexts.kisses.setText(`♥ ${this.stats.kisses}   Score: ${this.stats.score}`);
-    }
-    this.hudTexts.time.setText(`⏱ ${Math.ceil(this.stats.timeRemaining)}s`);
+    const blessing = this.stats.hasVirgenBlessing ? ' ✧' : '';
+    // Figma HUD 13:4 — kisses + score on the left
+    this.hudTexts.kisses.setText(
+      `♥ ${this.stats.kisses}${blessing}   Score: ${this.stats.score}`,
+    );
+    // Figma HUD 13:5 — plain seconds, no clock emoji
+    this.hudTexts.time.setText(`${Math.ceil(this.stats.timeRemaining)}s`);
     this.hudTexts.projects.setText(
       `Projects: ${this.stats.projectsCompleted}/${getRequiredProjects(this.levelLayout)}`,
     );
     this.hudTexts.lives.setText(`❤ x${this.stats.lives}`);
-
-    if (!isMobile) {
-      this.hudTexts.score.setText('');
-    }
+    this.hudTexts.score.setText('');
 
     if (this.stats.timeRemaining <= 10) {
-      this.hudTexts.time.setColor('#c62828');
+      this.hudTexts.time.setColor('#ff8a80');
     } else {
-      this.hudTexts.time.setColor('#880e4f');
+      this.hudTexts.time.setColor('#e91e63');
     }
+    this.hudTexts.kisses.setColor('#e91e63');
+    this.hudTexts.lives.setColor('#e91e63');
   }
 
   private setupInput(): void {

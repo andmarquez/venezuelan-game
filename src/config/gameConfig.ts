@@ -97,8 +97,10 @@ export const GAME_CONFIG = {
 
   /** HUD top edge — Figma M02 HUD frame 13:3 y=106 */
   mobileHudTopRatio: 106 / 720,
+  /** Figma HUD 13:3 height */
+  hudBarHeight: 52,
   /** Pill radius — Figma rounded-[60px] capped to bar height */
-  hudCornerRadius: 26,
+  hudCornerRadius: 60,
 
   /** Padding from bottom of screen for touch controls (plus safe-area inset) */
   mobileControlsLift: 12,
@@ -205,6 +207,10 @@ export const GAME_CONFIG = {
     playerWhite: 0xffffff,
     playerHair: 0xc62828,
     uiBg: 0xffffff,
+    /** Figma HUD 13:3 bar fill #2C2C2C */
+    hudBg: 0x2c2c2c,
+    /** Figma HUD 13:3 label / timer text #E91E63 */
+    hudText: 0xe91e63,
     uiText: 0x880e4f,
     uiAccent: 0xe91e63,
   },
