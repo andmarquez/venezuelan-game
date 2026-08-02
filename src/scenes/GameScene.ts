@@ -544,8 +544,8 @@ export class GameScene extends Phaser.Scene {
     const pad = GAME_CONFIG.safePadding;
     this.hudBg = this.add.graphics().setScrollFactor(0);
 
-    // Figma HUD 13:3 — gray labels on frosted white pill
-    const hudHex = '#848484';
+    // Figma HUD 13:3 — white labels on frosted black pill
+    const hudHex = '#ffffff';
     const style: Phaser.Types.GameObjects.Text.TextStyle = {
       fontSize: '14px',
       fontFamily: 'Nunito, Inter, sans-serif',
@@ -581,7 +581,7 @@ export class GameScene extends Phaser.Scene {
   private drawHudBackground(cx: number, cy: number, w: number, h: number): void {
     const r = Math.min(GAME_CONFIG.hudCornerRadius, h / 2);
     this.hudBg.clear();
-    // No stroke — Figma HUD is fill-only (white at low alpha).
+    // No stroke — Figma HUD is fill-only (black at low alpha).
     this.hudBg.lineStyle(0, 0x000000, 0);
     this.hudBg.fillStyle(GAME_CONFIG.colors.hudBg, GAME_CONFIG.colors.hudBgAlpha);
     this.hudBg.fillRoundedRect(cx - w / 2, cy - h / 2, w, h, r);
@@ -624,7 +624,7 @@ export class GameScene extends Phaser.Scene {
 
   private updateHUD(): void {
     const blessing = this.stats.hasVirgenBlessing ? ' ✧' : '';
-    const hudHex = '#848484';
+    const hudHex = '#ffffff';
     // Figma HUD 13:4 — kisses + score on the left
     this.hudTexts.kisses.setText(
       `♥ ${this.stats.kisses}${blessing}   Score: ${this.stats.score}`,
@@ -638,7 +638,7 @@ export class GameScene extends Phaser.Scene {
     this.hudTexts.score.setText('');
 
     if (this.stats.timeRemaining <= 10) {
-      this.hudTexts.time.setColor('#c62828');
+      this.hudTexts.time.setColor('#ff8a80');
     } else {
       this.hudTexts.time.setColor(hudHex);
     }

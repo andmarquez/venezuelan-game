@@ -207,12 +207,12 @@ export const GAME_CONFIG = {
     playerWhite: 0xffffff,
     playerHair: 0xc62828,
     uiBg: 0xffffff,
-    /** HUD bar fill — white; alpha applied in GameScene */
-    hudBg: 0xffffff,
-    /** Figma HUD 13:3 — rgba(255,255,255,0.11) */
+    /** HUD bar fill — black; alpha applied in GameScene */
+    hudBg: 0x000000,
+    /** Figma HUD 13:3 — rgba(0,0,0,0.11) */
     hudBgAlpha: 0.11,
-    /** Figma HUD 13:3 label / timer text #848484 */
-    hudText: 0x848484,
+    /** Figma HUD 13:3 label / timer text — white */
+    hudText: 0xffffff,
     uiText: 0x880e4f,
     uiAccent: 0xe91e63,
   },
