@@ -209,10 +209,10 @@ export const GAME_CONFIG = {
     uiBg: 0xffffff,
     /** HUD bar fill — white; alpha applied in GameScene */
     hudBg: 0xffffff,
-    /** HUD bar opacity — very light frost (Figma ~11%; keep subtler in-game) */
-    hudBgAlpha: 0.05,
-    /** Figma HUD 13:3 label / timer text #E91E63 */
-    hudText: 0xe91e63,
+    /** Figma HUD 13:3 — rgba(255,255,255,0.11) */
+    hudBgAlpha: 0.11,
+    /** Figma HUD 13:3 label / timer text #848484 */
+    hudText: 0x848484,
     uiText: 0x880e4f,
     uiAccent: 0xe91e63,
   },

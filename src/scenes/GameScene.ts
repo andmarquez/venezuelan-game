@@ -544,17 +544,18 @@ export class GameScene extends Phaser.Scene {
     const pad = GAME_CONFIG.safePadding;
     this.hudBg = this.add.graphics().setScrollFactor(0);
 
-    // Figma HUD 13:3 — Kiss Pink labels on dark pill
+    // Figma HUD 13:3 — gray labels on frosted white pill
+    const hudHex = '#848484';
     const style: Phaser.Types.GameObjects.Text.TextStyle = {
       fontSize: '14px',
       fontFamily: 'Nunito, Inter, sans-serif',
-      color: '#e91e63',
+      color: hudHex,
       fontStyle: 'bold',
     };
 
     const kisses = this.add.text(pad + 8, pad + 8, '', style).setScrollFactor(0);
     const time = this.add
-      .text(GAME_CONFIG.width / 2, pad + 8, '', { ...style, fontSize: '30px', fontStyle: '600' })
+      .text(GAME_CONFIG.width / 2, pad + 8, '', { ...style, fontSize: '19px', fontStyle: '600' })
       .setScrollFactor(0)
       .setOrigin(0.5, 0.5);
     const projects = this.add
@@ -608,7 +609,8 @@ export class GameScene extends Phaser.Scene {
     const innerRight = vp.x + vp.width - pad - safe.right - (isMobile ? 51 : 12);
     const scale = vp.width / GAME_CONFIG.width;
     const sideSize = Math.max(12, Math.round(14 * scale));
-    const timerSize = Math.max(18, Math.round((isMobile ? 30 : 22) * scale));
+    // Figma timer 13:5 is 19px on the 1280 artboard
+    const timerSize = Math.max(14, Math.round(19 * scale));
 
     this.hudTexts.kisses.setOrigin(0, 0.5).setPosition(innerLeft, barCy).setFontSize(`${sideSize}px`);
     this.hudTexts.time
@@ -622,6 +624,7 @@ export class GameScene extends Phaser.Scene {
 
   private updateHUD(): void {
     const blessing = this.stats.hasVirgenBlessing ? ' ✧' : '';
+    const hudHex = '#848484';
     // Figma HUD 13:4 — kisses + score on the left
     this.hudTexts.kisses.setText(
       `♥ ${this.stats.kisses}${blessing}   Score: ${this.stats.score}`,
@@ -635,12 +638,12 @@ export class GameScene extends Phaser.Scene {
     this.hudTexts.score.setText('');
 
     if (this.stats.timeRemaining <= 10) {
-      this.hudTexts.time.setColor('#ff8a80');
+      this.hudTexts.time.setColor('#c62828');
     } else {
-      this.hudTexts.time.setColor('#e91e63');
+      this.hudTexts.time.setColor(hudHex);
     }
-    this.hudTexts.kisses.setColor('#e91e63');
-    this.hudTexts.lives.setColor('#e91e63');
+    this.hudTexts.kisses.setColor(hudHex);
+    this.hudTexts.lives.setColor(hudHex);
   }
 
   private setupInput(): void {
