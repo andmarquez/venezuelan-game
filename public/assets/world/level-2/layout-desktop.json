@@ -23,215 +23,215 @@
     {
       "name": "platform_start",
       "x": 80,
-      "y": 4520,
+      "y": 4670,
       "width": 236,
-      "height": 40,
+      "height": 36,
       "type": "platform"
     },
     {
       "name": "floating_platform_01",
       "x": 420,
-      "y": 4360,
+      "y": 4510,
       "width": 160,
-      "height": 36,
+      "height": 32,
       "type": "platform"
     },
     {
       "name": "floating_platform_02",
       "x": 780,
-      "y": 4200,
+      "y": 4350,
       "width": 110,
-      "height": 32,
+      "height": 28,
       "type": "platform"
     },
     {
       "name": "floating_platform_03",
       "x": 980,
-      "y": 4040,
+      "y": 4190,
       "width": 160,
-      "height": 36,
+      "height": 32,
       "type": "platform"
     },
     {
       "name": "floating_platform_04",
       "x": 620,
-      "y": 3880,
+      "y": 4030,
       "width": 236,
-      "height": 40,
+      "height": 36,
       "type": "platform"
     },
     {
       "name": "floating_platform_05",
       "x": 180,
-      "y": 3720,
+      "y": 3870,
       "width": 110,
-      "height": 32,
+      "height": 28,
       "type": "platform"
     },
     {
       "name": "floating_platform_06",
       "x": 420,
-      "y": 3560,
+      "y": 3710,
       "width": 160,
-      "height": 36,
+      "height": 32,
       "type": "platform"
     },
     {
       "name": "floating_platform_07",
       "x": 820,
-      "y": 3400,
+      "y": 3550,
       "width": 236,
-      "height": 40,
+      "height": 36,
       "type": "platform"
     },
     {
       "name": "floating_platform_08",
       "x": 1040,
-      "y": 3240,
+      "y": 3390,
       "width": 110,
-      "height": 32,
+      "height": 28,
       "type": "platform"
     },
     {
       "name": "floating_platform_09",
       "x": 700,
-      "y": 3080,
+      "y": 3230,
       "width": 160,
-      "height": 36,
+      "height": 32,
       "type": "platform"
     },
     {
       "name": "floating_platform_10",
       "x": 280,
-      "y": 2920,
+      "y": 3070,
       "width": 110,
-      "height": 32,
+      "height": 28,
       "type": "platform"
     },
     {
       "name": "floating_platform_11",
       "x": 80,
-      "y": 2760,
+      "y": 2910,
       "width": 236,
-      "height": 40,
+      "height": 36,
       "type": "platform"
     },
     {
       "name": "floating_platform_12",
       "x": 480,
-      "y": 2600,
+      "y": 2750,
       "width": 160,
-      "height": 36,
+      "height": 32,
       "type": "platform"
     },
     {
       "name": "floating_platform_13",
       "x": 860,
-      "y": 2440,
+      "y": 2590,
       "width": 110,
-      "height": 32,
+      "height": 28,
       "type": "platform"
     },
     {
       "name": "floating_platform_14",
       "x": 980,
-      "y": 2280,
+      "y": 2430,
       "width": 236,
-      "height": 40,
+      "height": 36,
       "type": "platform"
     },
     {
       "name": "floating_platform_15",
       "x": 620,
-      "y": 2120,
+      "y": 2270,
       "width": 160,
-      "height": 36,
+      "height": 32,
       "type": "platform"
     },
     {
       "name": "floating_platform_16",
       "x": 220,
-      "y": 1960,
+      "y": 2110,
       "width": 110,
-      "height": 32,
+      "height": 28,
       "type": "platform"
     },
     {
       "name": "floating_platform_17",
       "x": 80,
-      "y": 1800,
+      "y": 1950,
       "width": 236,
-      "height": 40,
+      "height": 36,
       "type": "platform"
     },
     {
       "name": "floating_platform_18",
       "x": 420,
-      "y": 1640,
+      "y": 1790,
       "width": 160,
-      "height": 36,
+      "height": 32,
       "type": "platform"
     },
     {
       "name": "floating_platform_19",
       "x": 780,
-      "y": 1480,
+      "y": 1630,
       "width": 110,
-      "height": 32,
+      "height": 28,
       "type": "platform"
     },
     {
       "name": "floating_platform_20",
       "x": 1000,
-      "y": 1320,
+      "y": 1470,
       "width": 160,
-      "height": 36,
+      "height": 32,
       "type": "platform"
     },
     {
       "name": "floating_platform_21",
       "x": 620,
-      "y": 1160,
+      "y": 1310,
       "width": 236,
-      "height": 40,
+      "height": 36,
       "type": "platform"
     },
     {
       "name": "floating_platform_22",
       "x": 220,
-      "y": 1000,
+      "y": 1150,
       "width": 110,
-      "height": 32,
+      "height": 28,
       "type": "platform"
     },
     {
       "name": "floating_platform_23",
       "x": 480,
-      "y": 840,
+      "y": 990,
       "width": 160,
-      "height": 36,
+      "height": 32,
       "type": "platform"
     },
     {
       "name": "floating_platform_24",
       "x": 780,
-      "y": 680,
+      "y": 830,
       "width": 236,
-      "height": 40,
+      "height": 36,
       "type": "platform"
     },
     {
       "name": "floating_platform_25",
       "x": 420,
-      "y": 560,
+      "y": 710,
       "width": 160,
-      "height": 36,
+      "height": 32,
       "type": "platform"
     },
     {
       "name": "goal_platform",
       "x": 280,
-      "y": 420,
+      "y": 570,
       "width": 720,
       "height": 48,
       "type": "platform"
@@ -240,142 +240,142 @@
   "markers": {
     "player_spawn": {
       "x": 194,
-      "y": 4520
+      "y": 4670
     },
     "portal_goal": {
       "x": 645,
-      "y": 165,
+      "y": 315,
       "size": 90
     },
     "kiss_collectibles": [
       {
         "x": 491,
-        "y": 4311
+        "y": 4461
       },
       {
         "x": 831,
-        "y": 4151
+        "y": 4301
       },
       {
         "x": 991,
-        "y": 3931
+        "y": 4081
       },
       {
         "x": 711,
-        "y": 3831
+        "y": 3981
       },
       {
         "x": 231,
-        "y": 3671
+        "y": 3821
       },
       {
         "x": 511,
-        "y": 3511
+        "y": 3661
       },
       {
         "x": 911,
-        "y": 3351
+        "y": 3501
       },
       {
         "x": 331,
-        "y": 2871
+        "y": 3021
       },
       {
         "x": 571,
-        "y": 2551
+        "y": 2701
       },
       {
         "x": 931,
-        "y": 2391
+        "y": 2541
       },
       {
         "x": 191,
-        "y": 1751
+        "y": 1901
       },
       {
         "x": 471,
-        "y": 1531
+        "y": 1681
       },
       {
         "x": 851,
-        "y": 1431
+        "y": 1581
       },
       {
         "x": 291,
-        "y": 951
+        "y": 1101
       },
       {
         "x": 571,
-        "y": 791
+        "y": 941
       }
     ],
     "timer_collectibles": [
       {
         "x": 873,
-        "y": 3533
+        "y": 3683
       },
       {
         "x": 173,
-        "y": 2113
+        "y": 2263
       },
       {
         "x": 733,
-        "y": 1113
+        "y": 1263
       }
     ],
     "virgen_collectibles": [
       {
         "x": 200,
-        "y": 2700
+        "y": 2850
       }
     ],
     "enemies": [
       {
         "x": 518,
-        "y": 4294,
+        "y": 4444,
         "min": 432,
         "max": 568
       },
       {
         "x": 1098,
-        "y": 3984,
+        "y": 4134,
         "min": 992,
         "max": 1128
       },
       {
         "x": 918,
-        "y": 3334,
+        "y": 3484,
         "min": 832,
         "max": 1044
       },
       {
         "x": 218,
-        "y": 2694,
+        "y": 2844,
         "min": 92,
         "max": 304
       },
       {
         "x": 1098,
-        "y": 2214,
+        "y": 2364,
         "min": 992,
         "max": 1204
       },
       {
         "x": 578,
-        "y": 1584,
+        "y": 1734,
         "min": 432,
         "max": 568
       },
       {
         "x": 918,
-        "y": 654,
+        "y": 804,
         "min": 792,
         "max": 1004
       }
     ],
     "final_boss": {
       "x": 640,
-      "y": 320,
+      "y": 470,
       "min": 320,
       "max": 960
     }
