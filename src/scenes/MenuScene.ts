@@ -15,15 +15,15 @@ type MenuButtonConfig = {
 };
 
 const FALLBACK_BUTTONS: MenuButtonConfig[] = [
-  { id: 'level-1', label: 'Maracaibo — Level 1', level: 'level-1', x: 462, y: 166, w: 340, h: 115 },
-  { id: 'level-2', label: 'Salto Ángel — Level 2', level: 'level-2', x: 460, y: 289, w: 340, h: 115 },
+  { id: 'level-1', label: 'Maracaibo — Level 1', level: 'level-1', x: 462, y: 258, w: 340, h: 115 },
+  { id: 'level-2', label: 'Salto Ángel — Level 2', level: 'level-2', x: 460, y: 381, w: 340, h: 115 },
   {
     id: 'level-3',
     label: 'Level 3 — Coming soon',
     level: null,
     comingSoon: true,
     x: 460,
-    y: 412,
+    y: 504,
     w: 340,
     h: 115,
   },
