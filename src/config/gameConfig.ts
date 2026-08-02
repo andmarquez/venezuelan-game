@@ -111,12 +111,13 @@ export const GAME_CONFIG = {
 
   /**
    * Level 2 vertical climb — keep Andsiosa lower on screen so more upcoming
-   * platforms stay visible above. Negative Y = camera looks ahead upward.
+   * platforms stay visible above.
+   * Phaser subtracts followOffset from the target, so positive Y looks upward.
    */
   verticalClimbCamera: {
-    deadzone: { width: 160, height: 36 },
-    followOffsetY: -160,
-    lerp: 0.14,
+    deadzone: { width: 140, height: 48 },
+    followOffsetY: 140,
+    lerp: 0.12,
   },
 
   /**
