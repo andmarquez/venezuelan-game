@@ -8,7 +8,7 @@ import { addCtaHitZone, layoutCoverScreenBackground, scalePx } from '../ui/endSc
 import {
   mountGameOverLottieOverlay,
   unmountGameOverLottieOverlay,
-} from '../ui/gameOverLottieOverlay';
+} from '../ui/endScreenLottieOverlay';
 
 export type GameOverReason = 'time' | 'lives' | 'fall';
 

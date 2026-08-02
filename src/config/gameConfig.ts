@@ -8,7 +8,7 @@ export const GAME_CONFIG = {
   characterAssetVersion: '20260705l',
   enemyAssetVersion: '20260705l',
   /** Bump after Figma M01/M03/M04 screen art sync */
-  screenAssetVersion: '20260712c',
+  screenAssetVersion: '20260712d',
   /** Bump after audio asset sync */
   audioAssetVersion: '20260712c',
 
