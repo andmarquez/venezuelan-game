@@ -580,7 +580,7 @@ export class GameScene extends Phaser.Scene {
   private drawHudBackground(cx: number, cy: number, w: number, h: number): void {
     const r = Math.min(GAME_CONFIG.hudCornerRadius, h / 2);
     this.hudBg.clear();
-    this.hudBg.fillStyle(GAME_CONFIG.colors.hudBg, 1);
+    this.hudBg.fillStyle(GAME_CONFIG.colors.hudBg, GAME_CONFIG.colors.hudBgAlpha);
     this.hudBg.fillRoundedRect(cx - w / 2, cy - h / 2, w, h, r);
   }
 
