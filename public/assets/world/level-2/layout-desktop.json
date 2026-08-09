@@ -102,7 +102,7 @@
     },
     {
       "name": "floating_platform_10",
-      "x": 280,
+      "x": 500,
       "y": 3070,
       "width": 110,
       "height": 28,
@@ -110,8 +110,8 @@
     },
     {
       "name": "floating_platform_11",
-      "x": 80,
-      "y": 2910,
+      "x": 190,
+      "y": 2900,
       "width": 236,
       "height": 36,
       "type": "platform"
@@ -126,15 +126,15 @@
     },
     {
       "name": "floating_platform_13",
-      "x": 860,
-      "y": 2590,
+      "x": 740,
+      "y": 2630,
       "width": 110,
       "height": 28,
       "type": "platform"
     },
     {
       "name": "floating_platform_14",
-      "x": 980,
+      "x": 880,
       "y": 2430,
       "width": 236,
       "height": 36,
@@ -158,8 +158,8 @@
     },
     {
       "name": "floating_platform_17",
-      "x": 80,
-      "y": 1950,
+      "x": 140,
+      "y": 1940,
       "width": 236,
       "height": 36,
       "type": "platform"
@@ -174,16 +174,16 @@
     },
     {
       "name": "floating_platform_19",
-      "x": 780,
-      "y": 1630,
+      "x": 740,
+      "y": 1660,
       "width": 110,
       "height": 28,
       "type": "platform"
     },
     {
       "name": "floating_platform_20",
-      "x": 1000,
-      "y": 1470,
+      "x": 910,
+      "y": 1490,
       "width": 160,
       "height": 32,
       "type": "platform"
@@ -198,8 +198,8 @@
     },
     {
       "name": "floating_platform_22",
-      "x": 321,
-      "y": 1188,
+      "x": 361,
+      "y": 1208,
       "width": 110,
       "height": 28,
       "type": "platform"
@@ -277,7 +277,7 @@
         "y": 3501
       },
       {
-        "x": 331,
+        "x": 521,
         "y": 3021
       },
       {
@@ -285,8 +285,8 @@
         "y": 2701
       },
       {
-        "x": 931,
-        "y": 2541
+        "x": 841,
+        "y": 2561
       },
       {
         "x": 191,
@@ -325,8 +325,8 @@
     ],
     "virgen_collectibles": [
       {
-        "x": 200,
-        "y": 2850
+        "x": 308,
+        "y": 2860
       }
     ],
     "enemies": [
@@ -351,14 +351,14 @@
       {
         "x": 218,
         "y": 2844,
-        "min": 92,
-        "max": 304
+        "min": 202,
+        "max": 414
       },
       {
         "x": 1098,
         "y": 2364,
-        "min": 992,
-        "max": 1204
+        "min": 892,
+        "max": 1104
       },
       {
         "x": 578,
@@ -376,8 +376,8 @@
     "final_boss": {
       "x": 640,
       "y": 470,
-      "min": 320,
-      "max": 960
+      "min": 280,
+      "max": 1000
     }
   }
 }
