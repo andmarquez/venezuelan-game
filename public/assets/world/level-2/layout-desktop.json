@@ -206,16 +206,16 @@
     },
     {
       "name": "floating_platform_23",
-      "x": 480,
-      "y": 990,
+      "x": 500,
+      "y": 1010,
       "width": 160,
       "height": 32,
       "type": "platform"
     },
     {
       "name": "floating_platform_24",
-      "x": 810,
-      "y": 870,
+      "x": 808,
+      "y": 887,
       "width": 236,
       "height": 36,
       "type": "platform"
@@ -369,8 +369,8 @@
       {
         "x": 918,
         "y": 804,
-        "min": 822,
-        "max": 1034
+        "min": 820,
+        "max": 1032
       }
     ],
     "final_boss": {
