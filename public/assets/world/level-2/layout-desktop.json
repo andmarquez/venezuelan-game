@@ -62,8 +62,8 @@
     },
     {
       "name": "floating_platform_05",
-      "x": 180,
-      "y": 3870,
+      "x": 290,
+      "y": 3900,
       "width": 110,
       "height": 28,
       "type": "platform"
@@ -214,16 +214,16 @@
     },
     {
       "name": "floating_platform_24",
-      "x": 780,
-      "y": 830,
+      "x": 810,
+      "y": 870,
       "width": 236,
       "height": 36,
       "type": "platform"
     },
     {
       "name": "floating_platform_25",
-      "x": 420,
-      "y": 710,
+      "x": 1029,
+      "y": 720,
       "width": 160,
       "height": 32,
       "type": "platform"
@@ -265,7 +265,7 @@
         "y": 3981
       },
       {
-        "x": 231,
+        "x": 341,
         "y": 3821
       },
       {
@@ -369,8 +369,8 @@
       {
         "x": 918,
         "y": 804,
-        "min": 792,
-        "max": 1004
+        "min": 822,
+        "max": 1034
       }
     ],
     "final_boss": {
