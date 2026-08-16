@@ -10,7 +10,7 @@ export const GAME_CONFIG = {
   /** Bump after Figma M01/M03/M04 screen art sync */
   screenAssetVersion: '20260802d',
   /** Bump after audio asset sync */
-  audioAssetVersion: '20260816a',
+  audioAssetVersion: '20260816b',
 
   /** Background music — kept below SFX so gameplay sounds stay clear */
   musicVolume: 0.1,

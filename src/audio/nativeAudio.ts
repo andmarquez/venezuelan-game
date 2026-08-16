@@ -29,7 +29,7 @@ const FILES: Record<NativeAudioKey, string> = {
   'sfx-kiss': 'assets/audio/sfx_throw.mp3',
   /** Level 1 — gaita de furro (existing track) */
   'music-game': 'assets/audio/gaita-de-furro.mp3',
-  /** Level 2 — "Chill Jungle" by Alex McCulloch (CC0 / OpenGameArt) */
+  /** Level 2 — "8 bit jungle music" by game guy maker (CC0 / OpenGameArt) */
   'music-level-2': 'assets/audio/music-level-2.mp3',
 };
 
