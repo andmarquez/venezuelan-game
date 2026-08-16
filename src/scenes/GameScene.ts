@@ -192,23 +192,32 @@ export class GameScene extends Phaser.Scene {
     if (!water || getSelectedLevelId(this.game) !== 'level-3') return;
 
     const surfaceY = water.surfaceY;
-    const onFloor = this.player.body?.blocked.down || this.player.body?.touching.down;
+    const onFloor = !!(this.player.body?.blocked.down || this.player.body?.touching.down);
     const footY = this.player.y;
-    const deep = footY > surfaceY + 28;
-    const atSurface = footY > surfaceY - 20 && footY <= surfaceY + 28;
-    const aboveWater = footY <= surfaceY - 20;
+    const deep = footY > surfaceY + 24;
+    const nearSurface = footY > surfaceY - 40 && footY <= surfaceY + 24;
+    const onDockAboveWater = onFloor && footY < surfaceY - 8;
 
-    if (deep || (atSurface && downHeld)) {
+    // Dive from dock / canoe into the water body.
+    if (downHeld && (nearSurface || onDockAboveWater) && !deep) {
       this.player.setAquaticMode('swim', surfaceY);
-    } else if (atSurface && !onFloor) {
+      this.player.setVelocityY(GAME_CONFIG.playerSwimSpeed);
+      if (footY < surfaceY) this.player.y = surfaceY + 6;
+      return;
+    }
+
+    if (deep) {
+      this.player.setAquaticMode('swim', surfaceY);
+      return;
+    }
+
+    if (nearSurface && !onFloor) {
       this.player.setAquaticMode('canoe', surfaceY);
-    } else if (aboveWater || (onFloor && aboveWater)) {
+      return;
+    }
+
+    if (onFloor || footY <= surfaceY - 20) {
       this.player.setAquaticMode('land', surfaceY);
-    } else if (onFloor && footY <= surfaceY + 8) {
-      // Standing on a dock near the waterline.
-      this.player.setAquaticMode('land', surfaceY);
-    } else if (!onFloor && footY > surfaceY) {
-      this.player.setAquaticMode('swim', surfaceY);
     }
   }
 

@@ -51,6 +51,17 @@ export class MenuScene extends Phaser.Scene {
     this.game.canvas.focus({ preventScroll: true });
 
     bindSceneAudioUnlock(this);
+
+    // Deep-link: ?level=3 (or registry set before menu) skips straight into gameplay.
+    const params = new URLSearchParams(window.location.search);
+    const raw = params.get('level');
+    if (raw === '3' || raw === 'level-3') {
+      this.time.delayedCall(50, () => this.startLevel('level-3'));
+    } else if (raw === '2' || raw === 'level-2') {
+      this.time.delayedCall(50, () => this.startLevel('level-2'));
+    } else if (raw === '1' || raw === 'level-1') {
+      this.time.delayedCall(50, () => this.startLevel('level-1'));
+    }
   }
 
   private getButtons(): MenuButtonConfig[] {
