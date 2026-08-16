@@ -12,6 +12,43 @@ Deploys automatically via `.github/workflows/deploy-pages.yml` on push to **`mai
 
 This URL stays the same when you push updates — only the game content changes.
 
+## Figma design source (always use this file)
+
+**Canonical UI file:** [Andsiosa's Creative Quest — UI](https://www.figma.com/design/1zlB4dA4ktyuuBXzseo1ix)
+
+| Field | Value |
+|-------|-------|
+| File key | `1zlB4dA4ktyuuBXzseo1ix` |
+| MCP account | Andsiosa (`andsiosa@gmail.com`) |
+| Repo manifests | `figma/*.json` (all reference this file key) |
+
+**Rules for agents**
+
+- Treat this Figma file as the **design source of truth** for UI screens, character art, enemies, platforms, and gameplay markers.
+- **Do not edit Figma** unless the user explicitly asks — read/sync from Figma into code instead.
+- When the user updates designs in Figma, pull changes into the repo with the sync scripts below, then bump `screenAssetVersion` in `src/config/gameConfig.ts` if screen PNGs changed.
+
+**Key screen nodes**
+
+| Screen | Node ID | Manifest key |
+|--------|---------|--------------|
+| M01 Start | `150:117` | `menu-start` |
+| M02 Gameplay (mobile) | `13:2` | — do not modify gameplay layout |
+| M03 Game Over | `150:94` | `game-over-screen` |
+| M04 Win | `150:2` | `win-screen` |
+
+**Sync commands** (after Figma changes)
+
+```bash
+npm run assets:screens      # M01 / M03 / M04 full-screen PNGs
+npm run assets:character    # Andsiosa sprite states
+npm run assets:enemy        # Enemy art
+npm run assets:platforms    # Platform art
+npm run assets:sync         # World backgrounds + manifest
+```
+
+See also `figma/GAME-MESSAGES.md`, `figma/GAMEPLAY-ZONES.md`, `figma/CHARACTER-STATES.md`.
+
 ## Important — separate from Performing Typography
 
 The Concert Kinetic Typography app lives in **`performingtypography`** — do not confuse with this game:
