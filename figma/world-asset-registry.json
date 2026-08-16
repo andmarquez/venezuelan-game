@@ -1,7 +1,7 @@
 {
   "figmaFileKey": "1zlB4dA4ktyuuBXzseo1ix",
   "figmaFileUrl": "https://www.figma.com/design/1zlB4dA4ktyuuBXzseo1ix",
-  "version": 9,
+  "version": 10,
   "backgrounds": [
     {
       "assetKey": "level-1-mobile",
@@ -31,6 +31,16 @@
       "artboard": "M06 — Gameplay (Level 2 Vertical)",
       "artboardNodeId": "190:3",
       "notes": "Vertical climb prototype. Hide Gameplay Zones + Labels before export. Displayed at 1280×4800."
+    },
+    {
+      "assetKey": "level-3-mobile",
+      "figmaName": "Art (visual only)",
+      "figmaNodeId": "239:4",
+      "file": "background/level-3-mobile.png",
+      "textureKey": "world:level-3-background",
+      "artboard": "M07 — Gameplay (Level 3 Underwater)",
+      "artboardNodeId": "239:3",
+      "notes": "Horizontal underwater canoe + swim. Water surface y≈280. Hide Gameplay Zones + Labels before export. Placeholder art — replace with final BG."
     }
   ],
   "gameplayZones": {
@@ -49,6 +59,15 @@
       "artboardNodeId": "190:3",
       "platformsFrameNodeId": "190:114",
       "markersFrameNodeId": "190:142"
+    },
+    "level3": {
+      "pageId": "239:2",
+      "artboardNodeId": "239:3",
+      "waterFrameNodeId": "239:47",
+      "platformsFrameNodeId": "239:50",
+      "markersFrameNodeId": "239:73",
+      "labelsFrameNodeId": "239:168",
+      "notes": "water_surface + water_body; canoe_spawn; dive_point_*; surface_exit_*"
     }
   }
 }
