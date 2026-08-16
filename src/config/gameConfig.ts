@@ -4,11 +4,11 @@
  */
 export const GAME_CONFIG = {
   /** Bump after Figma asset sync so phones bypass CDN/browser cache */
-  worldAssetVersion: '20260811b',
+  worldAssetVersion: '20260816c',
   characterAssetVersion: '20260705l',
   enemyAssetVersion: '20260705l',
   /** Bump after Figma M01/M03/M04 screen art sync */
-  screenAssetVersion: '20260802d',
+  screenAssetVersion: '20260816c',
   /** Bump after audio asset sync */
   audioAssetVersion: '20260816b',
 
@@ -33,6 +33,10 @@ export const GAME_CONFIG = {
 
   /** Player movement */
   playerSpeed: 280,
+  /** Level 3 swim — omnidirectional speed while submerged */
+  playerSwimSpeed: 220,
+  /** Level 3 canoe — horizontal speed on the water surface */
+  playerCanoeSpeed: 300,
   playerJumpVelocity: -520,
   /** Hold X + jump for an extra-high leap */
   playerHighJumpVelocity: -700,

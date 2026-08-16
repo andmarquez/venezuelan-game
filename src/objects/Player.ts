@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { getSoundManager } from '../audio/SoundManager';
 import { GAME_CONFIG } from '../config/gameConfig';
+import { WORLD_LAYERS } from '../world/layerConfig';
 
 export type PlayerAnimState =
   | 'idle'
@@ -9,6 +10,8 @@ export type PlayerAnimState =
   | 'fall'
   | 'hurt'
   | 'victory';
+
+export type AquaticMode = 'land' | 'canoe' | 'swim';
 
 /**
  * Andsiosa — the player character.
@@ -26,6 +29,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   private maxJumpsAllowed: number = GAME_CONFIG.maxJumps;
   private jumpsRemaining: number = GAME_CONFIG.maxJumps;
   private blessingGlow?: Phaser.GameObjects.Container;
+  private aquaticMode: AquaticMode = 'land';
+  private waterSurfaceY = 280;
+  private canoeSprite?: Phaser.GameObjects.Image;
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, 'andsiosa-idle');
@@ -106,11 +112,22 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       right: boolean;
       jump: boolean;
       highJump: boolean;
+      /** Hold down / S to dive or swim deeper */
+      down?: boolean;
       /** Wild Rift joystick axis −1..1 (overrides left/right when set) */
       moveAxis?: number;
     },
   ): void {
     if (this.isHurt || this.animState === 'victory') return;
+
+    if (this.aquaticMode === 'swim') {
+      this.updateSwimMovement(cursors, keys);
+      return;
+    }
+    if (this.aquaticMode === 'canoe') {
+      this.updateCanoeMovement(cursors, keys);
+      return;
+    }
 
     const onFloor = this.body?.blocked.down || this.body?.touching.down;
     const axis = keys.moveAxis ?? 0;
@@ -181,6 +198,161 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         this.setAnimState('fall');
       }
     }
+  }
+
+  /** Level 3 — land / canoe on surface / swim underwater. */
+  setAquaticMode(mode: AquaticMode, surfaceY = this.waterSurfaceY): void {
+    this.waterSurfaceY = surfaceY;
+    if (this.aquaticMode === mode) {
+      this.syncCanoeVisual();
+      return;
+    }
+    this.aquaticMode = mode;
+    const body = this.body as Phaser.Physics.Arcade.Body | undefined;
+    if (!body) return;
+
+    if (mode === 'swim' || mode === 'canoe') {
+      body.setAllowGravity(false);
+      this.setDragX(mode === 'canoe' ? 400 : 200);
+      this.jumpsRemaining = this.maxJumpsAllowed;
+    } else {
+      body.setAllowGravity(true);
+      this.setDragX(800);
+      body.setMaxVelocityY(2000);
+    }
+    this.syncCanoeVisual();
+  }
+
+  getAquaticMode(): AquaticMode {
+    return this.aquaticMode;
+  }
+
+  private updateCanoeMovement(
+    cursors: Phaser.Types.Input.Keyboard.CursorKeys,
+    keys: {
+      left: boolean;
+      right: boolean;
+      jump: boolean;
+      down?: boolean;
+      moveAxis?: number;
+    },
+  ): void {
+    const axis = keys.moveAxis ?? 0;
+    const useAxis = Math.abs(axis) > 0.01;
+    const left = useAxis ? axis < 0 : cursors.left?.isDown || keys.left;
+    const right = useAxis ? axis > 0 : cursors.right?.isDown || keys.right;
+    const speed = GAME_CONFIG.playerCanoeSpeed;
+
+    if (useAxis) {
+      this.setVelocityX(axis * speed);
+      this.setFlipX(axis < 0);
+      this.facingRight = axis > 0;
+    } else if (left) {
+      this.setVelocityX(-speed);
+      this.setFlipX(true);
+      this.facingRight = false;
+    } else if (right) {
+      this.setVelocityX(speed);
+      this.setFlipX(false);
+      this.facingRight = true;
+    } else {
+      this.setVelocityX(0);
+    }
+
+    // Keep canoe floating on the surface band.
+    const floatY = this.waterSurfaceY - 12;
+    this.y = Phaser.Math.Linear(this.y, floatY, 0.25);
+    this.setVelocityY(0);
+
+    if (keys.down || cursors.down?.isDown) {
+      // Dive — GameScene will switch to swim when below surface.
+      this.setVelocityY(GAME_CONFIG.playerSwimSpeed);
+      this.y = this.waterSurfaceY + 4;
+    } else if (keys.jump) {
+      this.setVelocityY(GAME_CONFIG.playerJumpVelocity * 0.55);
+      getSoundManager(this.scene.game)?.play('sfx-jump', this.scene, { volume: 0.35 });
+    }
+
+    this.setAnimState(Math.abs(this.body?.velocity.x ?? 0) > 20 ? 'run' : 'idle');
+    this.syncCanoeVisual();
+  }
+
+  private updateSwimMovement(
+    cursors: Phaser.Types.Input.Keyboard.CursorKeys,
+    keys: {
+      left: boolean;
+      right: boolean;
+      jump: boolean;
+      down?: boolean;
+      moveAxis?: number;
+    },
+  ): void {
+    const axis = keys.moveAxis ?? 0;
+    const useAxis = Math.abs(axis) > 0.01;
+    const left = useAxis ? axis < 0 : cursors.left?.isDown || keys.left;
+    const right = useAxis ? axis > 0 : cursors.right?.isDown || keys.right;
+    const up = keys.jump || cursors.up?.isDown || false;
+    const down = keys.down || cursors.down?.isDown || false;
+    const speed = GAME_CONFIG.playerSwimSpeed;
+
+    if (useAxis) {
+      this.setVelocityX(axis * speed);
+      this.setFlipX(axis < 0);
+      this.facingRight = axis > 0;
+    } else if (left) {
+      this.setVelocityX(-speed);
+      this.setFlipX(true);
+      this.facingRight = false;
+    } else if (right) {
+      this.setVelocityX(speed);
+      this.setFlipX(false);
+      this.facingRight = true;
+    } else {
+      this.setVelocityX((this.body?.velocity.x ?? 0) * 0.9);
+    }
+
+    if (up && !down) {
+      this.setVelocityY(-speed);
+      this.setAnimState('jump');
+    } else if (down && !up) {
+      this.setVelocityY(speed);
+      this.setAnimState('fall');
+    } else {
+      // Gentle sink like Mario water levels.
+      const vy = this.body?.velocity.y ?? 0;
+      this.setVelocityY(vy * 0.85 + 28);
+      this.setAnimState(Math.abs(this.body?.velocity.x ?? 0) > 30 ? 'run' : 'idle');
+    }
+
+    // Soft ceiling at surface — pop into canoe when rising out.
+    if (this.y < this.waterSurfaceY - 4 && (this.body?.velocity.y ?? 0) < 0) {
+      this.y = this.waterSurfaceY - 4;
+      this.setVelocityY(0);
+    }
+
+    this.syncCanoeVisual();
+  }
+
+  private syncCanoeVisual(): void {
+    const show = this.aquaticMode === 'canoe';
+    if (show && !this.canoeSprite) {
+      if (!this.scene.textures.exists('canoe')) return;
+      this.canoeSprite = this.scene.add
+        .image(this.x, this.y + 8, 'canoe')
+        .setDepth(WORLD_LAYERS.player - 1)
+        .setOrigin(0.5, 0.5);
+    }
+    if (!this.canoeSprite) return;
+    this.canoeSprite.setVisible(show);
+    if (show) {
+      this.canoeSprite.setPosition(this.x, this.y + 10);
+      this.canoeSprite.setFlipX(!this.facingRight);
+    }
+  }
+
+  /** Call each frame so canoe tracks the player. */
+  updateCanoeFollow(): void {
+    this.syncCanoeVisual();
   }
 
   getFacingRight(): boolean {

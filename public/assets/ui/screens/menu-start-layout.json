@@ -25,9 +25,8 @@
     },
     {
       "id": "level-3",
-      "label": "Level 3 \u2014 Coming soon",
-      "level": null,
-      "comingSoon": true,
+      "label": "Bajo el agua \u2014 Level 3",
+      "level": "level-3",
       "x": 460,
       "y": 504,
       "w": 340,

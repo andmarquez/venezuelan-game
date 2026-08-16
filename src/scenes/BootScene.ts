@@ -31,6 +31,8 @@ export class BootScene extends Phaser.Scene {
     this.load.json('level-1-layout-desktop', assetUrl('assets/world/level-1/layout-desktop.json', v));
     this.load.json('level-2-layout-mobile', assetUrl('assets/world/level-2/layout-mobile.json', v));
     this.load.json('level-2-layout-desktop', assetUrl('assets/world/level-2/layout-desktop.json', v));
+    this.load.json('level-3-layout-mobile', assetUrl('assets/world/level-3/layout-mobile.json', v));
+    this.load.json('level-3-layout-desktop', assetUrl('assets/world/level-3/layout-desktop.json', v));
 
     const singleFrameStates = ['idle', 'jump', 'fall', 'hurt', 'victory'] as const;
     singleFrameStates.forEach((state) => {
@@ -172,6 +174,8 @@ export class BootScene extends Phaser.Scene {
       this.cache.json.get('level-1-layout-desktop'),
       this.cache.json.get('level-2-layout-mobile'),
       this.cache.json.get('level-2-layout-desktop'),
+      this.cache.json.get('level-3-layout-mobile'),
+      this.cache.json.get('level-3-layout-desktop'),
     ] as Array<LevelLayout | null>;
     const artByKey = new Map<string, string>();
     for (const layout of layouts) {
@@ -231,6 +235,7 @@ export class BootScene extends Phaser.Scene {
     this.createPortalTexture();
     this.createParticleTexture();
     this.createPlatformTexture();
+    this.createCanoeTexture();
   }
 
   /** Andsiosa placeholder — red flat-vector style character */
@@ -456,6 +461,20 @@ export class BootScene extends Phaser.Scene {
     g.fillStyle(GAME_CONFIG.colors.platformTop, 1);
     g.fillRoundedRect(0, 0, 64, 16, 8);
     g.generateTexture('platform-tile', 64, 32);
+    g.destroy();
+  }
+
+  /** Level 3 canoe placeholder — replace with Figma canoe art later. */
+  private createCanoeTexture(): void {
+    if (this.textures.exists('canoe')) return;
+    const g = this.make.graphics({ x: 0, y: 0 });
+    g.fillStyle(0x6d4c2b, 1);
+    g.fillEllipse(48, 18, 96, 28);
+    g.fillStyle(0x8d6a45, 1);
+    g.fillEllipse(48, 14, 78, 14);
+    g.fillStyle(0x4e3420, 1);
+    g.fillRect(10, 16, 76, 4);
+    g.generateTexture('canoe', 96, 36);
     g.destroy();
   }
 

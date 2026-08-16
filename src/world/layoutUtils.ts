@@ -34,13 +34,16 @@ export function shouldShowCloudZones(): boolean {
   return false;
 }
 
-/** Active level id — `?level=2` (or `level-2`) selects the vertical climb map. */
+/** Active level id — `?level=2` / `?level=3` (or `level-2` / `level-3`). */
 export function getSelectedLevelId(game?: Phaser.Game): string {
   const fromRegistry = game?.registry.get('currentLevel') as string | undefined;
-  if (fromRegistry === 'level-1' || fromRegistry === 'level-2') return fromRegistry;
+  if (fromRegistry === 'level-1' || fromRegistry === 'level-2' || fromRegistry === 'level-3') {
+    return fromRegistry;
+  }
 
   if (typeof window !== 'undefined') {
     const raw = new URLSearchParams(window.location.search).get('level');
+    if (raw === '3' || raw === 'level-3') return 'level-3';
     if (raw === '2' || raw === 'level-2') return 'level-2';
     if (raw === '1' || raw === 'level-1') return 'level-1';
   }

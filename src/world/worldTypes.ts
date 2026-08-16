@@ -63,6 +63,19 @@ export type LevelMarkers = {
   virgen_collectibles?: { x: number; y: number }[];
   enemies: EnemyMarker[];
   final_boss?: BossMarker;
+  /** Level 3 — canoe mount point (surface). */
+  canoe_spawn?: { x: number; y: number };
+  /** Level 3 — dive into water_body. */
+  dive_points?: { x: number; y: number }[];
+  /** Level 3 — return to canoe / surface. */
+  surface_exits?: { x: number; y: number }[];
+};
+
+/** Level 3 aquatic zones — surface canoe band + swim volume. */
+export type WaterZones = {
+  surfaceY: number;
+  bodyTop: number;
+  bodyBottom: number;
 };
 
 export type LevelLayout = {
@@ -72,6 +85,9 @@ export type LevelLayout = {
   figmaNodeId: string;
   width: number;
   height: number;
+  scroll?: 'horizontal' | 'vertical';
+  /** Level 3 underwater canoe + swim. */
+  water?: WaterZones;
   /** Visual-only background (no physics). */
   background: {
     mode: 'sections';

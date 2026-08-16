@@ -6,7 +6,7 @@ import { getUiViewport } from '../ui/viewportLayout';
 type MenuButtonConfig = {
   id: string;
   label: string;
-  level: 'level-1' | 'level-2' | null;
+  level: 'level-1' | 'level-2' | 'level-3' | null;
   comingSoon?: boolean;
   x: number;
   y: number;
@@ -19,9 +19,8 @@ const FALLBACK_BUTTONS: MenuButtonConfig[] = [
   { id: 'level-2', label: 'Salto Ángel — Level 2', level: 'level-2', x: 460, y: 381, w: 340, h: 115 },
   {
     id: 'level-3',
-    label: 'Level 3 — Coming soon',
-    level: null,
-    comingSoon: true,
+    label: 'Bajo el agua — Level 3',
+    level: 'level-3',
     x: 460,
     y: 504,
     w: 340,
@@ -139,8 +138,10 @@ export class MenuScene extends Phaser.Scene {
   private setupKeyboard(): void {
     this.input.keyboard?.on('keydown-ONE', () => this.startLevel('level-1'));
     this.input.keyboard?.on('keydown-TWO', () => this.startLevel('level-2'));
+    this.input.keyboard?.on('keydown-THREE', () => this.startLevel('level-3'));
     this.input.keyboard?.on('keydown-NUMPAD_ONE', () => this.startLevel('level-1'));
     this.input.keyboard?.on('keydown-NUMPAD_TWO', () => this.startLevel('level-2'));
+    this.input.keyboard?.on('keydown-NUMPAD_THREE', () => this.startLevel('level-3'));
   }
 
   private cleanup = (): void => {
@@ -149,7 +150,7 @@ export class MenuScene extends Phaser.Scene {
     this.comingSoonTimer = undefined;
   };
 
-  private startLevel(level: 'level-1' | 'level-2'): void {
+  private startLevel(level: 'level-1' | 'level-2' | 'level-3'): void {
     if (!this.canStart) return;
     this.canStart = false;
     this.game.registry.set('currentLevel', level);

@@ -65,6 +65,7 @@ export class GameScene extends Phaser.Scene {
   private levelLayout!: LevelLayout;
   private toggleDebug?: () => void;
   private keyDebug!: Phaser.Input.Keyboard.Key;
+  private keyS!: Phaser.Input.Keyboard.Key;
 
   constructor() {
     super({ key: 'GameScene' });
@@ -88,10 +89,15 @@ export class GameScene extends Phaser.Scene {
     if (getSelectedLevelId(this.game) === 'level-2') {
       this.stats.timeRemaining = Math.max(this.stats.timeRemaining, 180);
     }
+    if (getSelectedLevelId(this.game) === 'level-3') {
+      this.stats.timeRemaining = Math.max(this.stats.timeRemaining, 150);
+    }
 
     this.physics.world.setBounds(0, 0, worldW, worldH, true, true, true, false);
     this.cameras.main.setBounds(0, 0, worldW, worldH);
-    this.cameras.main.setBackgroundColor('#b8e0f5');
+    this.cameras.main.setBackgroundColor(
+      getSelectedLevelId(this.game) === 'level-3' ? '#1e6bb8' : '#b8e0f5',
+    );
 
     const world = WorldBuilder.build(this, this.levelLayout, { debug, cloudZones });
     this.platforms = world.platforms;
@@ -105,6 +111,7 @@ export class GameScene extends Phaser.Scene {
     this.settlePlayerOnSpawn();
     this.createHUD();
     this.setupInput();
+    this.setupAquaticLevel();
 
     const isMobile = shouldShowMobileControls(this.game);
     const isVerticalClimb = getSelectedLevelId(this.game) === 'level-2';
@@ -150,6 +157,59 @@ export class GameScene extends Phaser.Scene {
     this.player.setPosition(x, y);
     this.player.setVelocity(0, 0);
     (this.player.body as Phaser.Physics.Arcade.Body).updateFromGameObject();
+  }
+
+  /** Level 3 — water tint + canoe/swim hint. */
+  private setupAquaticLevel(): void {
+    if (getSelectedLevelId(this.game) !== 'level-3' || !this.levelLayout.water) return;
+
+    const surfaceY = this.levelLayout.water.surfaceY;
+    const worldW = this.levelLayout.width;
+    const worldH = this.levelLayout.height;
+
+    this.add
+      .rectangle(worldW / 2, (surfaceY + worldH) / 2, worldW, worldH - surfaceY, 0x1565c0, 0.18)
+      .setDepth(WORLD_LAYERS.collectibles - 1)
+      .setScrollFactor(1);
+
+    this.add
+      .text(16, 64, 'Canoa: ←→  |  Bajar/Nadar: ↓/S  |  Subir: ↑/W/Espacio', {
+        fontSize: '14px',
+        fontFamily: 'Nunito, sans-serif',
+        color: '#e3f2fd',
+        backgroundColor: '#0d47a1aa',
+        padding: { x: 8, y: 4 },
+      })
+      .setScrollFactor(0)
+      .setDepth(WORLD_LAYERS.ui);
+
+    // Start on the dock in land mode; step onto water → canoe.
+    this.player.setAquaticMode('land', surfaceY);
+  }
+
+  private updateAquaticMode(downHeld: boolean): void {
+    const water = this.levelLayout.water;
+    if (!water || getSelectedLevelId(this.game) !== 'level-3') return;
+
+    const surfaceY = water.surfaceY;
+    const onFloor = this.player.body?.blocked.down || this.player.body?.touching.down;
+    const footY = this.player.y;
+    const deep = footY > surfaceY + 28;
+    const atSurface = footY > surfaceY - 20 && footY <= surfaceY + 28;
+    const aboveWater = footY <= surfaceY - 20;
+
+    if (deep || (atSurface && downHeld)) {
+      this.player.setAquaticMode('swim', surfaceY);
+    } else if (atSurface && !onFloor) {
+      this.player.setAquaticMode('canoe', surfaceY);
+    } else if (aboveWater || (onFloor && aboveWater)) {
+      this.player.setAquaticMode('land', surfaceY);
+    } else if (onFloor && footY <= surfaceY + 8) {
+      // Standing on a dock near the waterline.
+      this.player.setAquaticMode('land', surfaceY);
+    } else if (!onFloor && footY > surfaceY) {
+      this.player.setAquaticMode('swim', surfaceY);
+    }
   }
 
   private createCollectibles(): void {
@@ -649,6 +709,7 @@ export class GameScene extends Phaser.Scene {
     this.keyA = this.input.keyboard.addKey('A');
     this.keyD = this.input.keyboard.addKey('D');
     this.keyW = this.input.keyboard.addKey('W');
+    this.keyS = this.input.keyboard.addKey('S');
     this.keyX = this.input.keyboard.addKey('X');
     this.keySpace = this.input.keyboard.addKey('SPACE');
     this.keyDebug = this.input.keyboard.addKey('H');
@@ -693,6 +754,8 @@ export class GameScene extends Phaser.Scene {
       (this.mobileControls?.consumeKissPress() ?? false);
 
     const highJumpHeld = this.keyX?.isDown ?? false;
+    const downHeld =
+      (this.cursors.down?.isDown ?? false) || (this.keyS?.isDown ?? false);
 
     if (kissJustDown) {
       this.blowKiss();
@@ -702,13 +765,17 @@ export class GameScene extends Phaser.Scene {
       this.toggleDebug?.();
     }
 
+    this.updateAquaticMode(downHeld);
+
     this.player.updateMovement(this.cursors, {
       left: (this.cursors.left?.isDown ?? false) || touch.left,
       right: (this.cursors.right?.isDown ?? false) || (this.keyD?.isDown ?? false) || touch.right,
-      jump: jumpJustDown,
+      jump: jumpJustDown || (this.player.getAquaticMode() === 'swim' && (this.cursors.up?.isDown || this.keyW?.isDown)),
       highJump: highJumpHeld,
+      down: downHeld,
       moveAxis: touch.moveAxis,
     });
+    this.player.updateCanoeFollow();
 
     this.enemies.forEach((e) => e.update());
     this.finalBoss?.update(_time, delta);

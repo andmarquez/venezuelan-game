@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-08-11T02:08:10.778Z",
+  "generatedAt": "2026-08-16T04:25:00.000Z",
   "figmaFileKey": "1zlB4dA4ktyuuBXzseo1ix",
   "figmaFileUrl": "https://www.figma.com/design/1zlB4dA4ktyuuBXzseo1ix",
-  "version": 9,
+  "version": 10,
   "backgrounds": {
     "level-1-mobile": {
       "key": "world:level-1-background",
@@ -24,10 +24,17 @@
       "figmaNodeId": "190:3",
       "figmaName": "M06 — Gameplay (Level 2 Vertical)",
       "present": true
+    },
+    "level-3-mobile": {
+      "key": "world:level-3-background",
+      "path": "/assets/world/background/level-3-mobile.png",
+      "figmaNodeId": "239:4",
+      "figmaName": "Art (visual only)",
+      "present": true
     }
   },
   "layout": {
-    "level": "level-1",
+    "level": "level-3",
     "width": 5335,
     "height": 720,
     "platformCount": 22
