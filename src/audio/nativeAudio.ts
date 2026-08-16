@@ -1,6 +1,8 @@
 import { GAME_CONFIG } from '../config/gameConfig';
 import { assetUrl } from '../utils/assetUrl';
 
+export type MusicNativeKey = 'music-game' | 'music-level-2';
+
 export type NativeAudioKey =
   | 'sfx-jump'
   | 'sfx-collect'
@@ -11,7 +13,9 @@ export type NativeAudioKey =
   | 'sfx-select'
   | 'sfx-game-over'
   | 'sfx-kiss'
-  | 'music-game';
+  | MusicNativeKey;
+
+export type SfxNativeKey = Exclude<NativeAudioKey, MusicNativeKey>;
 
 const FILES: Record<NativeAudioKey, string> = {
   'sfx-jump': 'assets/audio/sfx_jump.mp3',
@@ -23,13 +27,23 @@ const FILES: Record<NativeAudioKey, string> = {
   'sfx-select': 'assets/audio/sfx_select.mp3',
   'sfx-game-over': 'assets/audio/sfx_disappear.mp3',
   'sfx-kiss': 'assets/audio/sfx_throw.mp3',
+  /** Level 1 — gaita de furro (existing track) */
   'music-game': 'assets/audio/gaita-de-furro.mp3',
+  /** Level 2 — "Chill Jungle" by Alex McCulloch (CC0 / OpenGameArt) */
+  'music-level-2': 'assets/audio/music-level-2.mp3',
 };
 
+const MUSIC_KEYS: readonly MusicNativeKey[] = ['music-game', 'music-level-2'];
+
+function isMusicKey(key: NativeAudioKey): key is MusicNativeKey {
+  return key === 'music-game' || key === 'music-level-2';
+}
+
 const SFX_POOL_SIZE = 3;
-const sfxPools = new Map<Exclude<NativeAudioKey, 'music-game'>, HTMLAudioElement[]>();
-const sfxPoolCursor = new Map<Exclude<NativeAudioKey, 'music-game'>, number>();
-let musicEl: HTMLAudioElement | null = null;
+const sfxPools = new Map<SfxNativeKey, HTMLAudioElement[]>();
+const sfxPoolCursor = new Map<SfxNativeKey, number>();
+const musicEls = new Map<MusicNativeKey, HTMLAudioElement>();
+let currentMusicKey: MusicNativeKey | null = null;
 let unlocked = false;
 
 function urlFor(key: NativeAudioKey): string {
@@ -39,7 +53,7 @@ function urlFor(key: NativeAudioKey): string {
 function createAudio(key: NativeAudioKey): HTMLAudioElement {
   const el = new Audio(urlFor(key));
   el.preload = 'auto';
-  if (key === 'music-game') {
+  if (isMusicKey(key)) {
     el.loop = true;
   }
   el.load();
@@ -47,11 +61,11 @@ function createAudio(key: NativeAudioKey): HTMLAudioElement {
 }
 
 export function initNativeAudio(): void {
-  if (sfxPools.size > 0) return;
+  if (sfxPools.size > 0 || musicEls.size > 0) return;
 
   (Object.keys(FILES) as NativeAudioKey[]).forEach((key) => {
-    if (key === 'music-game') {
-      musicEl = createAudio(key);
+    if (isMusicKey(key)) {
+      musicEls.set(key, createAudio(key));
       return;
     }
 
@@ -97,7 +111,7 @@ export function unlockNativeAudio(): void {
 }
 
 export function playNativeSfx(
-  key: Exclude<NativeAudioKey, 'music-game'>,
+  key: SfxNativeKey,
   volume: number = GAME_CONFIG.sfxVolume,
 ): void {
   initNativeAudio();
@@ -114,20 +128,48 @@ export function playNativeSfx(
   void el.play().catch(() => {});
 }
 
-export function playNativeMusic(volume: number = GAME_CONFIG.musicVolume): void {
+export function playNativeMusic(
+  key: MusicNativeKey = 'music-game',
+  volume: number = GAME_CONFIG.musicVolume,
+): void {
   initNativeAudio();
-  if (!musicEl) return;
-  if (!musicEl.paused && !musicEl.ended) return;
-  musicEl.volume = volume;
-  void musicEl.play().catch(() => {});
+  const el = musicEls.get(key);
+  if (!el) return;
+
+  if (currentMusicKey && currentMusicKey !== key) {
+    const prev = musicEls.get(currentMusicKey);
+    if (prev) {
+      prev.pause();
+      prev.currentTime = 0;
+    }
+  }
+
+  if (currentMusicKey === key && !el.paused && !el.ended) {
+    el.volume = volume;
+    return;
+  }
+
+  currentMusicKey = key;
+  el.volume = volume;
+  void el.play().catch(() => {});
 }
 
 export function stopNativeMusic(): void {
-  if (!musicEl) return;
-  musicEl.pause();
-  musicEl.currentTime = 0;
+  MUSIC_KEYS.forEach((key) => {
+    const el = musicEls.get(key);
+    if (!el) return;
+    el.pause();
+    el.currentTime = 0;
+  });
+  currentMusicKey = null;
 }
 
 export function isNativeMusicPlaying(): boolean {
-  return !!musicEl && !musicEl.paused && !musicEl.ended;
+  if (!currentMusicKey) return false;
+  const el = musicEls.get(currentMusicKey);
+  return !!el && !el.paused && !el.ended;
+}
+
+export function getCurrentNativeMusicKey(): MusicNativeKey | null {
+  return currentMusicKey;
 }

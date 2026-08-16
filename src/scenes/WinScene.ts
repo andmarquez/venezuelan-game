@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
-import { getSoundManager } from '../audio/SoundManager';
+import { getSoundManager, musicKeyForLevel } from '../audio/SoundManager';
+import { getSelectedLevelId } from '../world/layoutUtils';
 import {
   END_SCREEN,
   addCtaHitZone,
@@ -73,7 +74,7 @@ export class WinScene extends Phaser.Scene {
     const restart = () => {
       const sound = getSoundManager(this.game);
       sound?.unlock(this);
-      sound?.playMusic('music-game', this);
+      sound?.playMusic(musicKeyForLevel(getSelectedLevelId(this.game)), this);
       this.scene.start('GameScene');
     };
     addCtaHitZone(this, cx, mapY(base.ctaY), px(base.ctaW), px(base.ctaH), restart);
@@ -83,7 +84,7 @@ export class WinScene extends Phaser.Scene {
     const restart = () => {
       const sound = getSoundManager(this.game);
       sound?.unlock(this);
-      sound?.playMusic('music-game', this);
+      sound?.playMusic(musicKeyForLevel(getSelectedLevelId(this.game)), this);
       this.scene.start('GameScene');
     };
     this.input.keyboard?.on('keydown-ENTER', restart);

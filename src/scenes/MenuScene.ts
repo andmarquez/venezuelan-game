@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { getSoundManager, bindSceneAudioUnlock } from '../audio/SoundManager';
+import { getSoundManager, bindSceneAudioUnlock, musicKeyForLevel } from '../audio/SoundManager';
 import { coverFitImage, getCoverScreenLayout, scalePx } from '../ui/endScreenLayout';
 import { getUiViewport } from '../ui/viewportLayout';
 
@@ -157,7 +157,7 @@ export class MenuScene extends Phaser.Scene {
     const sound = getSoundManager(this.game);
     sound?.unlock(this);
     sound?.play('sfx-select', this);
-    sound?.playMusic('music-game', this);
+    sound?.playMusic(musicKeyForLevel(level), this);
     this.scene.start('GameScene');
   }
 }

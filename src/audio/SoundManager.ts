@@ -7,14 +7,20 @@ import {
   playNativeSfx,
   stopNativeMusic,
   unlockNativeAudio,
-  type NativeAudioKey,
+  type MusicNativeKey,
+  type SfxNativeKey,
 } from './nativeAudio';
 import { resumeSharedAudioContext } from './sharedAudioContext';
 
 const MUTE_KEY = 'venezuelan-game.soundMuted';
 
-export type SfxKey = Exclude<NativeAudioKey, 'music-game'>;
-export type MusicKey = 'music-game';
+export type SfxKey = SfxNativeKey;
+export type MusicKey = MusicNativeKey;
+
+/** Level 1 keeps gaita; Level 2 uses tropical jungle loop. */
+export function musicKeyForLevel(levelId: string): MusicKey {
+  return levelId === 'level-2' ? 'music-level-2' : 'music-game';
+}
 
 /**
  * Low-latency audio via native HTMLAudioElement (iOS Safari).
@@ -22,7 +28,7 @@ export type MusicKey = 'music-game';
  */
 export class SoundManager {
   private muted = false;
-  private activeMusic = false;
+  private activeMusicKey: MusicKey | null = null;
 
   constructor(_game: Phaser.Game) {
     try {
@@ -68,18 +74,18 @@ export class SoundManager {
     playNativeSfx(key, config?.volume ?? GAME_CONFIG.sfxVolume);
   }
 
-  playMusic(_key: MusicKey, scene?: Phaser.Scene, volume = GAME_CONFIG.musicVolume): void {
+  playMusic(key: MusicKey, scene?: Phaser.Scene, volume = GAME_CONFIG.musicVolume): void {
     if (this.muted) return;
-    if (this.activeMusic && isNativeMusicPlaying()) return;
+    if (this.activeMusicKey === key && isNativeMusicPlaying()) return;
 
     this.unlock(scene);
-    playNativeMusic(volume);
-    this.activeMusic = true;
+    playNativeMusic(key, volume);
+    this.activeMusicKey = key;
   }
 
   stopMusic(_scene?: Phaser.Scene): void {
     stopNativeMusic();
-    this.activeMusic = false;
+    this.activeMusicKey = null;
   }
 }
 

@@ -1,6 +1,5 @@
 import Phaser from 'phaser';
-import { getSoundManager, bindSceneAudioUnlock } from '../audio/SoundManager';
-import { isNativeMusicPlaying } from '../audio/nativeAudio';
+import { getSoundManager, bindSceneAudioUnlock, musicKeyForLevel } from '../audio/SoundManager';
 import { Player } from '../objects/Player';
 import { Enemy } from '../objects/Enemy';
 import { FinalBoss } from '../objects/FinalBoss';
@@ -130,11 +129,9 @@ export class GameScene extends Phaser.Scene {
     bindSceneAudioUnlock(this);
     this.sound.pauseOnBlur = false;
 
-    if (!isNativeMusicPlaying()) {
-      const sound = getSoundManager(this.game);
-      sound?.unlock(this);
-      sound?.playMusic('music-game', this);
-    }
+    const sound = getSoundManager(this.game);
+    sound?.unlock(this);
+    sound?.playMusic(musicKeyForLevel(getSelectedLevelId(this.game)), this);
   }
 
   private createPlayer(): void {

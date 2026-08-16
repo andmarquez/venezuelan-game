@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
-import { getSoundManager } from '../audio/SoundManager';
+import { getSoundManager, musicKeyForLevel } from '../audio/SoundManager';
+import { getSelectedLevelId } from '../world/layoutUtils';
 import {
   GAME_OVER_LOTTIE_CACHE_KEY,
   getCachedGameOverLayout,
@@ -46,7 +47,7 @@ export class GameOverScene extends Phaser.Scene {
       unmountGameOverLottieOverlay();
       const sound = getSoundManager(this.game);
       sound?.unlock(this);
-      sound?.playMusic('music-game', this);
+      sound?.playMusic(musicKeyForLevel(getSelectedLevelId(this.game)), this);
       this.scene.start('GameScene');
     };
 
@@ -71,7 +72,7 @@ export class GameOverScene extends Phaser.Scene {
       unmountGameOverLottieOverlay();
       const sound = getSoundManager(this.game);
       sound?.unlock(this);
-      sound?.playMusic('music-game', this);
+      sound?.playMusic(musicKeyForLevel(getSelectedLevelId(this.game)), this);
       this.scene.start('GameScene');
     };
     this.input.keyboard?.on('keydown-ENTER', restart);
