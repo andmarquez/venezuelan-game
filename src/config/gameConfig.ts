@@ -112,14 +112,22 @@ export const GAME_CONFIG = {
   mobileLandscapeCameraFollowOffsetY: 48,
 
   /**
-   * Level 2 vertical climb — keep Andsiosa lower on screen so more upcoming
-   * platforms stay visible above.
-   * Phaser subtracts followOffset from the target, so positive Y looks upward.
+   * Level 2 vertical climb — look ahead by vertical velocity.
+   * Phaser subtracts followOffset from the target: positive Y looks up,
+   * negative Y looks down (landing platforms while falling).
    */
   verticalClimbCamera: {
-    deadzone: { width: 140, height: 48 },
-    followOffsetY: 140,
-    lerp: 0.12,
+    deadzone: { width: 160, height: 40 },
+    /** Mild upward bias while standing / slow move — plan the next jump */
+    groundedOffsetY: 72,
+    /** Strong look-up while climbing so upcoming platforms stay on screen */
+    lookUpOffsetY: 200,
+    /** Look down while falling so landing spots stay visible */
+    lookDownOffsetY: -120,
+    /** Camera follow lerp (higher = snappier) */
+    lerp: 0.16,
+    /** How quickly followOffset eases between look-up / look-down */
+    offsetLerp: 0.1,
   },
 
   /**
