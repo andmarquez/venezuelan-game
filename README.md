@@ -55,13 +55,13 @@ See `public/experience/README.md` for export tips. Files load on top of the came
 
 The app can be hosted on **GitHub Pages** so you always have the same HTTPS link on your phone — no dev server or Cloudflare tunnel required.
 
-**Live URL:** [https://andmarquez.github.io/performingtypography/](https://andmarquez.github.io/performingtypography/)
+**Live URL:** [https://andmarquez.github.io/venezuelan-game/](https://andmarquez.github.io/venezuelan-game/)
 
-The site deploys automatically when changes are pushed to **`main`**. GitHub Pages only allows deploys from that branch in this repo.
+The site deploys automatically when changes are pushed to **`main`**. The active preview branch can also deploy while it is open, so the same HTTPS URL can be used for phone testing without relying on a temporary tunnel.
 
 ### One-time setup (already done if the link above works)
 
-1. **GitHub → performingtypography → Settings → Pages**
+1. **GitHub → venezuelan-game → Settings → Pages**
 2. **Source:** GitHub Actions
 3. Push to **`main`** — the workflow builds and deploys in ~1 minute
 

@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - cursor/concert-kinetic-typography-1da3
   workflow_dispatch:
 
 permissions:
@@ -34,7 +35,7 @@ jobs:
       - name: Build for GitHub Pages
         run: npm run build:pages
         env:
-          BASE_PATH: /performingtypography/
+          BASE_PATH: /venezuelan-game/
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
