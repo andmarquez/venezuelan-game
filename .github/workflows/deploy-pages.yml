@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - cursor/concert-kinetic-typography-1da3
   workflow_dispatch:
 
 permissions:

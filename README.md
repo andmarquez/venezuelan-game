@@ -57,7 +57,7 @@ The app can be hosted on **GitHub Pages** so you always have the same HTTPS link
 
 **Live URL:** [https://andmarquez.github.io/venezuelan-game/](https://andmarquez.github.io/venezuelan-game/)
 
-The site deploys automatically when changes are pushed to **`main`**. The active preview branch can also deploy while it is open, so the same HTTPS URL can be used for phone testing without relying on a temporary tunnel.
+The site deploys automatically when changes are pushed to **`main`**. GitHub Pages only allows deploys from that branch in this repo, so this URL is the stable option after the app is merged to `main`.
 
 ### One-time setup (already done if the link above works)
 
