@@ -8,7 +8,7 @@ Guidance for AI agents working in this repository.
 
 **GitHub Pages** is the canonical permanent URL for this app:
 
-- **https://andmarquez.github.io/venezuelan-game/**
+- **https://andmarquez.github.io/performingtypography/**
 
 Deploys automatically via `.github/workflows/deploy-pages.yml` on push to **`main`** only (GitHub Pages branch policy). Requires **Settings → Pages → Source: GitHub Actions**.
 

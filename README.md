@@ -55,7 +55,7 @@ See `public/experience/README.md` for export tips. Files load on top of the came
 
 The app can be hosted on **GitHub Pages** so you always have the same HTTPS link on your phone — no dev server or Cloudflare tunnel required.
 
-**Live URL:** [https://andmarquez.github.io/venezuelan-game/](https://andmarquez.github.io/venezuelan-game/)
+**Live URL:** [https://andmarquez.github.io/performingtypography/](https://andmarquez.github.io/performingtypography/)
 
 The site deploys automatically when changes are pushed to **`main`**. GitHub Pages only allows deploys from that branch in this repo, so this URL is the stable option after the app is merged to `main`.
 
